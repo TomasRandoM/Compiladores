@@ -7,14 +7,24 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PushbackReader;
 
+/**
+ * Clase para modificar el reader de java y hacer más amigable su utilización
+ * @author Tomás Rando
+ */
 public class ModifiedFileReader {
     private PushbackReader fileReader;
 
-    public ModifiedFileReader() throws ReaderException {
+    /**
+     * Constructor del ModifiedFileReader
+     * @throws ReaderException Excepción del Reader
+     * @param inputFile String. Archivo de entrada
+     * @author Tomás Rando
+     */
+    public ModifiedFileReader(String inputFile) throws ReaderException {
         try {
-            this.fileReader =  new PushbackReader(new FileReader("entrada.txt"), 1);
+            this.fileReader =  new PushbackReader(new FileReader(inputFile), 1);
         } catch (FileNotFoundException e) {
-            throw new ReaderException("File not found. Please try again.");
+            throw new ReaderException("ARCHIVO NO ENCONTRADO. REINTENTE");
         }
     }
 
@@ -22,6 +32,7 @@ public class ModifiedFileReader {
      * Lee un caracter y lo devuelve
      * @return Character
      * @throws ReaderException Exception para errores de lectura
+     * @author Tomás Rando
      */
     public Character readChar() throws ReaderException {
         int e;
@@ -33,7 +44,7 @@ public class ModifiedFileReader {
                 return (char) e;
             }
         } catch (IOException ex) {
-            throw new ReaderException("Error in reading char");
+            throw new ReaderException("ERROR LEYENDO CARACTER");
         }
     }
 
@@ -41,12 +52,13 @@ public class ModifiedFileReader {
      * Nos permite deshacer la lectura de un caracter
      * @param c Caracter leido anteriormente
      * @throws ReaderException Exception por si hubiese algun error
+     * @author Tomás Rando
      */
     public void unreadChar(char c) throws ReaderException {
         try {
             fileReader.unread(c);
         } catch (IOException ex) {
-            throw new ReaderException("Error in unreading char");
+            throw new ReaderException("ERROR DESLEYENDO CARACTER");
         }
     }
 

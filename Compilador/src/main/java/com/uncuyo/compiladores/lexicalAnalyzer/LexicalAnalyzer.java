@@ -8,7 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- *
+ * Clase que representa al analizador léxico
+ * @author Paulina Suden y Tomás Rando
  */
 public class LexicalAnalyzer {
 
@@ -17,165 +18,207 @@ public class LexicalAnalyzer {
     private int row;
     private int column;
 
-    public LexicalAnalyzer() throws ReaderException {
+    /**
+     * Constructor
+     * @throws ReaderException Excepción del reader
+     * @param inputFile String Archivo de entrada
+     * @author Paulina Suden y Tomás Rando
+     */
+    public LexicalAnalyzer(String inputFile) throws ReaderException {
         keywords = new HashMap<>();
         initializeHash(keywords);
-        fileReader = new ModifiedFileReader();
-    }
-
-    public Token nextToken(Character caracter) throws ReaderException, LexicalException {
-        Character c = fileReader.readChar();
-        while (c != null) {
-            c = fileReader.readChar();
-
-            if ( c == '/') {
-                findComment();
-            } else if (Addons.isUpperCase(c)) {
-                findIdClass(c);
-            } else if (Addons.isLowerCase(c)) {
-                findIdentifierKeyword(c); //objeto, variable, funcion. Se verifica también si es palabra reservada
-            } else if (Character.isDigit(c)) {
-                findNumber(c); //entero o decimal
-            } else if ( c == '"') {
-                findStringConstant(); // termine "
-            } else {
-                if (c == ' ') {
-                    column++;
-                }
-                if (c == '\n') {
-                    column = 0;
-                    row++;
-                }
-
-        }
-
-    }
-        return null;
+        fileReader = new ModifiedFileReader(inputFile);
     }
 
     /**
-     * Metodo que identifica keywords o identificadores de objeto, variables o funciones
-     * @param c Primer Character leído en nextToken()
-     * @return Token resultante
-     * @throws ReaderException Excepción causada por la lectura del archivo
-     * @throws LexicalException Excepción causada por errores léxicos.
+     * Función que devuelve el siguiente token encontrado en el código fuente
+     * @return Token que representa el siguiente token encontrado
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionado por un error léxico
+     * @author Paulina Suden y Tomás Rando
+     */
+    public Token nextToken() throws ReaderException, LexicalException {
+        boolean stop = false;
+        Token token = null;
+        Character c = fileReader.readChar();
+        if (c == null) {
+            token = new Token(TokenTypes.end_of_file, "", null, row, column);
+            stop = true;
+        }
+        while (!stop) {
+
+            if ( c == '/') {
+                token = findComment();
+            }
+            else if (Addons.isUpperCase(c)) {
+                token = findIdClass(c);
+            }
+            else if (Addons.isLowerCase(c)) {
+                token = findIdentifierKeyword(c); //objeto, variable, funcion. Se verifica también si es palabra reservada
+            }
+            else if (Character.isDigit(c)) {
+                token = findNumber(c); //entero o decimal
+            }
+            else if ( c == '"') {
+                token = findStringConstant(); // strings
+            }
+            else {
+                if (c == ' ') {
+                    column++;
+                    c = fileReader.readChar();
+                }
+                else if (c == '\n') {
+                    column = 0;
+                    row++;
+                    c = fileReader.readChar();
+                }
+            }
+
+            if (token != null) {
+                stop = true;
+            }
+        }
+        return token;
+    }
+
+    /**
+     * Metodo para identificar identificadores de objeto/funcion (o ciertas keywords)
+     * @param c Character leído anteriormente en nextToken()
+     * @return Token con todos los atributos
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción provocado por un error léxico
+     * @author Tomás Rando
      */
     public Token findIdentifierKeyword(Character c) throws ReaderException, LexicalException {
         StringBuilder lexeme = new StringBuilder();
+        Token token = null;
+        boolean stop = false;
         lexeme.append(c);
-        while (c != null) {
+        while (!stop) {
             c = fileReader.readChar();
             sumRowAndColumn(c);
-            if (c == null || c == ' ' || c == '\t' || c == ')' || c == '(' || c == ';') {
+            if (c == null) {
+                throw new LexicalException("END OF FILE INESPERADO", column, row);
+            }
+            if (!(Addons.isLetter(c) || Character.isDigit(c) || c == '_')) {
                 fileReader.unreadChar(c);
-                if (Addons.isLetter(lexeme.charAt(lexeme.length() - 1)) || Character.isDigit(c)) {
-                    if (keywords.get(lexeme.toString()) != null) {
-                        return (new Token(keywords.get(lexeme.toString()), lexeme.toString(), null, row, column));
-                    } else {
-                        keywords.put(lexeme.toString(), TokenTypes.id_obj);
-                        return (new Token(TokenTypes.id_obj, lexeme.toString(), null, row, column));
-                    }
+                if (keywords.get(lexeme.toString()) != null) {
+                    token = new Token(keywords.get(lexeme.toString()), lexeme.toString(), null, row, column);
                 }
-            } else {
-                if (c != '\n') {
-                    if (Addons.isLetter(c) || Character.isDigit(c) || c == '_') {
-                        lexeme.append(c);
-                    } else {
-                        throw new LexicalException("Lexical Error in row " + row + ", column " + column +
-                                ". Illegal character: " + c);
-                    }
+                else {
+                    keywords.put(lexeme.toString(), TokenTypes.id_obj);
+                    token = new Token(TokenTypes.id_obj, lexeme.toString(), null, row, column);
                 }
+                stop = true;
+            }
+            else {
+                lexeme.append(c);
             }
         }
-        throw new LexicalException("Unexpected end of file at row " + row + ", column " + column);
+        return token;
     }
+    /*
+        POSIBLE IF PARA findIdentifierKeyword() SI NO PUDIESE TERMINAR CON _
+        if (Addons.isLetter(lexeme.charAt(lexeme.length() - 1)) || Character.isDigit(c)) { }
+     */
 
     /**
-     * Metodo que identifica identificadores de clase o ciertos keywords (que empiezan con mayuscula)
-     * @param c Primer Character leído en nextToken()
-     * @return Token resultante
-     * @throws ReaderException Excepción causada por la lectura del archivo
-     * @throws LexicalException Excepción causada por errores léxicos.
+     * Metodo para identificar identificadores de clase (o ciertas keywords)
+     * @param c Character leído anteriormente en nextToken()
+     * @return Token con todos los atributos
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción provocado por un error léxico
+     * @author Tomás Rando
      */
     public Token findIdClass(Character c) throws ReaderException, LexicalException {
         StringBuilder lexeme = new StringBuilder();
+        boolean stop = false;
+        Token token = null;
         lexeme.append(c);
-        while (c != null) {
+        while (!stop) {
             c = fileReader.readChar();
             sumRowAndColumn(c);
-            if (c == null || c == ' ' || c == '\t' || c == ')' || c == '(' || c == ';') {
+            if (c == null) {
+                throw new LexicalException("END OF FILE INESPERADO", column, row);
+            }
+            if (!(Addons.isLetter(c) || Character.isDigit(c) || c == '_')) {
                 fileReader.unreadChar(c);
                 if (Addons.isLetter(lexeme.charAt(lexeme.length() - 1))) {
                     if (keywords.get(lexeme.toString()) != null) {
-                        return (new Token(keywords.get(lexeme.toString()), lexeme.toString(), null, row, column));
-                    } else {
+                        token = new Token(keywords.get(lexeme.toString()), lexeme.toString(), null, row, column);
+                    }
+                    else {
                         keywords.put(lexeme.toString(), TokenTypes.id_class);
-                        return (new Token(TokenTypes.id_class, lexeme.toString(), null, row, column));
+                        token = new Token(TokenTypes.id_class, lexeme.toString(), null, row, column);
                     }
+                    stop = true;
                 }
-            } else {
-                if (c != '\n') {
-                    if (Addons.isLetter(c) || Character.isDigit(c) ||c == '_') {
-                        lexeme.append(c);
-                    } else {
-                        throw new LexicalException("Lexical Error in row " + row + ", column " + column +
-                                ". Illegal character: " + c);
-                    }
+                else {
+                    throw new LexicalException("IDENTIFICADOR DE CLASE INCORRECTO ", column, row);
                 }
             }
+            else {
+                lexeme.append(c);
+            }
         }
-        throw new LexicalException("Unexpected end of file at row " + row + ", column " + column);
+        return token;
     }
 
 
     /**
-     * Metodo que identifica constantes enteras y doubles
-     * @param c Primer Character leído en nextToken()
-     * @return Token resultante
-     * @throws ReaderException Excepción causada por la lectura del archivo
-     * @throws LexicalException Excepción causada por errores léxicos.
+     * Metodo para identificar int o double
+     * @param c Character leído anteriormente en nextToken()
+     * @return Token con todos los atributos
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción provocado por un error léxico
+     * @author Tomás Rando
      */
     public Token findNumber(Character c) throws ReaderException, LexicalException {
         StringBuilder lexeme = new StringBuilder();
-        lexeme.append(c);
         //1 es para identificar enteros y 2 para doubles
         int tipo = 1;
-        while (c != null) {
+        boolean stop = false;
+        Token token = null;
+        lexeme.append(c);
+
+        while (!stop) {
             c = fileReader.readChar();
             sumRowAndColumn(c);
-            if (c == null || c == ' ' || c == '\t' || c == ')' || c == '(' || c == ';'
-                    || Addons.isArithmeticOperator(c) || Addons.isRelationalOperator(c) || c == '\n') {
+            if (c == null) {
+                throw new LexicalException("END OF FILE INESPERADO", column, row);
+            }
+            if (!(Character.isDigit(c) || c == '.')) {
                 fileReader.unreadChar(c);
                 char aux = lexeme.charAt(lexeme.length() - 1);
-                if (Addons.isLetter(aux) || Character.isDigit(aux)) {
-                    if (tipo == 1) {
-                        return (new Token(TokenTypes.const_int, lexeme.toString(), Integer.parseInt(lexeme.toString()),
-                                row, column));
-                    } else {
-                        return (new Token(TokenTypes.const_double, lexeme.toString(),
-                                Double.parseDouble(lexeme.toString()), row, column));
-                    }
-
+                if (tipo == 1) {
+                    token = new Token(TokenTypes.const_int, lexeme.toString(), Integer.parseInt(lexeme.toString()),
+                            row, column);
                 }
-            } else {
-                if (Character.isDigit(c) || c == '.') {
-                    if (c == '.') {
-                        if (tipo == 2) {
-                            throw new LexicalException("Lexical Error in row " + row + ", column " + column +
-                                    ". Illegal character: " + c);
-                        }
-                        tipo = 2;
-                    }
-                    lexeme.append(c);
-                } else {
-                    throw new LexicalException("Lexical Error in row " + row + ", column " + column +
-                            ". Illegal character: " + c);
+                else {
+                    token = new Token(TokenTypes.const_double, lexeme.toString(),
+                            Double.parseDouble(lexeme.toString()), row, column);
                 }
+                stop = true;
+            }
+            else {
+                if (c == '.') {
+                    if (tipo == 2) {
+                        throw new LexicalException("CARACTER ILEGAL: " + c, column, row);
+                    }
+                    tipo = 2;
+                }
+                lexeme.append(c);
             }
         }
-        throw new LexicalException("Unexpected end of file at row " + row + ", column " + column);
+        return token;
     }
 
+    /**
+     * Función para inicializar el hash con las palabras reservadas y sus respectivos tokens
+     * @param hash HashMap<String, TokenTypes> anteriormente declarado
+     * @return HashMap<String, TokenTypes> inicializado
+     * @author Paulina Suden y Tomás Rando
+     */
     private HashMap<String, TokenTypes> initializeHash(HashMap<String, TokenTypes> hash) {
         List<String> plist = List.of(
                 "start", "class", "impl", "else", "false", "if", "ret", "while",

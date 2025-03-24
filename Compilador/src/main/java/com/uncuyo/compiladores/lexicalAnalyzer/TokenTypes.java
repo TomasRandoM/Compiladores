@@ -2,6 +2,7 @@ package com.uncuyo.compiladores.lexicalAnalyzer;
 
 /**
  * Enum para representar los tipos de tokens existentes
+ * @author Paulina Suden y Tomás Rando
  */
 public enum TokenTypes {
     //KEY WORDS
@@ -27,6 +28,9 @@ public enum TokenTypes {
     const_int, const_double, const_string,
 
     //IDENTIFICADORES
-    id_class, id_obj;
+    id_class, id_obj,
+
+    //EOF (End of file)
+    end_of_file;
 }
 
