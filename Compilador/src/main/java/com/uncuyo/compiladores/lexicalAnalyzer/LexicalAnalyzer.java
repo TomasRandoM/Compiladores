@@ -48,7 +48,7 @@ public class LexicalAnalyzer {
         while (!stop) {
 
             if ( c == '/') {
-                token = findComment();
+                findComment();
             }
             else if (Addons.isUpperCase(c)) {
                 token = findIdClass(c);
@@ -213,61 +213,88 @@ public class LexicalAnalyzer {
         return token;
     }
 
-
+    /**
+     * Método para identificar literales cadenas
+     * @return Token con todos los atributos
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción provocado por un error léxico
+     * @author Paulina Suden
+     */
     public Token findStringConstant() throws ReaderException, LexicalException {
-        int cont = 0;
         StringBuilder lexeme = new StringBuilder();
-        Character c = fileReader.readChar();
-        sumRowAndColumn(c);
-        try {
-            while (cont < 1024) {
-                if (c == '"') {
-                    break;
-                }
-                lexeme.append(c);
-                c = fileReader.readChar();
-                sumRowAndColumn(c);
-                cont++;
+        Character c;
+        while (lexeme.length() < 1024) {
+            c = fileReader.readChar();
+
+            if (c == null) {
+                throw new LexicalException("END OF FILE INESPERADO", column, row);
             }
-            if (cont == 1024) {
-                throw new LexicalException("Error léxico");
+
+            sumRowAndColumn(c);
+
+            if (c == '"') {
+                return new Token(TokenTypes.const_string, lexeme.toString(), null, column, row);
             }
-            return new Token(TokenTypes.const_string, lexeme.toString(), null, column, row);
-        } catch (ReaderException e) {
-            throw new ReaderException("Error léxico (del Reader)");
+
+            lexeme.append(c);
         }
+
+        throw new LexicalException("SE SUPERO EL TAMAÑO MAXIMO DE CADENA (1024 CARACTERES)",column,row);
     }
 
+    /**
+     * Método para identificar comentario simple o multilínea
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción provocado por un error léxico
+     * @author Paulina Suden
+     */
     public void findComment() throws ReaderException, LexicalException {
         Character c = fileReader.readChar();
+
+        if (c == null) {
+            throw new LexicalException("END OF FILE INESPERADO", column, row);
+        }
+
+        sumRowAndColumn(c);
+
         if (c == '/') {
-            while (c != '\n') {
-                c = fileReader.readChar();
+            while ((c = fileReader.readChar()) != '\n') {
+                if (c == null) {
+                    throw new LexicalException("END OF FILE INESPERADO", column, row);
+                }
             }
             column = 0;
             row++;
-            c = fileReader.readChar();
-            nextToken(c);
+            nextToken();
         } else if (c == '*') {
-            c = fileReader.readChar();
-            while (c != '*') {
-                c = fileReader.readChar();
+            boolean endFound = false;
+            while ((c = fileReader.readChar()) != null) {
                 sumRowAndColumn(c);
+
+                if (c == '*' && (c = fileReader.readChar()) == '/') {
+                    sumRowAndColumn(c);
+                    endFound = true;
+                    break;
+
+                } else if (c == null) {
+                    throw new LexicalException("END OF FILE INESPERADO EN COMENTARIO MULTILÍNEA", column, row);
+                }
             }
-            c = fileReader.readChar();
-            if (c=='/'){
-                column++;
-                c = fileReader.readChar();
-                sumRowAndColumn(c);
-            } else {
-                throw new LexicalException("Error léxico");
+
+            if (!endFound) {
+                throw new LexicalException("END OF FILE INESPERADO EN COMENTARIO MULTILÍNEA", column, row);
             }
+
         } else {
-            throw new LexicalException("Error léxico");
+            throw new LexicalException("SE ESPERABA '/' O '*'", column, row);
         }
     }
 
-    //funcion para que cuente filas y columnas
+    /**
+     * Método para contar las filas y columnas
+     * @param c Character
+     * @author Paulina Suden
+     */
     public void sumRowAndColumn(Character c) {
         if (c == '\n' || c == '\r') {
             column = 0;
@@ -278,7 +305,6 @@ public class LexicalAnalyzer {
             column++;
         }
     }
-
 
 
     /**
