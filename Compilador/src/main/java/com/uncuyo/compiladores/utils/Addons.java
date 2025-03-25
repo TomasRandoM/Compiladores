@@ -13,6 +13,7 @@ public class Addons {
 
     /**
      * Verifica que un caracter sea una letra (sin tilde)
+     *
      * @param c Character
      * @return boolean. True si es letra, false si no
      * @author Tomás Rando
@@ -24,6 +25,7 @@ public class Addons {
 
     /**
      * Verifica que un caracter sea un operador aritmetico
+     *
      * @param c Character
      * @return boolean. True si es un operador, false si no
      * @author Tomás Rando
@@ -38,6 +40,7 @@ public class Addons {
 
     /**
      * Verifica que un caracter sea una letra mayuscula
+     *
      * @param c Character
      * @return boolean. True si es letra mayuscula, false si no
      * @author Tomás Rando
@@ -48,6 +51,7 @@ public class Addons {
 
     /**
      * Verifica que un caracter sea una letra minuscula
+     *
      * @param c Character
      * @return boolean. True si es letra minuscula, false si no
      * @author Tomás Rando
@@ -58,6 +62,7 @@ public class Addons {
 
     /**
      * Verifica que un caracter sea un operador booleano
+     *
      * @param c Character
      * @return boolean. True si es un operador booleano, false si no
      * @author Paulina Suden
@@ -68,10 +73,13 @@ public class Addons {
 
     /**
      * Verifica que un caracter sea un simbolo especial
+     *
      * @param c Character
      * @return boolean. True si es un simbolo especial, false si no
      * @author Paulina Suden
      */
     public static boolean isSpecialSymbol(Character c) {
         return c == '[' || c == ']' || c == '(' || c == ')' || c == '{'
-                || c == '}' || c == '.' || c == ',' || c == ';'
+                || c == '}' || c == '.' || c == ',' || c == ';';
+    }
+}
