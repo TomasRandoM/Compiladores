@@ -21,6 +21,7 @@ public class Addons {
         return (isUpperCase(c) || isLowerCase(c));
     }
 
+
     /**
      * Verifica que un caracter sea un operador aritmetico
      * @param c Character
@@ -55,5 +56,22 @@ public class Addons {
         return (c >= 'a' && c <= 'z');
     }
 
-}
+    /**
+     * Verifica que un caracter sea un operador booleano
+     * @param c Character
+     * @return boolean. True si es un operador booleano, false si no
+     * @author Paulina Suden
+     */
+    public static boolean isBooleanOperator(Character c) {
+        return c == '&' || c == '|' || c == '!';
+    }
 
+    /**
+     * Verifica que un caracter sea un simbolo especial
+     * @param c Character
+     * @return boolean. True si es un simbolo especial, false si no
+     * @author Paulina Suden
+     */
+    public static boolean isSpecialSymbol(Character c) {
+        return c == '[' || c == ']' || c == '(' || c == ')' || c == '{'
+                || c == '}' || c == '.' || c == ',' || c == ';'

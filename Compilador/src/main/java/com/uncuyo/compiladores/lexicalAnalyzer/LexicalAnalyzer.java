@@ -15,6 +15,9 @@ public class LexicalAnalyzer {
 
     private HashMap<String, TokenTypes> keywords;
     private HashMap<String, TokenTypes> arithmeticOperator;
+    private HashMap<String, TokenTypes> booleanOperator;
+    private HashMap<String, TokenTypes> specialSymbol;
+
     private static ModifiedFileReader fileReader;
     private int row = 0;
     private int column = 0;
@@ -30,6 +33,10 @@ public class LexicalAnalyzer {
         initializeHash(keywords);
         arithmeticOperator = new HashMap<>();
         arithmeticOperatorHash(arithmeticOperator);
+        booleanOperator = new HashMap<>();
+        booleanOperatorHash(booleanOperator);
+        specialSymbol = new HashMap<>();
+        specialSymbolHash(specialSymbol);
         fileReader = new ModifiedFileReader(inputFile);
     }
 
@@ -58,17 +65,28 @@ public class LexicalAnalyzer {
                 token = findIdClass(c);
             }
             else if (Addons.isLowerCase(c)) {
-                token = findIdentifierKeyword(c); //objeto, variable, funcion. Se verifica también si es palabra reservada
+                token = findIdentifierKeyword(c);
             }
             else if (Character.isDigit(c)) {
-                token = findNumber(c); //entero o decimal
+                token = findNumber(c);
             }
             else if ( c == '"') {
-                token = findStringConstant(); // strings
-            } else if (Addons.isArithmeticOperator(c)) {
+                token = findStringConstant();
+            }
+            else if (Addons.isArithmeticOperator(c)) {
                 token = arithmeticOperation(c);
-            } else if (isRelationalOperator(c)) {
+            }
+            else if (isRelationalOperator(c)) {
                 token = relationalOperation(c);
+            }
+            else if (Addons.isBooleanOperator(c)) {
+                token = booleanOperation(c);
+            }
+            else if (c == '=') {
+                token = assignmentOperator(c);
+            }
+            else if (Addons.isSpecialSymbol(c)) {
+                token = specialSymbol(c);
             } else {
                 if (c == ' ') {
                     column++;
@@ -350,6 +368,68 @@ public class LexicalAnalyzer {
     }
 
     /**
+     * Metodo para identificar operadores booleanos
+     * @param c Character leído anteriormente en nextToken()
+     * @return Token con todos los atributos
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción provocada por un error léxico
+     * @author Paulina Suden
+     */
+    public Token booleanOperation(Character c) throws LexicalException, ReaderException {
+        Token token = null;
+        if (c == '&' || c == '|') {
+            Character cc = fileReader.readChar();
+            if (cc == c) {
+                sumRowAndColumn(cc);
+                token = new Token(c == '&' ? TokenTypes.op_and : TokenTypes.op_or, c.toString() + cc, null, row, column);
+            } else {
+                fileReader.unreadChar(cc);
+                throw new LexicalException("OPERADOR BOOLEANO NO VALIDO: "+c,column,row);
+            }
+        } else if (c == '!') {
+            token = new Token(TokenTypes.op_not, c.toString(), null, row, column);
+        } else {
+            throw new LexicalException("OPERADOR BOOLEANO NO VALIDO: "+c,column,row);
+        }
+        return token;
+    }
+
+    /**
+     * Metodo para identificar operador de asignacion
+     * @param c Character leído anteriormente en nextToken()
+     * @return Token con todos los atributos
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción provocada por un error léxico
+     * @author Paulina Suden
+     */
+    public Token assignmentOperator(Character c) throws LexicalException, ReaderException {
+        Token token = null;
+        Character cc = fileReader.readChar();
+        if (cc == c) {
+            throw new LexicalException("OPERADOR DE ASIGNACIÓN NO VÁLIDO", column, row);
+        }
+        fileReader.unreadChar(cc);
+        token = new Token(TokenTypes.op_equal,c.toString(),null,row,column);
+        return token;
+    }
+
+    /**
+     * Metodo para identificar simbolos especiales
+     * @param c Character leído anteriormente en nextToken()
+     * @return Token con todos los atributos
+     * @throws LexicalException Excepción provocada por un error léxico
+     * @author Paulina Suden
+     */
+    public Token specialSymbol(Character c) throws LexicalException {
+        String key = c.toString();
+        if (specialSymbol.get(key) != null) {
+            return new Token(specialSymbol.get(key), key, null, row, column);
+        } else {
+            throw new LexicalException("SIMBOLO ESPECIAL NO RECONOCIDO: "+c, column, row);
+        }
+    }
+
+    /**
      * Método para contar las filas y columnas
      * @param c Character
      * @author Paulina Suden
@@ -396,6 +476,12 @@ public class LexicalAnalyzer {
         return hash;
     }
 
+    /**
+     * Función para inicializar el hash con los operadores aritméticos y sus respectivos tokens
+     * @param hash HashMap<String, TokenTypes> anteriormente declarado
+     * @return HashMap<String, TokenTypes> inicializado
+     * @author Paulina Suden
+     */
     private HashMap<String, TokenTypes> arithmeticOperatorHash(HashMap<String, TokenTypes> hash) {
         List<String> plist = List.of("*", "+", "-", "/", "%", "++", "--");
 
@@ -411,11 +497,41 @@ public class LexicalAnalyzer {
         return hash;
     }
 
+    /**
+     * Función para inicializar el hash con los operadores booleanos y sus respectivos tokens
+     * @param hash HashMap<String, TokenTypes> anteriormente declarado
+     * @return HashMap<String, TokenTypes> inicializado
+     * @author Paulina Suden
+     */
+    private HashMap<String, TokenTypes> booleanOperatorHash(HashMap<String, TokenTypes> hash) {
+        List<String> plist = List.of("&&", "||", "!");
+        List<TokenTypes> tokentypesList = List.of(TokenTypes.op_and, TokenTypes.op_or, TokenTypes.op_not);
+
+        for (int i = 0; i < plist.size(); i++) {
+            hash.put(plist.get(i), tokentypesList.get(i));
+        }
+        return hash;
+    }
+
+    /**
+     * Función para inicializar el hash con los simbolos especiales y sus respectivos tokens
+     * @param hash HashMap<String, TokenTypes> anteriormente declarado
+     * @return HashMap<String, TokenTypes> inicializado
+     * @author Paulina Suden
+     */
+    private HashMap<String, TokenTypes> specialSymbolHash(HashMap<String, TokenTypes> hash) {
+        List<String> plist = List.of("[", "]", "(", ")", "{", "}", ".", ",", ";");
+        List<TokenTypes> tokentypesList = List.of(TokenTypes.brackets1, TokenTypes.brackets2, TokenTypes.parentheses1, TokenTypes.parentheses2, TokenTypes.braces1, TokenTypes.braces2, TokenTypes.dot, TokenTypes.comma, TokenTypes.semicolon);
+
+        for (int i = 0; i < plist.size(); i++) {
+            hash.put(plist.get(i), tokentypesList.get(i));
+        }
+        return hash;
+    }
 
 
 
 
-    
     /**
      * Verifica que un caracter sea un operador relacional
      * @param c Character

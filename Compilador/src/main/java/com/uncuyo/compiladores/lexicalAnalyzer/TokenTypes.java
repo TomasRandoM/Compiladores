@@ -5,7 +5,7 @@ package com.uncuyo.compiladores.lexicalAnalyzer;
  * @author Paulina Suden y Tomás Rando
  */
 public enum TokenTypes {
-    //KEY WORDS
+    //KEYWORDS
     pstart, pclass, pimpl, pelse, pfalse, pif, pret, pwhile, ptrue, pnil, pnew, pfn,
     pst, ppub, pself, pdiv, pbool, pstr, pint, pdouble, pobject, pio, parray, pvoid,
 
@@ -13,7 +13,7 @@ public enum TokenTypes {
     op_sum, op_div, op_mult, op_sub, op_mod, op_increment, op_decrement,
 
     //OPERADOR LÓGICO
-    op_log_and, op_log_or, op_log_not,
+    op_and, op_or, op_not,
 
     //OPERADOR RELACIONAL
     op_rel_less, op_rel_greater, op_rel_equal, op_rel_greaterequal, op_rel_lessequal, op_rel_notequal,
