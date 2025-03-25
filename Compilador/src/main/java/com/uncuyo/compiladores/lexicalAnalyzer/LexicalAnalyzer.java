@@ -66,7 +66,7 @@ public class LexicalAnalyzer {
             else if ( c == '"') {
                 token = findStringConstant(); // strings
             } else if (Addons.isArithmeticOperator(c)) {
-                token = mathOperation(c);
+                token = arithmeticOperation(c);
             } else if (isRelationalOperator(c)) {
                 token = relationalOperation(c);
             } else {
@@ -332,7 +332,7 @@ public class LexicalAnalyzer {
      * @throws ReaderException Excepción del reader
      * @author Paulina Suden
      */
-    public Token mathOperation(Character c) throws ReaderException {
+    public Token arithmeticOperation(Character c) throws ReaderException {
         Token token = null;
         if (c == '+' || c == '-') {
             Character cc = fileReader.readChar();
@@ -413,6 +413,9 @@ public class LexicalAnalyzer {
 
 
 
+
+
+    
     /**
      * Verifica que un caracter sea un operador relacional
      * @param c Character
