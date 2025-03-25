@@ -14,7 +14,8 @@ import java.util.List;
 public class LexicalAnalyzer {
 
     private HashMap<String, TokenTypes> keywords;
-    private ModifiedFileReader fileReader;
+    private HashMap<String, TokenTypes> arithmeticOperator;
+    private static ModifiedFileReader fileReader;
     private int row = 0;
     private int column = 0;
 
@@ -27,11 +28,13 @@ public class LexicalAnalyzer {
     public LexicalAnalyzer(String inputFile) throws ReaderException {
         keywords = new HashMap<>();
         initializeHash(keywords);
+        arithmeticOperator = new HashMap<>();
+        arithmeticOperatorHash(arithmeticOperator);
         fileReader = new ModifiedFileReader(inputFile);
     }
 
     /**
-     * Función que devuelve el siguiente token encontrado en el código fuente
+     * Método que devuelve el siguiente token encontrado en el código fuente
      * @return Token que representa el siguiente token encontrado
      * @throws ReaderException Excepción del reader
      * @throws LexicalException Excepción ocasionado por un error léxico
@@ -41,6 +44,7 @@ public class LexicalAnalyzer {
         boolean stop = false;
         Token token = null;
         Character c = fileReader.readChar();
+        sumRowAndColumn(c);
         if (c == null) {
             token = new Token(TokenTypes.end_of_file, "", null, row, column);
             stop = true;
@@ -61,8 +65,11 @@ public class LexicalAnalyzer {
             }
             else if ( c == '"') {
                 token = findStringConstant(); // strings
-            }
-            else {
+            } else if (Addons.isArithmeticOperator(c)) {
+                token = mathOperation(c);
+            } else if (isRelationalOperator(c)) {
+                token = relationalOperation(c);
+            } else {
                 if (c == ' ') {
                     column++;
                     c = fileReader.readChar();
@@ -80,6 +87,7 @@ public class LexicalAnalyzer {
         }
         return token;
     }
+
 
     /**
      * Metodo para identificar identificadores de objeto/funcion (o ciertas keywords)
@@ -291,6 +299,57 @@ public class LexicalAnalyzer {
     }
 
     /**
+     * Metodo para identificar operadores relacionales
+     * @param c Character leído anteriormente en nextToken()
+     * @return Token con todos los atributos
+     * @throws ReaderException Excepción del reader
+     * @author Paulina Suden
+     */
+    public Token relationalOperation(Character c) throws ReaderException {
+        Token token = null;
+
+        if (c == '<' || c == '>') {
+            Character cc = fileReader.readChar();
+            if (cc == '=') { // ++ o --
+                sumRowAndColumn(cc);
+                token = new Token(c == '<' ? TokenTypes.op_rel_lessequal : TokenTypes.op_rel_greaterequal, c.toString() + cc, null, row, column);
+            } else {
+                fileReader.unreadChar(cc);
+                token = new Token(c == '<' ? TokenTypes.op_rel_less : TokenTypes.op_rel_greater, c.toString() + cc, null, row, column);
+            }
+        } else if (c == '!' || c == '=') {
+            Character cc = fileReader.readChar();
+            sumRowAndColumn(cc);
+            token = new Token(c == '!' ? TokenTypes.op_rel_notequal : TokenTypes.op_rel_equal, c.toString() + cc, null, row, column);
+        }
+        return token;
+    }
+
+    /**
+     * Metodo para identificar operadores aritmeticos
+     * @param c Character leído anteriormente en nextToken()
+     * @return Token con todos los atributos
+     * @throws ReaderException Excepción del reader
+     * @author Paulina Suden
+     */
+    public Token mathOperation(Character c) throws ReaderException {
+        Token token = null;
+        if (c == '+' || c == '-') {
+            Character cc = fileReader.readChar();
+            if (cc == c) { // ++ o --
+                sumRowAndColumn(cc);
+                token = new Token(c == '+' ? TokenTypes.op_increment : TokenTypes.op_decrement, c.toString() + cc, null, row, column);
+            } else {
+                fileReader.unreadChar(cc);
+                token = new Token(arithmeticOperator.get(c.toString()), c.toString(), null, row, column);
+            }
+        } else {
+            token = new Token(arithmeticOperator.get(c.toString()), c.toString(), null, row, column);
+        }
+        return token;
+    }
+
+    /**
      * Método para contar las filas y columnas
      * @param c Character
      * @author Paulina Suden
@@ -335,5 +394,44 @@ public class LexicalAnalyzer {
         plist = null;
         tokentypesList = null;
         return hash;
+    }
+
+    private HashMap<String, TokenTypes> arithmeticOperatorHash(HashMap<String, TokenTypes> hash) {
+        List<String> plist = List.of("*", "+", "-", "/", "%", "++", "--");
+
+        List<TokenTypes> tokentypesList = List.of(
+                //op_sum, op_div, op_mult, op_sub, op_divdouble, op_increment, op_decrement,
+                TokenTypes.op_mult, TokenTypes.op_sum, TokenTypes.op_sub, TokenTypes.op_div, TokenTypes.op_mod, TokenTypes.op_increment, TokenTypes.op_decrement);
+
+        for (int i = 0; i < plist.size(); i++) {
+            hash.put(plist.get(i), tokentypesList.get(i));
+        }
+        plist = null;
+        tokentypesList = null;
+        return hash;
+    }
+
+
+
+    /**
+     * Verifica que un caracter sea un operador relacional
+     * @param c Character
+     * @return boolean. True si es un operador, false si no
+     * @author Tomás Rando y Paulina Suden
+     */
+    public boolean isRelationalOperator(Character c) throws ReaderException {
+        boolean is = false;
+        if (c == '<' || c == '>') {
+            is = true;
+        } else if (c == '=' || c == '!'){
+            Character cc = fileReader.readChar();
+            if (cc == '=') {
+                is = true;
+                fileReader.unreadChar(cc);
+            } else {
+                fileReader.unreadChar(cc);
+            }
+        }
+        return is;
     }
 }

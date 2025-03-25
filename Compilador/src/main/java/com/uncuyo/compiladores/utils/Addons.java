@@ -1,5 +1,10 @@
 package com.uncuyo.compiladores.utils;
 
+
+import com.uncuyo.compiladores.exceptions.ReaderException;
+import com.uncuyo.compiladores.lexicalAnalyzer.ModifiedFileReader;
+
+
 /**
  * Utilidades para reutilizar facilmente
  * @author Tomás Rando
@@ -23,25 +28,11 @@ public class Addons {
      * @author Tomás Rando
      */
     public static boolean isArithmeticOperator(Character c) {
-        if (c == '*' || c == '+' || c == '-' || c == '%') {
-            return true;
-        } else {
-            return false;
+        boolean is = false;
+        if (c == '*' || c == '+' || c == '-' || c == '/' || c == '%') {
+            is = true;
         }
-    }
-
-    /**
-     * Verifica que un caracter sea un operador relacional
-     * @param c Character
-     * @return boolean. True si es un operador, false si no
-     * @author Tomás Rando
-     */
-    public static boolean isRelationalOperator(Character c) {
-        if (c == '>' || c == '<' || c == '=' || c == '!') {
-            return true;
-        } else {
-            return false;
-        }
+        return is;
     }
 
     /**

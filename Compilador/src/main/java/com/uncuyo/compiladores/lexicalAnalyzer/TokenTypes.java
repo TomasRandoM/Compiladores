@@ -10,7 +10,7 @@ public enum TokenTypes {
     pst, ppub, pself, pdiv, pbool, pstr, pint, pdouble, pobject, pio, parray, pvoid,
 
     //OPERADOR ARITMETICO
-    op_sum, op_div, op_mult, op_sub, op_divdouble, op_increment, op_decrement,
+    op_sum, op_div, op_mult, op_sub, op_mod, op_increment, op_decrement,
 
     //OPERADOR LÓGICO
     op_log_and, op_log_or, op_log_not,
