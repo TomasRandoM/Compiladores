@@ -51,15 +51,24 @@ public class LexicalAnalyzer {
         boolean stop = false;
         Token token = null;
         Character c = fileReader.readChar();
-        sumRowAndColumn(c);
+        System.out.println("Caracter c en nextToken: " +c);/////////////
         if (c == null) {
             token = new Token(TokenTypes.end_of_file, "", null, row, column);
             stop = true;
+        } else {
+            sumRowAndColumn(c);
         }
         while (!stop) {
 
             if ( c == '/') {
-                findComment();
+                Character cc = fileReader.readChar();
+                if (cc == '/' || cc == '*') {
+                    findComment(cc);
+                    token = nextToken();
+                } else {
+                    fileReader.unreadChar(cc);
+                    token = arithmeticOperation(c);
+                }
             }
             else if (Addons.isUpperCase(c)) {
                 token = findIdClass(c);
@@ -251,7 +260,6 @@ public class LexicalAnalyzer {
         Character c;
         while (lexeme.length() < 1024) {
             c = fileReader.readChar();
-
             if (c == null) {
                 throw new LexicalException("END OF FILE INESPERADO", column, row);
             }
@@ -274,15 +282,11 @@ public class LexicalAnalyzer {
      * @throws LexicalException Excepción provocado por un error léxico
      * @author Paulina Suden
      */
-    public void findComment() throws ReaderException, LexicalException {
-        Character c = fileReader.readChar();
-
+    public void findComment(Character c) throws ReaderException, LexicalException {
         if (c == null) {
             throw new LexicalException("END OF FILE INESPERADO", column, row);
         }
-
         sumRowAndColumn(c);
-
         if (c == '/') {
             while ((c = fileReader.readChar()) != '\n') {
                 if (c == null) {
@@ -291,7 +295,7 @@ public class LexicalAnalyzer {
             }
             column = 0;
             row++;
-            nextToken();
+            return;
         } else if (c == '*') {
             boolean endFound = false;
             while ((c = fileReader.readChar()) != null) {
@@ -310,6 +314,8 @@ public class LexicalAnalyzer {
             if (!endFound) {
                 throw new LexicalException("END OF FILE INESPERADO EN COMENTARIO MULTILÍNEA", column, row);
             }
+
+            return;
 
         } else {
             throw new LexicalException("SE ESPERABA '/' O '*'", column, row);
@@ -358,7 +364,9 @@ public class LexicalAnalyzer {
                 sumRowAndColumn(cc);
                 token = new Token(c == '+' ? TokenTypes.op_increment : TokenTypes.op_decrement, c.toString() + cc, null, row, column);
             } else {
-                fileReader.unreadChar(cc);
+                if (cc != null) {
+                    fileReader.unreadChar(cc);
+                }
                 token = new Token(arithmeticOperator.get(c.toString()), c.toString(), null, row, column);
             }
         } else {

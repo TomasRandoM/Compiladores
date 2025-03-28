@@ -1,0 +1,6 @@
+CORRECTO: ANALISIS LEXICO
+| TOKEN | LEXEMA |  NÚMERO DE LÍNEA (NÚMERO DE COLUMNA) |
+| op_sum | + | LINEA 1 (COLUMNA 0) |
+| op_div | / | LINEA 3 (COLUMNA 0) |
+| const_string | hola | LINEA 1 (COLUMNA 6) |
+| end_of_file |  | LINEA 6 (COLUMNA 1) |
