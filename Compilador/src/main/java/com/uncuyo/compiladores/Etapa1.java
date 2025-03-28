@@ -25,13 +25,14 @@ public class Etapa1 {
         LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(args[0]);
         Token token;
 
+        PrintWriter writer = null;
         try {
-            PrintWriter writer =  new PrintWriter(new FileWriter(args[1]));
+            writer = new PrintWriter(new FileWriter(args[1]));
             writer.println("CORRECTO: ANALISIS LEXICO");
             writer.println("| TOKEN | LEXEMA |  NÚMERO DE LÍNEA (NÚMERO DE COLUMNA) |");
             while (!stop) {
                 token = lexicalAnalyzer.nextToken();
-                writer.println("| " + token.getName().name() + " | " + token.getLexeme() + " | LINEA " + token.getRow() + " (COLUMNA " + token.getColumn() + ") |" );
+                writer.println("| " + token.getName().name() + " | " + token.getLexeme() + " | LINEA " + token.getRow() + " (COLUMNA " + token.getColumn() + ") |");
 
                 if (token.getName() == TokenTypes.end_of_file) {
                     stop = true;
@@ -39,8 +40,10 @@ public class Etapa1 {
             }
         } catch (IOException ex) {
             throw new WriterException("NO SE PUEDE ESCRIBIR EL ARCHIVO " + args[1]);
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
         }
-
-
     }
 }
