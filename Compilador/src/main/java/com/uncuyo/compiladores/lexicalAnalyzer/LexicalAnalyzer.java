@@ -51,22 +51,22 @@ public class LexicalAnalyzer {
         boolean stop = false;
         Token token = null;
         Character c = fileReader.readChar();
-        System.out.println("Caracter c en nextToken: " +c);/////////////
         if (c == null) {
             token = new Token(TokenTypes.end_of_file, "", null, row, column);
             stop = true;
-        } else {
+        }
+        else {
             sumRowAndColumn(c);
         }
         while (!stop) {
-
             if ( c == '/') {
                 Character cc = fileReader.readChar();
                 if (cc == '/' || cc == '*') {
                     findComment(cc);
                     token = nextToken();
-                } else {
-                    fileReader.unreadChar(cc);
+                }
+                else {
+                    fileReader.unreadChar();
                     token = arithmeticOperation(c);
                 }
             }
@@ -96,15 +96,21 @@ public class LexicalAnalyzer {
             }
             else if (Addons.isSpecialSymbol(c)) {
                 token = specialSymbol(c);
-            } else {
-                if (c == ' ') {
-                    column++;
-                    c = fileReader.readChar();
-                }
-                else if (c == '\n') {
+            }
+            else {
+                if (c == '\n') {
                     column = 0;
                     row++;
                     c = fileReader.readChar();
+                }
+                else if (c == ' ') {
+                    column++;
+                    c = fileReader.readChar();
+                }
+                else if (c == '\r') {
+                    c = fileReader.readChar();
+                } else {
+                    throw new LexicalException("CARACTER ILEGAL", column, row);
                 }
             }
 
@@ -132,11 +138,13 @@ public class LexicalAnalyzer {
         while (!stop) {
             c = fileReader.readChar();
             sumRowAndColumn(c);
+            /*
             if (c == null) {
                 throw new LexicalException("END OF FILE INESPERADO", column, row);
             }
-            if (!(Addons.isLetter(c) || Character.isDigit(c) || c == '_')) {
-                fileReader.unreadChar(c);
+             */
+            if (c == null || (!(Addons.isLetter(c) || Character.isDigit(c) || c == '_'))) {
+                fileReader.unreadChar();
                 if (keywords.get(lexeme.toString()) != null) {
                     token = new Token(keywords.get(lexeme.toString()), lexeme.toString(), null, row, column);
                 }
@@ -173,11 +181,13 @@ public class LexicalAnalyzer {
         while (!stop) {
             c = fileReader.readChar();
             sumRowAndColumn(c);
+            /*
             if (c == null) {
                 throw new LexicalException("END OF FILE INESPERADO", column, row);
             }
-            if (!(Addons.isLetter(c) || Character.isDigit(c) || c == '_')) {
-                fileReader.unreadChar(c);
+             */
+            if (c == null || (!(Addons.isLetter(c) || Character.isDigit(c) || c == '_'))) {
+                fileReader.unreadChar();
                 if (Addons.isLetter(lexeme.charAt(lexeme.length() - 1))) {
                     if (keywords.get(lexeme.toString()) != null) {
                         token = new Token(keywords.get(lexeme.toString()), lexeme.toString(), null, row, column);
@@ -219,17 +229,30 @@ public class LexicalAnalyzer {
         while (!stop) {
             c = fileReader.readChar();
             sumRowAndColumn(c);
+            /*
             if (c == null) {
                 throw new LexicalException("END OF FILE INESPERADO", column, row);
             }
-            if (!(Character.isDigit(c) || c == '.')) {
-                fileReader.unreadChar(c);
-                char aux = lexeme.charAt(lexeme.length() - 1);
+             */
+            if (c == null || (!(Character.isDigit(c) || c == '.'))) {
+                fileReader.unreadChar();
                 if (tipo == 1) {
+                    try {
+                        int num = Integer.parseInt(lexeme.toString());
+                    }
+                    catch (NumberFormatException e) {
+                        throw new LexicalException("NUMERO FUERA DE LIMITES", column, row);
+                    }
                     token = new Token(TokenTypes.const_int, lexeme.toString(), Integer.parseInt(lexeme.toString()),
                             row, column);
                 }
                 else {
+                    try {
+                        double num = Double.parseDouble(lexeme.toString());
+                    }
+                    catch (NumberFormatException e) {
+                        throw new LexicalException("NUMERO FUERA DE LIMITES", column, row);
+                    }
                     token = new Token(TokenTypes.const_double, lexeme.toString(),
                             Double.parseDouble(lexeme.toString()), row, column);
                 }
@@ -267,7 +290,7 @@ public class LexicalAnalyzer {
             sumRowAndColumn(c);
 
             if (c == '"') {
-                return new Token(TokenTypes.const_string, lexeme.toString(), null, column, row);
+                return new Token(TokenTypes.const_string, lexeme.toString(), null, row, column);
             }
 
             lexeme.append(c);
@@ -306,7 +329,8 @@ public class LexicalAnalyzer {
                     endFound = true;
                     break;
 
-                } else if (c == null) {
+                }
+                else if (c == null) {
                     throw new LexicalException("END OF FILE INESPERADO EN COMENTARIO MULTILÍNEA", column, row);
                 }
             }
@@ -337,11 +361,13 @@ public class LexicalAnalyzer {
             if (cc == '=') { // ++ o --
                 sumRowAndColumn(cc);
                 token = new Token(c == '<' ? TokenTypes.op_rel_lessequal : TokenTypes.op_rel_greaterequal, c.toString() + cc, null, row, column);
-            } else {
-                fileReader.unreadChar(cc);
+            }
+            else {
+                fileReader.unreadChar();
                 token = new Token(c == '<' ? TokenTypes.op_rel_less : TokenTypes.op_rel_greater, c.toString() + cc, null, row, column);
             }
-        } else if (c == '!' || c == '=') {
+        }
+        else if (c == '!' || c == '=') {
             Character cc = fileReader.readChar();
             sumRowAndColumn(cc);
             token = new Token(c == '!' ? TokenTypes.op_rel_notequal : TokenTypes.op_rel_equal, c.toString() + cc, null, row, column);
@@ -363,13 +389,15 @@ public class LexicalAnalyzer {
             if (cc == c) { // ++ o --
                 sumRowAndColumn(cc);
                 token = new Token(c == '+' ? TokenTypes.op_increment : TokenTypes.op_decrement, c.toString() + cc, null, row, column);
-            } else {
+            }
+            else {
                 if (cc != null) {
-                    fileReader.unreadChar(cc);
+                    fileReader.unreadChar();
                 }
                 token = new Token(arithmeticOperator.get(c.toString()), c.toString(), null, row, column);
             }
-        } else {
+        }
+        else {
             token = new Token(arithmeticOperator.get(c.toString()), c.toString(), null, row, column);
         }
         return token;
@@ -390,13 +418,16 @@ public class LexicalAnalyzer {
             if (cc == c) {
                 sumRowAndColumn(cc);
                 token = new Token(c == '&' ? TokenTypes.op_and : TokenTypes.op_or, c.toString() + cc, null, row, column);
-            } else {
-                fileReader.unreadChar(cc);
+            }
+            else {
+                fileReader.unreadChar();
                 throw new LexicalException("OPERADOR BOOLEANO NO VALIDO: "+c,column,row);
             }
-        } else if (c == '!') {
+        }
+        else if (c == '!') {
             token = new Token(TokenTypes.op_not, c.toString(), null, row, column);
-        } else {
+        }
+        else {
             throw new LexicalException("OPERADOR BOOLEANO NO VALIDO: "+c,column,row);
         }
         return token;
@@ -416,7 +447,7 @@ public class LexicalAnalyzer {
         if (cc == c) {
             throw new LexicalException("OPERADOR DE ASIGNACIÓN NO VÁLIDO", column, row);
         }
-        fileReader.unreadChar(cc);
+        fileReader.unreadChar();
         token = new Token(TokenTypes.op_equal,c.toString(),null,row,column);
         return token;
     }
@@ -432,7 +463,8 @@ public class LexicalAnalyzer {
         String key = c.toString();
         if (specialSymbol.get(key) != null) {
             return new Token(specialSymbol.get(key), key, null, row, column);
-        } else {
+        }
+        else {
             throw new LexicalException("SIMBOLO ESPECIAL NO RECONOCIDO: "+c, column, row);
         }
     }
@@ -443,12 +475,17 @@ public class LexicalAnalyzer {
      * @author Paulina Suden
      */
     public void sumRowAndColumn(Character c) {
-        if (c == '\n' || c == '\r') {
+        if (c == null) {
+            column++;
+        }
+        else if (c == '\n' || c == '\r') {
             column = 0;
             row++;
-        } else if (c == '\t') {
+        }
+        else if (c == '\t') {
             column += 4;
-        } else {
+        }
+        else {
             column++;
         }
     }
@@ -495,7 +532,8 @@ public class LexicalAnalyzer {
 
         List<TokenTypes> tokentypesList = List.of(
                 //op_sum, op_div, op_mult, op_sub, op_divdouble, op_increment, op_decrement,
-                TokenTypes.op_mult, TokenTypes.op_sum, TokenTypes.op_sub, TokenTypes.op_div, TokenTypes.op_mod, TokenTypes.op_increment, TokenTypes.op_decrement);
+                TokenTypes.op_mult, TokenTypes.op_sum, TokenTypes.op_sub, TokenTypes.op_div,
+                TokenTypes.op_mod, TokenTypes.op_increment, TokenTypes.op_decrement);
 
         for (int i = 0; i < plist.size(); i++) {
             hash.put(plist.get(i), tokentypesList.get(i));
@@ -529,7 +567,9 @@ public class LexicalAnalyzer {
      */
     private HashMap<String, TokenTypes> specialSymbolHash(HashMap<String, TokenTypes> hash) {
         List<String> plist = List.of("[", "]", "(", ")", "{", "}", ".", ",", ";");
-        List<TokenTypes> tokentypesList = List.of(TokenTypes.brackets1, TokenTypes.brackets2, TokenTypes.parentheses1, TokenTypes.parentheses2, TokenTypes.braces1, TokenTypes.braces2, TokenTypes.dot, TokenTypes.comma, TokenTypes.semicolon);
+        List<TokenTypes> tokentypesList = List.of(TokenTypes.brackets1, TokenTypes.brackets2,
+                TokenTypes.parentheses1, TokenTypes.parentheses2, TokenTypes.braces1,
+                TokenTypes.braces2, TokenTypes.dot, TokenTypes.comma, TokenTypes.semicolon);
 
         for (int i = 0; i < plist.size(); i++) {
             hash.put(plist.get(i), tokentypesList.get(i));
@@ -550,13 +590,15 @@ public class LexicalAnalyzer {
         boolean is = false;
         if (c == '<' || c == '>') {
             is = true;
-        } else if (c == '=' || c == '!'){
+        }
+        else if (c == '=' || c == '!'){
             Character cc = fileReader.readChar();
             if (cc == '=') {
                 is = true;
-                fileReader.unreadChar(cc);
-            } else {
-                fileReader.unreadChar(cc);
+                fileReader.unreadChar();
+            }
+            else {
+                fileReader.unreadChar();
             }
         }
         return is;

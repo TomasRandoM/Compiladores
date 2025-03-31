@@ -1,5 +1,6 @@
 package com.uncuyo.compiladores;
 
+import com.uncuyo.compiladores.exceptions.LexicalException;
 import com.uncuyo.compiladores.exceptions.ReaderException;
 import com.uncuyo.compiladores.exceptions.WriterException;
 import com.uncuyo.compiladores.lexicalAnalyzer.LexicalAnalyzer;
@@ -15,12 +16,12 @@ import java.io.FileWriter;
  * @author Tomás Rando
  */
 public class Etapa1 {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws ReaderException, LexicalException, WriterException {
 
         if (args.length != 2) {
-            throw new Exception("ERROR: DEBE INDICAR 2 ARGUMENTOS (INPUT FILE) (OUTPUT FILE)");
+            throw new WriterException("ERROR: DEBE INDICAR 2 ARGUMENTOS (INPUT FILE) (OUTPUT FILE)");
         }
-
+        
         boolean stop = false;
         LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(args[0]);
         Token token;
@@ -40,6 +41,8 @@ public class Etapa1 {
             }
         } catch (IOException ex) {
             throw new WriterException("NO SE PUEDE ESCRIBIR EL ARCHIVO " + args[1]);
+        } catch (LexicalException | ReaderException ex) {
+            throw ex;
         } finally {
             if (writer != null) {
                 writer.close();
