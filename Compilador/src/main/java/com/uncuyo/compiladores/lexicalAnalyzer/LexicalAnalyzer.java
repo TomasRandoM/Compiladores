@@ -101,7 +101,7 @@ public class LexicalAnalyzer {
                 if (c == '\n') {
                     column = 0;
                     row++;
-                    c = fileReader.readChar();
+                    token = nextToken();
                 }
                 else if (c == ' ') {
                     column++;
