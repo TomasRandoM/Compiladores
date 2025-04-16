@@ -48,7 +48,6 @@ public class ModifiedFileReader {
 
     /**
      * Nos permite deshacer la lectura de un caracter
-     * @param c Caracter leido anteriormente
      * @throws ReaderException Exception por si hubiese algun error
      * @author Tomás Rando
      */
