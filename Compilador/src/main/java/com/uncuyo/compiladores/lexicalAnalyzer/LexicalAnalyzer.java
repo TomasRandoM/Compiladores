@@ -51,7 +51,7 @@ public class LexicalAnalyzer {
         boolean stop = false;
         Token token = null;
         Character c = fileReader.readChar();
-
+        sumRowAndColumn(c);
         while (!stop) {
             if (c == null) {
                 token = new Token(TokenTypes.end_of_file, "", null, row, column);
