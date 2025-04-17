@@ -193,7 +193,8 @@ public class LexicalAnalyzer {
                     stop = true;
                 }
                 else {
-                    throw new LexicalException("IDENTIFICADOR DE CLASE INCORRECTO ", column, row);
+                    String id = lexeme.toString();
+                    throw new LexicalException("IDENTIFICADOR DE CLASE INCORRECTO " + id, column, row);
                 }
             }
             else {
@@ -280,7 +281,7 @@ public class LexicalAnalyzer {
         while (lexeme.length() < 1024) {
             c = fileReader.readChar();
             if (c == null) {
-                throw new LexicalException("END OF FILE INESPERADO", column, row);
+                throw new LexicalException("END OF FILE INESPERADO. SE ESPERABA CIERRE DE COMILLAS", column, row);
             }
 
             sumRowAndColumn(c);
