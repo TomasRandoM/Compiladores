@@ -7,28 +7,56 @@ import com.uncuyo.compiladores.lexicalAnalyzer.LexicalAnalyzer;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 import com.uncuyo.compiladores.lexicalAnalyzer.TokenTypes;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 /**
  * Clase que representa el ejecutor de la etapa 1
+ *
  * @author Tomás Rando
  */
 public class Etapa1 {
     public static void main(String[] args) throws ReaderException, LexicalException, WriterException {
-
-        if (args.length != 2) {
-            throw new WriterException("ERROR: DEBE INDICAR 2 ARGUMENTOS (INPUT FILE) (OUTPUT FILE)");
-        }
-        
-        boolean stop = false;
-        LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(args[0]);
+        String fileName;
+        Path outputPath;
+        Path tempPath;
+        File tempFile;
         Token token;
 
+        //Chequeo de recibimiento de parámetros
+        if (args.length < 1) {
+            throw new WriterException("ERROR: DEBE INDICAR AL MENOS UN ARGUMENTO (INPUT FILE)");
+        }
+
+        //Chequeo de extensión
+        if (!args[0].endsWith(".s")) {
+            throw new WriterException("ERROR: LA ENTRADA DEBE SER UN ARCHIVO .s");
+        }
+
+        //Se definen los paths y files.
+        Path inputPath = Paths.get(args[0]);
+        Path dirPath = inputPath.getParent();
+        if (args.length == 2) {
+            outputPath = dirPath.resolve(args[1] + ".asm");
+        }
+        else {
+            fileName = inputPath.getFileName().toString();
+            outputPath = dirPath.resolve(fileName.substring(0, fileName.length() - 2) + ".asm");
+        }
+        tempPath = dirPath.resolve("tempFile.tmp");
+        tempFile = tempPath.toFile();
+
+        boolean stop = false;
+        LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(args[0]);
         PrintWriter writer = null;
         try {
-            writer = new PrintWriter(new FileWriter(args[1]));
+            writer = new PrintWriter(new FileWriter(tempFile));
             writer.println("CORRECTO: ANALISIS LEXICO");
             writer.println("| TOKEN | LEXEMA |  NÚMERO DE LÍNEA (NÚMERO DE COLUMNA) |");
             while (!stop) {
@@ -39,14 +67,32 @@ public class Etapa1 {
                     stop = true;
                 }
             }
-        } catch (IOException ex) {
-            throw new WriterException("NO SE PUEDE ESCRIBIR EL ARCHIVO " + args[1]);
+
+            writer.close();
+            //El archivo temporal lo renombramos al normal
+            Files.move(tempPath, outputPath, StandardCopyOption.REPLACE_EXISTING);
+
         } catch (LexicalException | ReaderException ex) {
-            throw ex;
-        } finally {
-            if (writer != null) {
-                writer.close();
+            writer.close();
+            try {
+                //Borramos el archivo temporal
+                Files.deleteIfExists(tempPath);
+            } catch (IOException e) {
+                //
             }
+            throw ex;
+
+        } catch (IOException ex) {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+                //Borramos el archivo temporal
+                Files.deleteIfExists(tempPath);
+            } catch (IOException e) {
+                //
+            }
+            throw new WriterException("NO SE PUEDE ESCRIBIR EL ARCHIVO " + outputPath);
         }
     }
 }

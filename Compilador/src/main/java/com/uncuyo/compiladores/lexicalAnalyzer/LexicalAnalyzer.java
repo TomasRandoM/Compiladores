@@ -54,10 +54,11 @@ public class LexicalAnalyzer {
         sumRowAndColumn(c);
         while (!stop) {
             if (c == null) {
-                token = new Token(TokenTypes.end_of_file, "", null, row, column);
+                token = new Token(TokenTypes.end_of_file, "", null, row, column - 1);
             }
             else if  ( c == '/') {
                 Character cc = fileReader.readChar();
+                sumRowAndColumn(cc);
                 if (cc == '/' || cc == '*') {
                     findComment(cc);
                     token = nextToken();
@@ -135,11 +136,13 @@ public class LexicalAnalyzer {
             if (c == null || (!(Addons.isLetter(c) || Character.isDigit(c) || c == '_'))) {
                 unreadChar(c);
                 if (keywords.get(lexeme.toString()) != null) {
-                    token = new Token(keywords.get(lexeme.toString()), lexeme.toString(), null, row, column);
+                    token = new Token(keywords.get(lexeme.toString()), lexeme.toString(),
+                            null, row, column - lexeme.length());
                 }
                 else {
                     keywords.put(lexeme.toString(), TokenTypes.id_obj);
-                    token = new Token(TokenTypes.id_obj, lexeme.toString(), null, row, column);
+                    token = new Token(TokenTypes.id_obj, lexeme.toString(),
+                            null, row, column - lexeme.length());
                 }
                 stop = true;
             }
@@ -179,11 +182,13 @@ public class LexicalAnalyzer {
                 unreadChar(c);
                 if (Addons.isLetter(lexeme.charAt(lexeme.length() - 1))) {
                     if (keywords.get(lexeme.toString()) != null) {
-                        token = new Token(keywords.get(lexeme.toString()), lexeme.toString(), null, row, column);
+                        token = new Token(keywords.get(lexeme.toString()), lexeme.toString(),
+                                null, row, column - lexeme.length());
                     }
                     else {
                         keywords.put(lexeme.toString(), TokenTypes.id_class);
-                        token = new Token(TokenTypes.id_class, lexeme.toString(), null, row, column);
+                        token = new Token(TokenTypes.id_class, lexeme.toString(),
+                                null, row, column - lexeme.length());
                     }
                     stop = true;
                 }
@@ -232,8 +237,9 @@ public class LexicalAnalyzer {
                     catch (NumberFormatException e) {
                         throw new LexicalException("NUMERO FUERA DE LIMITES", column, row);
                     }
-                    token = new Token(TokenTypes.const_int, lexeme.toString(), Integer.parseInt(lexeme.toString()),
-                            row, column);
+                    token = new Token(TokenTypes.const_int, lexeme.toString(),
+                            Integer.parseInt(lexeme.toString()),
+                            row, column - lexeme.length());
                 }
                 else {
                     try {
@@ -243,7 +249,8 @@ public class LexicalAnalyzer {
                         throw new LexicalException("NUMERO FUERA DE LIMITES", column, row);
                     }
                     token = new Token(TokenTypes.const_double, lexeme.toString(),
-                            Double.parseDouble(lexeme.toString()), row, column);
+                            Double.parseDouble(lexeme.toString()), row,
+                            column - lexeme.length());
                 }
                 stop = true;
             }
@@ -279,7 +286,8 @@ public class LexicalAnalyzer {
             sumRowAndColumn(c);
 
             if (c == '"') {
-                return new Token(TokenTypes.const_string, lexeme.toString(), null, row, column);
+                return new Token(TokenTypes.const_string, lexeme.toString(),
+                        null, row, column - lexeme.length() - 2);
             }
 
             lexeme.append(c);
@@ -295,14 +303,12 @@ public class LexicalAnalyzer {
      * @author Paulina Suden
      */
     public void findComment(Character c) throws ReaderException, LexicalException {
-        if (c == null) {
-            throw new LexicalException("END OF FILE INESPERADO", column, row);
-        }
-        sumRowAndColumn(c);
         if (c == '/') {
-            while ((c = fileReader.readChar()) != '\n') {
-                if (c == null) {
-                    throw new LexicalException("END OF FILE INESPERADO", column, row);
+            boolean stop = false;
+            while (!stop) {
+                c = fileReader.readChar();
+                if (c == null || c == '\n') {
+                    stop = true;
                 }
             }
             column = 0;
@@ -348,19 +354,25 @@ public class LexicalAnalyzer {
 
         if (c == '<' || c == '>') {
             Character cc = fileReader.readChar();
+            sumRowAndColumn(cc);
             if (cc == '=') { // ++ o --
-                sumRowAndColumn(cc);
-                token = new Token(c == '<' ? TokenTypes.op_rel_lessequal : TokenTypes.op_rel_greaterequal, c.toString() + cc, null, row, column);
+                token = new Token(c == '<' ? TokenTypes.op_rel_lessequal : TokenTypes.op_rel_greaterequal,
+                        c.toString() + cc, null, row,
+                        column - (c.toString() + cc).length());
             }
             else {
                 unreadChar(cc);
-                token = new Token(c == '<' ? TokenTypes.op_rel_less : TokenTypes.op_rel_greater, c.toString() + cc, null, row, column);
+                token = new Token(c == '<' ? TokenTypes.op_rel_less : TokenTypes.op_rel_greater,
+                        c.toString() + cc, null, row,
+                        column - (c.toString() + cc).length());
             }
         }
         else if (c == '!' || c == '=') {
             Character cc = fileReader.readChar();
             sumRowAndColumn(cc);
-            token = new Token(c == '!' ? TokenTypes.op_rel_notequal : TokenTypes.op_rel_equal, c.toString() + cc, null, row, column);
+            token = new Token(c == '!' ? TokenTypes.op_rel_notequal : TokenTypes.op_rel_equal,
+                    c.toString() + cc, null, row,
+                    column - (c.toString() + cc).length());
         }
         return token;
     }
@@ -376,19 +388,22 @@ public class LexicalAnalyzer {
         Token token = null;
         if (c == '+' || c == '-') {
             Character cc = fileReader.readChar();
+            sumRowAndColumn(cc);
             if (cc == c) { // ++ o --
-                sumRowAndColumn(cc);
-                token = new Token(c == '+' ? TokenTypes.op_increment : TokenTypes.op_decrement, c.toString() + cc, null, row, column);
+                token = new Token(c == '+' ? TokenTypes.op_increment : TokenTypes.op_decrement,
+                        c.toString() + cc, null, row, column - (c.toString() + cc).length());
             }
             else {
                 if (cc != null) {
                     unreadChar(cc);
                 }
-                token = new Token(arithmeticOperator.get(c.toString()), c.toString(), null, row, column);
+                token = new Token(arithmeticOperator.get(c.toString()), c.toString(),
+                        null, row, column - c.toString().length());
             }
         }
         else {
-            token = new Token(arithmeticOperator.get(c.toString()), c.toString(), null, row, column);
+            token = new Token(arithmeticOperator.get(c.toString()), c.toString(),
+                    null, row, column - c.toString().length());
         }
         return token;
     }
@@ -405,9 +420,10 @@ public class LexicalAnalyzer {
         Token token = null;
         if (c == '&' || c == '|') {
             Character cc = fileReader.readChar();
+            sumRowAndColumn(cc);
             if (cc == c) {
-                sumRowAndColumn(cc);
-                token = new Token(c == '&' ? TokenTypes.op_and : TokenTypes.op_or, c.toString() + cc, null, row, column);
+                token = new Token(c == '&' ? TokenTypes.op_and : TokenTypes.op_or,
+                        c.toString() + cc, null, row, column - (c.toString() + cc).length());
             }
             else {
                 unreadChar(cc);
@@ -415,7 +431,8 @@ public class LexicalAnalyzer {
             }
         }
         else if (c == '!') {
-            token = new Token(TokenTypes.op_not, c.toString(), null, row, column);
+            token = new Token(TokenTypes.op_not, c.toString(), null, row,
+                    column - c.toString().length());
         }
         else {
             throw new LexicalException("OPERADOR BOOLEANO NO VALIDO: "+c,column,row);
@@ -434,11 +451,12 @@ public class LexicalAnalyzer {
     public Token assignmentOperator(Character c) throws LexicalException, ReaderException {
         Token token = null;
         Character cc = fileReader.readChar();
+        sumRowAndColumn(cc);
         if (cc == c) {
             throw new LexicalException("OPERADOR DE ASIGNACIÓN NO VÁLIDO", column, row);
         }
         unreadChar(cc);
-        token = new Token(TokenTypes.op_equal,c.toString(),null,row,column);
+        token = new Token(TokenTypes.op_equal,c.toString(),null,row,column - c.toString().length());
         return token;
     }
 
@@ -452,7 +470,7 @@ public class LexicalAnalyzer {
     public Token specialSymbol(Character c) throws LexicalException {
         String key = c.toString();
         if (specialSymbol.get(key) != null) {
-            return new Token(specialSymbol.get(key), key, null, row, column);
+            return new Token(specialSymbol.get(key), key, null, row, column - key.length());
         }
         else {
             throw new LexicalException("SIMBOLO ESPECIAL NO RECONOCIDO: "+c, column, row);
@@ -484,6 +502,7 @@ public class LexicalAnalyzer {
      * Gestiona los números de fila y columna a la hora de desleer un carácter.
      * @param c Character
      * @throws ReaderException Excepción que nos dice que el Reader falló al desleer el carácter
+     * @author Tomás Rando
      */
     public void unreadChar(Character c) throws ReaderException {
         if (c == null) {
@@ -605,6 +624,7 @@ public class LexicalAnalyzer {
         }
         else if (c == '=' || c == '!'){
             Character cc = fileReader.readChar();
+            sumRowAndColumn(cc);
             if (cc == '=') {
                 is = true;
                 unreadChar(cc);
