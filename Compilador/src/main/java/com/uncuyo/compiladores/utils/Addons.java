@@ -4,12 +4,35 @@ package com.uncuyo.compiladores.utils;
 import com.uncuyo.compiladores.exceptions.ReaderException;
 import com.uncuyo.compiladores.lexicalAnalyzer.ModifiedFileReader;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 /**
  * Utilidades para reutilizar facilmente
  * @author Tomás Rando
  */
 public class Addons {
+
+    private static final Set<Character> specialLetters = new HashSet<>();
+
+    static {
+        specialLetters.add('ñ');
+        specialLetters.add('Ñ');
+        specialLetters.add('ü');
+        specialLetters.add('Ü');
+        specialLetters.add('á');
+        specialLetters.add('é');
+        specialLetters.add('í');
+        specialLetters.add('ó');
+        specialLetters.add('ú');
+        specialLetters.add('Á');
+        specialLetters.add('É');
+        specialLetters.add('Í');
+        specialLetters.add('Ó');
+        specialLetters.add('Ú');
+
+    }
 
     /**
      * Verifica que un caracter sea una letra (sin tilde)
@@ -81,5 +104,34 @@ public class Addons {
     public static boolean isSpecialSymbol(Character c) {
         return c == '[' || c == ']' || c == '(' || c == ')' || c == '{'
                 || c == '}' || c == '.' || c == ',' || c == ';';
+    }
+
+    /**
+     * Verifica si un caracter es un símbolo utilizado en el español (tíldes, diéresis, ñ).
+     * @param c Character
+     * @author Tomás Rando
+     * @return True si es un símbolo especial del abecedario o no
+     */
+    public static boolean isSpecialLetter(Character c) {
+        return specialLetters.contains(c);
+    }
+
+    /**
+     * Verifica si un caracter está definido en nuestra gramática. Estos símbolos son
+     * los caracteres imprimibles (www.ascii-code.com/) y, adicionalmente
+     * las vocales con tílde, la ñ y la u con diéresis.
+     * @param c Character
+     * @return True si pertenece, False si no.
+     */
+    public static boolean isInGrammar(Character c) {
+        boolean present;
+        int symbolCode;
+
+        symbolCode = (int) c;
+        present = (symbolCode > 31 && symbolCode < 127);
+        if (!present) {
+            present = isSpecialLetter(c);
+        }
+        return present;
     }
 }
