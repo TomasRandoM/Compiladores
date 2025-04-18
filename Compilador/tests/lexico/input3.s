@@ -1,3 +1,4 @@
+//No debería dar error
 // jaja hola
 Clase impl start
 metodo1
