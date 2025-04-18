@@ -15,6 +15,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Clase que representa el ejecutor de la etapa 1
@@ -94,5 +96,41 @@ public class Etapa1 {
             }
             throw new WriterException("NO SE PUEDE ESCRIBIR EL ARCHIVO " + outputPath);
         }
+    }
+
+    /**
+     * Nos sirve para los tests JUnit, en lugar de escribir en un archivo, devuelve una lista
+     * de tokens.
+     * @param input Path del archivo de entrada.
+     * @return ArrayList con los tokens encontrados
+     * @throws ReaderException Excepción de lectura
+     * @throws LexicalException Excepción léxica
+     * @author Tomás Rando
+     */
+    public static List<Token> getAllTokens(String input) throws ReaderException, LexicalException {
+        boolean stop = false;
+        Token token;
+        List<Token> tokenList = new ArrayList<>();
+        LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(input);
+
+        //Chequeo de extensión
+        if (!input.endsWith(".s")) {
+            throw new ReaderException("ERROR: LA ENTRADA DEBE SER UN ARCHIVO .s");
+        }
+
+        try {
+            while (!stop) {
+                token = lexicalAnalyzer.nextToken();
+                tokenList.add(token);
+
+                if (token.getName() == TokenTypes.end_of_file) {
+                    stop = true;
+                }
+            }
+
+        } catch (LexicalException | ReaderException ex) {
+            throw ex;
+        }
+        return tokenList;
     }
 }
