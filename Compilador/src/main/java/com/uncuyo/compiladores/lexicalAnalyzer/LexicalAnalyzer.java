@@ -315,6 +315,7 @@ public class LexicalAnalyzer {
             boolean stop = false;
             while (!stop) {
                 c = fileReader.readChar();
+                column++;
                 if (c == null || c == '\n') {
                     stop = true;
                 }
@@ -346,7 +347,7 @@ public class LexicalAnalyzer {
             }
 
             if (!endFound) {
-                throw new LexicalException("END OF FILE INESPERADO EN COMENTARIO MULTILÍNEA", column, row);
+                throw new LexicalException("END OF FILE INESPERADO EN COMENTARIO MULTILINEA", column, row);
             }
 
         }
