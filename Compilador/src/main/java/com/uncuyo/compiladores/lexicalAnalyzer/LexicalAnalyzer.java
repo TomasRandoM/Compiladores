@@ -280,11 +280,18 @@ public class LexicalAnalyzer {
         Character c;
         while (lexeme.length() < 1024) {
             c = fileReader.readChar();
+            sumRowAndColumn(c);
             if (c == null) {
                 throw new LexicalException("END OF FILE INESPERADO. SE ESPERABA CIERRE DE COMILLAS", column, row);
             }
 
-            sumRowAndColumn(c);
+            if (c == '\n') {
+                throw new LexicalException("SALTO DE LINEA INESPERADO. SE ESPERABA CIERRE DE COMILLAS", column, row);
+            }
+
+            if (!Addons.isInGrammar(c) && c != '\t' && c != ' ') {
+                throw new LexicalException("SIMBOLO INVALIDO: " + c, column, row);
+            }
 
             if (c == '"') {
                 return new Token(TokenTypes.const_string, lexeme.toString(),
@@ -311,6 +318,11 @@ public class LexicalAnalyzer {
                 if (c == null || c == '\n') {
                     stop = true;
                 }
+                else {
+                    if (!Addons.isInGrammar(c) && c != '\t' && c != '\r' && c != ' ') {
+                        throw new LexicalException("SIMBOLO INVALIDO: " + c, column, row);
+                    }
+                }
             }
             column = 0;
             row++;
@@ -325,10 +337,11 @@ public class LexicalAnalyzer {
                     sumRowAndColumn(c);
                     endFound = true;
                     break;
-
                 }
-                else if (c == null) {
-                    throw new LexicalException("END OF FILE INESPERADO EN COMENTARIO MULTILÍNEA", column, row);
+                else {
+                    if (!Addons.isInGrammar(c) && c != '\t' && c != '\n' && c != '\r' && c != ' ') {
+                        throw new LexicalException("SIMBOLO INVALIDO: " + c, column, row);
+                    }
                 }
             }
 
