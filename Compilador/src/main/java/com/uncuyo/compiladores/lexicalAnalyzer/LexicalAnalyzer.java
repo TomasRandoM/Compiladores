@@ -278,6 +278,8 @@ public class LexicalAnalyzer {
     public Token findStringConstant() throws ReaderException, LexicalException {
         StringBuilder lexeme = new StringBuilder();
         Character c;
+        int startRow = row;
+        int startColumn = column - 1;
         while (lexeme.length() < 1024) {
             c = fileReader.readChar();
             sumRowAndColumn(c);
@@ -286,16 +288,28 @@ public class LexicalAnalyzer {
             }
 
             if (c == '\n') {
-                throw new LexicalException("SALTO DE LINEA INESPERADO. SE ESPERABA CIERRE DE COMILLAS", column, row);
+                row++;
+                column=0;
             }
 
-            if (!Addons.isInGrammar(c) && c != '\t' && c != ' ') {
+            // caracter nulo \0 invalido en literal cadena
+            if (c == '\\') {
+                Character cc = fileReader.readChar();
+                if (cc == '0') {
+                    throw new LexicalException("CARACER NULO INVÁLIDO EN CADENA: " + c+cc, column, row);
+                } else {
+                    fileReader.unreadChar();
+                }
+            }
+
+            //esta permitido el salto de linea en cadena
+            if (!Addons.isInGrammar(c) && c != '\t' && c != ' ' && c != '\n' && c != '\r') {
                 throw new LexicalException("SIMBOLO INVALIDO: " + c, column, row);
             }
 
             if (c == '"') {
                 return new Token(TokenTypes.const_string, lexeme.toString(),
-                        null, row, column - lexeme.length() - 2);
+                        null, startRow, startColumn);
             }
 
             lexeme.append(c);
