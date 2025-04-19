@@ -6,6 +6,7 @@ import com.uncuyo.compiladores.exceptions.WriterException;
 import com.uncuyo.compiladores.lexicalAnalyzer.LexicalAnalyzer;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 import com.uncuyo.compiladores.lexicalAnalyzer.TokenTypes;
+import com.uncuyo.compiladores.utils.Addons;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class Etapa1 {
 
         //Chequeo de recibimiento de parámetros
         if (args.length < 1) {
-            throw new WriterException("ERROR: DEBE INDICAR AL MENOS UN ARGUMENTO (INPUT FILE)");
+            throw new WriterException("ERROR: D%EBE INDICAR AL MENOS UN ARGUMENTO (INPUT FILE)");
         }
 
         //Chequeo de extensión

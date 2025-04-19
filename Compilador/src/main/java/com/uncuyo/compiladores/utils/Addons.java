@@ -3,8 +3,11 @@ package com.uncuyo.compiladores.utils;
 
 import com.uncuyo.compiladores.exceptions.ReaderException;
 import com.uncuyo.compiladores.lexicalAnalyzer.ModifiedFileReader;
+import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -133,5 +136,39 @@ public class Addons {
             present = isSpecialLetter(c);
         }
         return present;
+    }
+
+    /**
+     * Compara dos listas de tokens que se le pasan como parámetro. Utilizando principalmente en los tests JUnit
+     * @param li1 Lista de tokens 1
+     * @param li2 Lista de tokens 2
+     * @return boolean. true si son iguales, false si no.
+     * @author Tomás Rando
+     */
+    public static boolean compareTokenLists(List<Token> li1, List<Token> li2) {
+        boolean condition = li1.size() == li2.size();
+
+        if (condition) {
+            Token token1;
+            Token token2;
+            boolean stop = false;
+            int i = 0;
+            while (!stop) {
+                token1 = li1.get(i);
+                token2 = li2.get(i);
+                if (token1.getName() != token2.getName() ||
+                        !(token1.getLexeme().equals(token2.getLexeme())) ||
+                        token1.getRow() != token2.getRow() ||
+                        token1.getColumn() != token2.getColumn() ||
+                        !(Objects.equals(token1.getValor(), token2.getValor()))) {
+                    condition = false;
+                }
+                i++;
+                if (i == li1.size() || !condition) {
+                    stop = true;
+                }
+            }
+        }
+        return condition;
     }
 }
