@@ -1,8 +1,6 @@
 package com.uncuyo.compiladores.utils;
 
 
-import com.uncuyo.compiladores.exceptions.ReaderException;
-import com.uncuyo.compiladores.lexicalAnalyzer.ModifiedFileReader;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 
 import java.util.HashSet;
