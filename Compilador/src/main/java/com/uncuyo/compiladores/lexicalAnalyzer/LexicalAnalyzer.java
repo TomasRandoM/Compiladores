@@ -626,10 +626,10 @@ public class LexicalAnalyzer {
      * @author Paulina Suden
      */
     private HashMap<String, TokenTypes> specialSymbolHash(HashMap<String, TokenTypes> hash) {
-        List<String> plist = List.of("[", "]", "(", ")", "{", "}", ".", ",", ";");
+        List<String> plist = List.of("[", "]", "(", ")", "{", "}", ".", ",", ";", ":");
         List<TokenTypes> tokentypesList = List.of(TokenTypes.brackets1, TokenTypes.brackets2,
                 TokenTypes.parentheses1, TokenTypes.parentheses2, TokenTypes.braces1,
-                TokenTypes.braces2, TokenTypes.dot, TokenTypes.comma, TokenTypes.semicolon);
+                TokenTypes.braces2, TokenTypes.dot, TokenTypes.comma, TokenTypes.semicolon, TokenTypes.colon);
 
         for (int i = 0; i < plist.size(); i++) {
             hash.put(plist.get(i), tokentypesList.get(i));
