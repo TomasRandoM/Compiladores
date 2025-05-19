@@ -104,7 +104,7 @@ public class Addons {
      */
     public static boolean isSpecialSymbol(Character c) {
         return c == '[' || c == ']' || c == '(' || c == ')' || c == '{'
-                || c == '}' || c == '.' || c == ',' || c == ';';
+                || c == '}' || c == '.' || c == ',' || c == ';' || c == ':';
     }
 
     /**

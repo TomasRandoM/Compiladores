@@ -22,7 +22,7 @@ public enum TokenTypes {
     op_equal,
 
     //SIMBOLOS ESPECIALES
-    brackets1, brackets2, parentheses1, parentheses2, braces1, braces2, dot, comma, semicolon,
+    brackets1, brackets2, parentheses1, parentheses2, braces1, braces2, dot, comma, semicolon, colon,
 
     //CONSTANTES
     const_int, const_double, const_string,
