@@ -434,6 +434,34 @@ public class SyntacticAnalyzer {
         }
     }
 
+
+    public void metodo2() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.pstr ||
+            lookahead.getName() == TokenTypes.pbool ||
+            lookahead.getName() == TokenTypes.pint ||
+            lookahead.getName() == TokenTypes.pdouble ||
+            lookahead.getName() == TokenTypes.parray ||
+            lookahead.getName() == TokenTypes.id_class ||
+            lookahead.getName() == TokenTypes.pvoid
+        ) {
+            tipoMetodo();
+            match(TokenTypes.id_obj);
+            argumentosFormales();
+            bloqueMetodo();
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.id_obj) {
+                match(TokenTypes.id_obj);
+                argumentosFormales();
+                bloqueMetodo();
+            }
+            else {
+                throw new SyntacticException("Se esperaba 'str', 'bool', " +
+                        "'int, 'double, 'array', 'void o identificador");
+            }
+        }
+    }
+
     public void constructor() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             match(TokenTypes.dot);
@@ -445,6 +473,69 @@ public class SyntacticAnalyzer {
         }
     }
 
+    public void expresionParentizada2() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.pnil ||
+            lookahead.getName() == TokenTypes.ptrue ||
+            lookahead.getName() == TokenTypes.pfalse ||
+            lookahead.getName() == TokenTypes.const_int ||
+            lookahead.getName() == TokenTypes.const_string ||
+            lookahead.getName() == TokenTypes.const_double ||
+            lookahead.getName() == TokenTypes.parentheses1 ||
+            lookahead.getName() == TokenTypes.pself ||
+            lookahead.getName() == TokenTypes.id_class ||
+            lookahead.getName() == TokenTypes.id_obj ||
+            lookahead.getName() == TokenTypes.pnew ||
+            lookahead.getName() == TokenTypes.op_sum ||
+            lookahead.getName() == TokenTypes.op_sub ||
+            lookahead.getName() == TokenTypes.op_not ||
+            lookahead.getName() == TokenTypes.op_increment ||
+            lookahead.getName() == TokenTypes.op_decrement
+        ) {
+            expOr();
+            match(TokenTypes.parentheses2);
+            expresionParentizada3();
+        }
+        else {
+            throw new SyntacticException("Se esperaba 'nil', 'true', " +
+                    "'false', ')', 'self', '+', '-', '!', '++', " +
+                    "'--', identificadores o constantes");
+        }
+    }
+
+
+    public void expresionParentizada3() throws SyntacticException {
+        if (lookahead.getName() == TokenTypes.dot) {
+            encadenado();
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.op_mult ||
+                    lookahead.getName() == TokenTypes.op_div ||
+                    lookahead.getName() == TokenTypes.op_mod ||
+                    lookahead.getName() == TokenTypes.pdiv ||
+                    lookahead.getName() == TokenTypes.op_sum ||
+                    lookahead.getName() == TokenTypes.op_sub ||
+                    lookahead.getName() == TokenTypes.op_rel_less ||
+                    lookahead.getName() == TokenTypes.op_rel_greater ||
+                    lookahead.getName() == TokenTypes.op_rel_lessequal ||
+                    lookahead.getName() == TokenTypes.op_rel_greaterequal ||
+                    lookahead.getName() == TokenTypes.op_rel_equal ||
+                    lookahead.getName() == TokenTypes.op_rel_notequal ||
+                    lookahead.getName() == TokenTypes.op_and ||
+                    lookahead.getName() == TokenTypes.op_or ||
+                    lookahead.getName() == TokenTypes.parentheses2 ||
+                    lookahead.getName() == TokenTypes.brackets2 ||
+                    lookahead.getName() == TokenTypes.semicolon ||
+                    lookahead.getName() == TokenTypes.comma
+            ) {
+                //retorna, pues es lambda, pero se coloca al final del código
+            }
+            else {
+                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                        "'>', '<=', '>=', '==', '!=', '&&', '||'," +
+                        " ')', ']', ';', ','. Se encontró: " + lookahead.getName());
+            }
+        }
+    }
 
     public void match(TokenTypes tokenType) throws LexicalException, ReaderException, SyntacticException {
 
