@@ -292,7 +292,7 @@ public class SyntacticAnalyzer {
         match(TokenTypes.braces2);
     }
 
-    public void miembro() {
+    public void miembro() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.pfn || lookahead.getName() == TokenTypes.pst) {
             metodo();
         } else if (lookahead.getName() == TokenTypes.dot) {
@@ -300,7 +300,7 @@ public class SyntacticAnalyzer {
         }
     }
 
-    public void miembros() throws SyntacticException {
+    public void miembros() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.pfn || lookahead.getName() == TokenTypes.pst ||
                 lookahead.getName() == TokenTypes.dot) {
             miembro();
@@ -503,30 +503,12 @@ public class SyntacticAnalyzer {
     }
 
 
-    public void expresionParentizada3() throws SyntacticException {
+    public void expresionParentizada3() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             encadenado();
         }
         else {
-            if (lookahead.getName() == TokenTypes.op_mult ||
-                    lookahead.getName() == TokenTypes.op_div ||
-                    lookahead.getName() == TokenTypes.op_mod ||
-                    lookahead.getName() == TokenTypes.pdiv ||
-                    lookahead.getName() == TokenTypes.op_sum ||
-                    lookahead.getName() == TokenTypes.op_sub ||
-                    lookahead.getName() == TokenTypes.op_rel_less ||
-                    lookahead.getName() == TokenTypes.op_rel_greater ||
-                    lookahead.getName() == TokenTypes.op_rel_lessequal ||
-                    lookahead.getName() == TokenTypes.op_rel_greaterequal ||
-                    lookahead.getName() == TokenTypes.op_rel_equal ||
-                    lookahead.getName() == TokenTypes.op_rel_notequal ||
-                    lookahead.getName() == TokenTypes.op_and ||
-                    lookahead.getName() == TokenTypes.op_or ||
-                    lookahead.getName() == TokenTypes.parentheses2 ||
-                    lookahead.getName() == TokenTypes.brackets2 ||
-                    lookahead.getName() == TokenTypes.semicolon ||
-                    lookahead.getName() == TokenTypes.comma
-            ) {
+            if (primarioFollows()) {
                 //retorna, pues es lambda, pero se coloca al final del código
             }
             else {
@@ -548,30 +530,12 @@ public class SyntacticAnalyzer {
         }
     }
 
-    public void accesoSelf2() throws SyntacticException {
+    public void accesoSelf2() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             encadenado();
         }
         else {
-            if (lookahead.getName() == TokenTypes.op_mult ||
-                    lookahead.getName() == TokenTypes.op_div ||
-                    lookahead.getName() == TokenTypes.op_mod ||
-                    lookahead.getName() == TokenTypes.pdiv ||
-                    lookahead.getName() == TokenTypes.op_sum ||
-                    lookahead.getName() == TokenTypes.op_sub ||
-                    lookahead.getName() == TokenTypes.op_rel_less ||
-                    lookahead.getName() == TokenTypes.op_rel_greater ||
-                    lookahead.getName() == TokenTypes.op_rel_lessequal ||
-                    lookahead.getName() == TokenTypes.op_rel_greaterequal ||
-                    lookahead.getName() == TokenTypes.op_rel_equal ||
-                    lookahead.getName() == TokenTypes.op_rel_notequal ||
-                    lookahead.getName() == TokenTypes.op_and ||
-                    lookahead.getName() == TokenTypes.op_or ||
-                    lookahead.getName() == TokenTypes.parentheses2 ||
-                    lookahead.getName() == TokenTypes.brackets2 ||
-                    lookahead.getName() == TokenTypes.semicolon ||
-                    lookahead.getName() == TokenTypes.comma
-            ) {
+            if (primarioFollows()) {
                 //retorna, pues es lambda, pero se coloca al final del código
             }
             else {
@@ -582,7 +546,7 @@ public class SyntacticAnalyzer {
         }
     }
 
-    public void accesoVar2() throws SyntacticException {
+    public void accesoVar2() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.brackets1) {
             match(TokenTypes.brackets1);
             expOr();
@@ -591,24 +555,7 @@ public class SyntacticAnalyzer {
         }
         else {
             if (lookahead.getName() == TokenTypes.dot ||
-                    lookahead.getName() == TokenTypes.op_mult ||
-                    lookahead.getName() == TokenTypes.op_div ||
-                    lookahead.getName() == TokenTypes.op_mod ||
-                    lookahead.getName() == TokenTypes.pdiv ||
-                    lookahead.getName() == TokenTypes.op_sum ||
-                    lookahead.getName() == TokenTypes.op_sub ||
-                    lookahead.getName() == TokenTypes.op_rel_less ||
-                    lookahead.getName() == TokenTypes.op_rel_greater ||
-                    lookahead.getName() == TokenTypes.op_rel_lessequal ||
-                    lookahead.getName() == TokenTypes.op_rel_greaterequal ||
-                    lookahead.getName() == TokenTypes.op_rel_equal ||
-                    lookahead.getName() == TokenTypes.op_rel_notequal ||
-                    lookahead.getName() == TokenTypes.op_and ||
-                    lookahead.getName() == TokenTypes.op_or ||
-                    lookahead.getName() == TokenTypes.parentheses2 ||
-                    lookahead.getName() == TokenTypes.brackets2 ||
-                    lookahead.getName() == TokenTypes.semicolon ||
-                    lookahead.getName() == TokenTypes.comma
+                    primarioFollows()
             ) {
                 accesoVar3();
             }
@@ -622,30 +569,12 @@ public class SyntacticAnalyzer {
         }
     }
 
-    public void accesoVar3() throws SyntacticException {
+    public void accesoVar3() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             encadenado();
         }
         else {
-            if (lookahead.getName() == TokenTypes.op_mult ||
-                    lookahead.getName() == TokenTypes.op_div ||
-                    lookahead.getName() == TokenTypes.op_mod ||
-                    lookahead.getName() == TokenTypes.pdiv ||
-                    lookahead.getName() == TokenTypes.op_sum ||
-                    lookahead.getName() == TokenTypes.op_sub ||
-                    lookahead.getName() == TokenTypes.op_rel_less ||
-                    lookahead.getName() == TokenTypes.op_rel_greater ||
-                    lookahead.getName() == TokenTypes.op_rel_lessequal ||
-                    lookahead.getName() == TokenTypes.op_rel_greaterequal ||
-                    lookahead.getName() == TokenTypes.op_rel_equal ||
-                    lookahead.getName() == TokenTypes.op_rel_notequal ||
-                    lookahead.getName() == TokenTypes.op_and ||
-                    lookahead.getName() == TokenTypes.op_or ||
-                    lookahead.getName() == TokenTypes.parentheses2 ||
-                    lookahead.getName() == TokenTypes.brackets2 ||
-                    lookahead.getName() == TokenTypes.semicolon ||
-                    lookahead.getName() == TokenTypes.comma
-            ) {
+            if (primarioFollows()) {
                 //retorna, pues es lambda, pero se coloca al final del código
             }
             else {
@@ -680,14 +609,234 @@ public class SyntacticAnalyzer {
         }
     }
 
-    public void encadenado2() throws SyntacticException {
+    public void encadenado2() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.parentheses1) {
             llamadaMetodoEncadenado();
         }
         else {
             if (lookahead.getName() == TokenTypes.dot ||
                 lookahead.getName() == TokenTypes.brackets1 ||
-                lookahead.getName() == TokenTypes.op_mult ||
+                primarioFollows()
+            ) {
+                accesoVariableEncadenado();
+            }
+            else {
+                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                        "'>', '<=', '>=', '==', '!=', '&&', '||'," +
+                        " ')', ']', ';', ',', '.'," +
+                        " '[', '('. Se encontró: " + lookahead.getName());
+            }
+        }
+    }
+
+    public void llamadaMetodoEncadenado() throws SyntacticException, LexicalException, ReaderException {
+        if (lookahead.getName() == TokenTypes.parentheses1) {
+            argumentosActuales();
+            llamadaMetodoEncadenado2();
+        }
+        else {
+            throw new SyntacticException("Se esperaba '('. " +
+                    "Se encontró: " + lookahead.getName());
+        }
+    }
+
+    public void llamadaMetodoEncadenado2() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.dot) {
+            encadenado();
+        }
+        else {
+            if (primarioFollows()) {
+                //retorna, pues es lambda, pero el return se coloca al final
+            }
+            else {
+                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                        "'>', '<=', '>=', '==', '!=', '&&', '||'," +
+                        " ')', ']', ';', ','. Se encontró: " + lookahead.getName());
+            }
+        }
+    }
+
+    public void accesoVariableEncadenado() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.brackets1) {
+            match(TokenTypes.brackets1);
+            expOr();
+            match(TokenTypes.brackets2);
+            accesoVariableEncadenado3();
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.dot ||
+                    primarioFollows()
+            ) {
+                accesoVariableEncadenado3();
+            }
+            else {
+                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                        "'>', '<=', '>=', '==', '!=', '&&', '||'," +
+                        " ')', ']', ';', ',', '.'. Se encontró: " + lookahead.getName());
+            }
+        }
+    }
+
+    public void accesoVariableEncadenado3() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.dot) {
+            encadenado();
+        }
+        else {
+            if (primarioFollows()) {
+                //retorna, pues es lambda, pero el return se coloca al final
+            }
+            else {
+                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                        "'>', '<=', '>=', '==', '!=', '&&', '||'," +
+                        " ')', ']', ';', ','. Se encontró: " + lookahead.getName());
+            }
+        }
+    }
+
+    public void argumentosActuales() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.parentheses1) {
+            match(TokenTypes.parentheses1);
+            argumentosActuales2();
+        }
+        else {
+            throw new SyntacticException("Se esperaba '('. " +
+                    "Se encontró: " +  lookahead.getName());
+        }
+    }
+
+    public void argumentosActuales2() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.pnil ||
+            lookahead.getName() == TokenTypes.ptrue ||
+            lookahead.getName() == TokenTypes.pfalse ||
+            lookahead.getName() == TokenTypes.const_int ||
+            lookahead.getName() == TokenTypes.const_string ||
+            lookahead.getName() == TokenTypes.const_double ||
+            lookahead.getName() == TokenTypes.parentheses1 ||
+            lookahead.getName() == TokenTypes.pself ||
+            lookahead.getName() == TokenTypes.id_class ||
+            lookahead.getName() == TokenTypes.id_obj ||
+            lookahead.getName() == TokenTypes.pnew ||
+            lookahead.getName() == TokenTypes.op_sum ||
+            lookahead.getName() == TokenTypes.op_sub ||
+            lookahead.getName() == TokenTypes.op_not ||
+            lookahead.getName() == TokenTypes.op_increment ||
+            lookahead.getName() == TokenTypes.op_decrement
+        ) {
+            listaExpresiones();
+            match(TokenTypes.parentheses2);
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.parentheses2) {
+                match(TokenTypes.parentheses2);
+            }
+            else {
+                throw new SyntacticException("Se esperaba 'nil', " +
+                        "'true', 'false', '(', 'self', 'new', " +
+                        "'+', '-', '!', '++', '--', ')', " +
+                        "identificadores o constantes. Se " +
+                        "encontró: " + lookahead.getName());
+            }
+        }
+    }
+
+    public void listaExpresiones() throws SyntacticException, LexicalException, ReaderException {
+        if (lookahead.getName() == TokenTypes.pnil ||
+                lookahead.getName() == TokenTypes.ptrue ||
+                lookahead.getName() == TokenTypes.pfalse ||
+                lookahead.getName() == TokenTypes.const_int ||
+                lookahead.getName() == TokenTypes.const_string ||
+                lookahead.getName() == TokenTypes.const_double ||
+                lookahead.getName() == TokenTypes.parentheses1 ||
+                lookahead.getName() == TokenTypes.pself ||
+                lookahead.getName() == TokenTypes.id_class ||
+                lookahead.getName() == TokenTypes.id_obj ||
+                lookahead.getName() == TokenTypes.pnew ||
+                lookahead.getName() == TokenTypes.op_sum ||
+                lookahead.getName() == TokenTypes.op_sub ||
+                lookahead.getName() == TokenTypes.op_not ||
+                lookahead.getName() == TokenTypes.op_increment ||
+                lookahead.getName() == TokenTypes.op_decrement
+        ) {
+            expOr();
+            listaExpresiones2();
+        }
+        else {
+            throw new SyntacticException("Se esperaba 'nil', " +
+                    "'true', 'false', '(', 'self', 'new', " +
+                    "'+', '-', '!', '++', '--', " +
+                    "identificadores o constantes. Se " +
+                    "encontró: " + lookahead.getName());
+        }
+    }
+
+    public void listaExpresiones2() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.comma) {
+            match(TokenTypes.comma);
+            listaExpresiones();
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.parentheses2) {
+                //retorna, pues es lambda
+            }
+            else {
+                throw new SyntacticException("Se esperaba ',', ')'." +
+                        " Se encontró: " + lookahead.getName());
+            }
+        }
+    }
+
+    public void operando() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.pnil ||
+            lookahead.getName() == TokenTypes.ptrue ||
+            lookahead.getName() == TokenTypes.pfalse ||
+            lookahead.getName() == TokenTypes.const_int ||
+            lookahead.getName() == TokenTypes.const_string ||
+            lookahead.getName() == TokenTypes.const_double
+        ) {
+            literal();
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.pself ||
+                lookahead.getName() == TokenTypes.id_class ||
+                lookahead.getName() == TokenTypes.id_obj ||
+                lookahead.getName() == TokenTypes.pnew
+            ) {
+                primario();
+            }
+            else {
+                throw new SyntacticException("Se esperaba 'nil', " +
+                        "'true', 'false', 'self', 'new', " +
+                        "identificadores o constantes. " +
+                        "Se encontró: " + lookahead.getName());
+            }
+        }
+    }
+
+    
+    public void primario() {
+
+    }
+
+
+    public void primario3() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.dot) {
+            encadenado();
+        }
+        else {
+            if (primarioFollows()) {
+                //Retorna, pues es lambda
+            }
+            else {
+                throw new SyntacticException("Se esperaba '*', " +
+                        "'/', '%', 'div', '+', '-', '<', " +
+                        "'>', '<=', '>=', '==', '!=', '&&', '||'," +
+                        " ')', ']', ';', ',', '.'. Se encontró: " + lookahead.getName());
+            }
+        }
+    }
+
+    public boolean primarioFollows() {
+        return (lookahead.getName() == TokenTypes.op_mult ||
                 lookahead.getName() == TokenTypes.op_div ||
                 lookahead.getName() == TokenTypes.op_mod ||
                 lookahead.getName() == TokenTypes.pdiv ||
@@ -705,18 +854,8 @@ public class SyntacticAnalyzer {
                 lookahead.getName() == TokenTypes.brackets2 ||
                 lookahead.getName() == TokenTypes.semicolon ||
                 lookahead.getName() == TokenTypes.comma
-            ) {
-                accesoVariableEncadenado();
-            }
-            else {
-                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
-                        "'>', '<=', '>=', '==', '!=', '&&', '||'," +
-                        " ')', ']', ';', ',', '.'," +
-                        " '[', '('. Se encontró: " + lookahead.getName());
-            }
-        }
+        );
     }
-
     public void match(TokenTypes tokenType) throws LexicalException, ReaderException, SyntacticException {
 
         if (lookahead.getName() == tokenType) {
