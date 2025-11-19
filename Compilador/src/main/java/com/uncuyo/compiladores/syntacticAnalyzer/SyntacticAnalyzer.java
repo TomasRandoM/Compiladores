@@ -210,7 +210,105 @@ public class SyntacticAnalyzer {
         }
     }
 
+    public void listaDeclaracionVariables() throws LexicalException, SyntacticException, ReaderException {
+        match(TokenTypes.id_obj);
+        listaDeclaracionVariables2();
+    }
 
+    public void listaDeclaracionVariables2() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.comma) {
+            match(TokenTypes.comma);
+            listaDeclaracionVariables();
+        } else if (lookahead.getName() == TokenTypes.semicolon) {
+            return; // lambda
+        } else {
+            throw new SyntacticException("Se esperaba ',' o ';'");
+        }
+    }
+
+    public void herencia() throws LexicalException, SyntacticException, ReaderException {
+        match(TokenTypes.colon);
+        tipo();
+    }
+
+    public void atributo() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.ppub) {
+            visibilidad();
+            tipo();
+            listaDeclaracionVariables();
+            match(TokenTypes.semicolon);
+        } else if (lookahead.getName() == TokenTypes.pstr || lookahead.getName() == TokenTypes.pbool ||
+                lookahead.getName() == TokenTypes.pint || lookahead.getName() == TokenTypes.pdouble ||
+                lookahead.getName() == TokenTypes.parray || lookahead.getName() == TokenTypes.id_class) {
+            tipo();
+            listaDeclaracionVariables();
+            match(TokenTypes.semicolon);
+        }
+    }
+
+    public void atributos() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.ppub || lookahead.getName() == TokenTypes.pstr ||
+                lookahead.getName() == TokenTypes.pbool || lookahead.getName() == TokenTypes.pint ||
+                lookahead.getName() == TokenTypes.pdouble || lookahead.getName() == TokenTypes.parray ||
+                lookahead.getName() == TokenTypes.id_class) {
+            atributo();
+            atributos();
+        } else if (lookahead.getName() == TokenTypes.braces2) {
+            return; //lambda
+        }
+
+    }
+
+    public void class2() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.colon) {
+            herencia();
+        }
+        if (lookahead.getName() == TokenTypes.braces1) {
+                match(TokenTypes.braces1);
+                atributos();
+                if (lookahead.getName() == TokenTypes.braces2) {
+                    match(TokenTypes.braces2);
+                } else {
+                    throw new SyntacticException("Se esperaba '}'");
+                }
+        } else {
+            throw new SyntacticException ("Se esperaba '{'");
+        }
+    }
+
+    public void class1() throws LexicalException, SyntacticException, ReaderException {
+        match(TokenTypes.pclass);
+        match(TokenTypes.id_class);
+        class2();
+    }
+
+    public void impl() throws LexicalException, SyntacticException, ReaderException {
+        match(TokenTypes.pimpl);
+        match(TokenTypes.id_class);
+        match(TokenTypes.braces1);
+        miembro();
+        miembros();
+        match(TokenTypes.braces2);
+    }
+
+    public void miembro() {
+        if (lookahead.getName() == TokenTypes.pfn || lookahead.getName() == TokenTypes.pst) {
+            metodo();
+        } else if (lookahead.getName() == TokenTypes.dot) {
+            constructor();
+        }
+    }
+
+    public void miembros() throws SyntacticException {
+        if (lookahead.getName() == TokenTypes.pfn || lookahead.getName() == TokenTypes.pst || lookahead.getName() == TokenTypes.dot) {
+            miembro();
+            miembros();
+        } else if (lookahead.getName() == TokenTypes.braces2) {
+            return; //lambda
+        } else {
+            throw new SyntacticException("Se esperaba '}' o 'fn' o 'st' o '.'");
+        }
+    }
 
     public void match(TokenTypes tokenType) throws LexicalException, ReaderException, SyntacticException {
 
