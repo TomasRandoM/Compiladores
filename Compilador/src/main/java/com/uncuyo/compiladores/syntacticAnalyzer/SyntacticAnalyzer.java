@@ -11,6 +11,7 @@ public class SyntacticAnalyzer {
 
     private LexicalAnalyzer lexicalAnalyzer;
     private Token lookahead;
+    private Token auxLookahead = null;
 
     public SyntacticAnalyzer(String inputFile) throws ReaderException{
         try {
@@ -300,7 +301,8 @@ public class SyntacticAnalyzer {
     }
 
     public void miembros() throws SyntacticException {
-        if (lookahead.getName() == TokenTypes.pfn || lookahead.getName() == TokenTypes.pst || lookahead.getName() == TokenTypes.dot) {
+        if (lookahead.getName() == TokenTypes.pfn || lookahead.getName() == TokenTypes.pst ||
+                lookahead.getName() == TokenTypes.dot) {
             miembro();
             miembros();
         } else if (lookahead.getName() == TokenTypes.braces2) {
@@ -310,10 +312,150 @@ public class SyntacticAnalyzer {
         }
     }
 
+    public void bloqueMetodo() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.braces1) {
+            match(TokenTypes.braces1);
+            masDeclVarLocales();
+            sentencias();
+        }
+        else {
+            throw new SyntacticException("Se esperaba '{'");
+        }
+    }
+
+    public void sentencias() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.braces2) {
+            match(TokenTypes.braces2);
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.braces1 ||
+            lookahead.getName() == TokenTypes.parentheses1 ||
+            lookahead.getName() == TokenTypes.pret ||
+            lookahead.getName() == TokenTypes.pself ||
+            lookahead.getName() == TokenTypes.id_class ||
+            lookahead.getName() == TokenTypes.id_obj ||
+            lookahead.getName() == TokenTypes.pwhile ||
+            lookahead.getName() == TokenTypes.pif ||
+            lookahead.getName() == TokenTypes.semicolon) {
+                sentencia();
+                sentencias();
+            }
+            else {
+                throw new SyntacticException("Se esperaba '{', '(', 'ret', " +
+                        "'self', 'while', 'if', ';' o identificador");
+            }
+        }
+    }
+
+    public void masDeclVarLocales() throws LexicalException, ReaderException, SyntacticException {
+        if (lookahead.getName() == TokenTypes.id_class) {
+            auxLookahead = lexicalAnalyzer.nextToken();
+            if (auxLookahead.getName() == TokenTypes.id_obj) {
+                declVarLocales();
+                masDeclVarLocales();
+            }
+            else {
+                if (auxLookahead.getName() == TokenTypes.brackets1 ||
+                    auxLookahead.getName() == TokenTypes.dot ||
+                    auxLookahead.getName() == TokenTypes.op_equal
+                ) {
+                    //Retorna, pues es lambda, pero se coloca al final del metodo
+                }
+                else {
+                    throw new SyntacticException("Se esperaba '.', '[', '==' o identificador de objeto");
+                }
+            }
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.pstr ||
+                    lookahead.getName() == TokenTypes.pbool ||
+                    lookahead.getName() == TokenTypes.pint ||
+                    lookahead.getName() == TokenTypes.pdouble ||
+                    lookahead.getName() == TokenTypes.parray
+            ) {
+                declVarLocales();
+                masDeclVarLocales();
+            }
+            else {
+                if (lookahead.getName() == TokenTypes.semicolon ||
+                        lookahead.getName() == TokenTypes.pif ||
+                        lookahead.getName() == TokenTypes.pwhile ||
+                        lookahead.getName() == TokenTypes.pself ||
+                        lookahead.getName() == TokenTypes.pret ||
+                        lookahead.getName() == TokenTypes.parentheses1 ||
+                        lookahead.getName() == TokenTypes.braces1 ||
+                        lookahead.getName() == TokenTypes.braces2 ||
+                        lookahead.getName() == TokenTypes.id_obj
+                ) {
+                    //Retorna, pues es lambda, pero se coloca al final del metodo
+                }
+                else {
+                    throw new SyntacticException("Se esperaba 'str', " +
+                            "'bool', 'int', 'double', 'array', ';', 'while, " +
+                            "'self', 'ret', '(', '{', '}' o identificador de objeto");
+                }
+            }
+        }
+        return;
+    }
+
+    public void declVarLocales() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.pstr ||
+            lookahead.getName() == TokenTypes.pbool ||
+            lookahead.getName() == TokenTypes.pint ||
+            lookahead.getName() == TokenTypes.pdouble ||
+            lookahead.getName() == TokenTypes.parray ||
+            lookahead.getName() == TokenTypes.id_class
+        ) {
+            tipo();
+            listaDeclaracionVariables();
+            match(TokenTypes.semicolon);
+        }
+        else {
+            throw new SyntacticException("Se esperaba 'str', " +
+                    "'bool', 'int', 'double', 'array' o identificador de clase");
+        }
+    }
+
+    public void metodo() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.pfn) {
+            match(TokenTypes.pfn);
+            metodo2();
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.pst) {
+                formaMetodo();
+                match(TokenTypes.pfn);
+                metodo2();
+            }
+            else {
+                throw new SyntacticException("Se esperaba 'fn' o 'st'");
+            }
+        }
+    }
+
+    public void constructor() throws SyntacticException, LexicalException, ReaderException {
+        if (lookahead.getName() == TokenTypes.dot) {
+            match(TokenTypes.dot);
+            argumentosFormales();
+            bloqueMetodo();
+        }
+        else {
+            throw new SyntacticException("Se esperaba '.'");
+        }
+    }
+
+
     public void match(TokenTypes tokenType) throws LexicalException, ReaderException, SyntacticException {
 
         if (lookahead.getName() == tokenType) {
-            lookahead = lexicalAnalyzer.nextToken();
+            if (auxLookahead != null) {
+                lookahead = auxLookahead;
+                auxLookahead = null;
+            }
+            else {
+                lookahead = lexicalAnalyzer.nextToken();
+            }
         } else {
             throw new SyntacticException("Se esperaba " + tokenType + " y se encontró " + lookahead.getName());
         }
