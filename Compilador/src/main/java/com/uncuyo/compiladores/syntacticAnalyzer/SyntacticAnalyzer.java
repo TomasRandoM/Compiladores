@@ -537,6 +537,186 @@ public class SyntacticAnalyzer {
         }
     }
 
+    public void accesoSelf() throws SyntacticException, LexicalException, ReaderException {
+        if (lookahead.getName() == TokenTypes.pself) {
+            match(TokenTypes.pself);
+            accesoSelf2();
+        }
+        else {
+            throw new SyntacticException("Se esperaba 'self'. " +
+                    "Se encontró: " + lookahead.getName());
+        }
+    }
+
+    public void accesoSelf2() throws SyntacticException {
+        if (lookahead.getName() == TokenTypes.dot) {
+            encadenado();
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.op_mult ||
+                    lookahead.getName() == TokenTypes.op_div ||
+                    lookahead.getName() == TokenTypes.op_mod ||
+                    lookahead.getName() == TokenTypes.pdiv ||
+                    lookahead.getName() == TokenTypes.op_sum ||
+                    lookahead.getName() == TokenTypes.op_sub ||
+                    lookahead.getName() == TokenTypes.op_rel_less ||
+                    lookahead.getName() == TokenTypes.op_rel_greater ||
+                    lookahead.getName() == TokenTypes.op_rel_lessequal ||
+                    lookahead.getName() == TokenTypes.op_rel_greaterequal ||
+                    lookahead.getName() == TokenTypes.op_rel_equal ||
+                    lookahead.getName() == TokenTypes.op_rel_notequal ||
+                    lookahead.getName() == TokenTypes.op_and ||
+                    lookahead.getName() == TokenTypes.op_or ||
+                    lookahead.getName() == TokenTypes.parentheses2 ||
+                    lookahead.getName() == TokenTypes.brackets2 ||
+                    lookahead.getName() == TokenTypes.semicolon ||
+                    lookahead.getName() == TokenTypes.comma
+            ) {
+                //retorna, pues es lambda, pero se coloca al final del código
+            }
+            else {
+                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                        "'>', '<=', '>=', '==', '!=', '&&', '||'," +
+                        " ')', ']', ';', ','. Se encontró: " + lookahead.getName());
+            }
+        }
+    }
+
+    public void accesoVar2() throws SyntacticException {
+        if (lookahead.getName() == TokenTypes.brackets1) {
+            match(TokenTypes.brackets1);
+            expOr();
+            match(TokenTypes.brackets2);
+            accesoVar3();
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.dot ||
+                    lookahead.getName() == TokenTypes.op_mult ||
+                    lookahead.getName() == TokenTypes.op_div ||
+                    lookahead.getName() == TokenTypes.op_mod ||
+                    lookahead.getName() == TokenTypes.pdiv ||
+                    lookahead.getName() == TokenTypes.op_sum ||
+                    lookahead.getName() == TokenTypes.op_sub ||
+                    lookahead.getName() == TokenTypes.op_rel_less ||
+                    lookahead.getName() == TokenTypes.op_rel_greater ||
+                    lookahead.getName() == TokenTypes.op_rel_lessequal ||
+                    lookahead.getName() == TokenTypes.op_rel_greaterequal ||
+                    lookahead.getName() == TokenTypes.op_rel_equal ||
+                    lookahead.getName() == TokenTypes.op_rel_notequal ||
+                    lookahead.getName() == TokenTypes.op_and ||
+                    lookahead.getName() == TokenTypes.op_or ||
+                    lookahead.getName() == TokenTypes.parentheses2 ||
+                    lookahead.getName() == TokenTypes.brackets2 ||
+                    lookahead.getName() == TokenTypes.semicolon ||
+                    lookahead.getName() == TokenTypes.comma
+            ) {
+                accesoVar3();
+            }
+            else {
+                throw new SyntacticException("Se esperaba '*', " +
+                        "'/', '%', 'div', '+', '-', '<', " +
+                        "'>', '<=', '>=', '==', '!=', '&&', '||'," +
+                        " ')', ']', ';', ',', '.', '['." +
+                        " Se encontró: " + lookahead.getName());
+            }
+        }
+    }
+
+    public void accesoVar3() throws SyntacticException {
+        if (lookahead.getName() == TokenTypes.dot) {
+            encadenado();
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.op_mult ||
+                    lookahead.getName() == TokenTypes.op_div ||
+                    lookahead.getName() == TokenTypes.op_mod ||
+                    lookahead.getName() == TokenTypes.pdiv ||
+                    lookahead.getName() == TokenTypes.op_sum ||
+                    lookahead.getName() == TokenTypes.op_sub ||
+                    lookahead.getName() == TokenTypes.op_rel_less ||
+                    lookahead.getName() == TokenTypes.op_rel_greater ||
+                    lookahead.getName() == TokenTypes.op_rel_lessequal ||
+                    lookahead.getName() == TokenTypes.op_rel_greaterequal ||
+                    lookahead.getName() == TokenTypes.op_rel_equal ||
+                    lookahead.getName() == TokenTypes.op_rel_notequal ||
+                    lookahead.getName() == TokenTypes.op_and ||
+                    lookahead.getName() == TokenTypes.op_or ||
+                    lookahead.getName() == TokenTypes.parentheses2 ||
+                    lookahead.getName() == TokenTypes.brackets2 ||
+                    lookahead.getName() == TokenTypes.semicolon ||
+                    lookahead.getName() == TokenTypes.comma
+            ) {
+                //retorna, pues es lambda, pero se coloca al final del código
+            }
+            else {
+                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                        "'>', '<=', '>=', '==', '!=', '&&', '||'," +
+                        " ')', ']', ';', ','. Se encontró: " + lookahead.getName());
+            }
+        }
+    }
+
+
+    public void encadenado() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.dot) {
+            match(TokenTypes.dot);
+            if (lookahead.getName() == TokenTypes.id_obj) {
+                match(TokenTypes.id_obj);
+            }
+            else {
+                if (lookahead.getName() == TokenTypes.id_class) {
+                    match(TokenTypes.id_class);
+                }
+                else {
+                    throw new SyntacticException("Se esperaba identificador. " +
+                            "Se encontró: " + lookahead.getName());
+                }
+            }
+            encadenado2();
+        }
+        else {
+            throw new SyntacticException("Se esperaba '.'. " +
+                    "Se encontró: "  + lookahead.getName());
+        }
+    }
+
+    public void encadenado2() throws SyntacticException {
+        if (lookahead.getName() == TokenTypes.parentheses1) {
+            llamadaMetodoEncadenado();
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.dot ||
+                lookahead.getName() == TokenTypes.brackets1 ||
+                lookahead.getName() == TokenTypes.op_mult ||
+                lookahead.getName() == TokenTypes.op_div ||
+                lookahead.getName() == TokenTypes.op_mod ||
+                lookahead.getName() == TokenTypes.pdiv ||
+                lookahead.getName() == TokenTypes.op_sum ||
+                lookahead.getName() == TokenTypes.op_sub ||
+                lookahead.getName() == TokenTypes.op_rel_less ||
+                lookahead.getName() == TokenTypes.op_rel_greater ||
+                lookahead.getName() == TokenTypes.op_rel_lessequal ||
+                lookahead.getName() == TokenTypes.op_rel_greaterequal ||
+                lookahead.getName() == TokenTypes.op_rel_equal ||
+                lookahead.getName() == TokenTypes.op_rel_notequal ||
+                lookahead.getName() == TokenTypes.op_and ||
+                lookahead.getName() == TokenTypes.op_or ||
+                lookahead.getName() == TokenTypes.parentheses2 ||
+                lookahead.getName() == TokenTypes.brackets2 ||
+                lookahead.getName() == TokenTypes.semicolon ||
+                lookahead.getName() == TokenTypes.comma
+            ) {
+                accesoVariableEncadenado();
+            }
+            else {
+                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                        "'>', '<=', '>=', '==', '!=', '&&', '||'," +
+                        " ')', ']', ';', ',', '.'," +
+                        " '[', '('. Se encontró: " + lookahead.getName());
+            }
+        }
+    }
+
     public void match(TokenTypes tokenType) throws LexicalException, ReaderException, SyntacticException {
 
         if (lookahead.getName() == tokenType) {
