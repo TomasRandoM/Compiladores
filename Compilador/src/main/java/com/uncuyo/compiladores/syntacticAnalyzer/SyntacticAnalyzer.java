@@ -20,20 +20,15 @@ public class SyntacticAnalyzer {
             throw ex;
         }
     }
-/*
-    public void program() throws LexicalException, ReaderException {
-        try {
-            lookahead = lexicalAnalyzer.nextToken();
-        } catch (LexicalException | ReaderException ex) {
-            throw ex;
-        }
+
+    public void program() throws LexicalException, ReaderException, SyntacticException {
         listaDefiniciones();
         start();
     }
 
-    public void start() LexicalException, ReaderException, SyntacticException {
+    public void start() throws LexicalException, SyntacticException, ReaderException {
         match(TokenTypes.pstart);
-        bloque_metodo();
+        bloqueMetodo();
     }
 
     public void listaDefiniciones() throws LexicalException, SyntacticException, ReaderException {
@@ -50,12 +45,6 @@ public class SyntacticAnalyzer {
         }
 
     }
-
-    public void class1() {
-
-    }
-
- */
 
     public void visibilidad() throws LexicalException, SyntacticException, ReaderException {
         match(TokenTypes.ppub);
@@ -79,35 +68,50 @@ public class SyntacticAnalyzer {
         if (lookahead.getName() == TokenTypes.parray) {
             match(TokenTypes.parray);
             tipoPrimitivo();
-        } else if (lookahead.getName() == TokenTypes.id_class) {
-            match(TokenTypes.id_class);
-        } else if (lookahead.getName() == TokenTypes.pstr || lookahead.getName() == TokenTypes.pbool ||
-                   lookahead.getName() == TokenTypes.pint || lookahead.getName() == TokenTypes.pdouble) {
-            tipoPrimitivo();
-        } else {
-            throw new SyntacticException("Se esperaba otra cosa");
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.id_class) {
+                match(TokenTypes.id_class);
+            }
+            else {
+                if (lookahead.getName() == TokenTypes.pstr || lookahead.getName() == TokenTypes.pbool ||
+                        lookahead.getName() == TokenTypes.pint || lookahead.getName() == TokenTypes.pdouble) {
+                    tipoPrimitivo();
+                }
+                else {
+                    throw new SyntacticException("Se esperaba otra cosa");
+                }
+            }
         }
     }
 
     public void tipoMetodo() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.pvoid) {
             match(TokenTypes.pvoid);
-        } else if (lookahead.getName() == TokenTypes.pstr || lookahead.getName() == TokenTypes.pbool ||
-                lookahead.getName() == TokenTypes.pint || lookahead.getName() == TokenTypes.pdouble ||
-                lookahead.getName() == TokenTypes.parray || lookahead.getName() == TokenTypes.id_class) {
-            tipo();
-        } else {
-            throw new SyntacticException("Se esperaba otra cosa");
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.pstr || lookahead.getName() == TokenTypes.pbool ||
+                    lookahead.getName() == TokenTypes.pint || lookahead.getName() == TokenTypes.pdouble ||
+                    lookahead.getName() == TokenTypes.parray || lookahead.getName() == TokenTypes.id_class) {
+                tipo();
+            }
+            else {
+                throw new SyntacticException("Se esperaba otra cosa");
+            }
         }
     }
 
     public void opIgual() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.op_rel_equal) {
             match(TokenTypes.op_rel_equal);
-        } else if (lookahead.getName() == TokenTypes.op_rel_notequal) {
-            match(TokenTypes.op_rel_notequal);
-        } else {
-            throw new SyntacticException("Se esperaba otra cosa");
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.op_rel_notequal) {
+                match(TokenTypes.op_rel_notequal);
+            }
+            else {
+                throw new SyntacticException("Se esperaba otra cosa");
+            }
         }
     }
 
@@ -124,10 +128,14 @@ public class SyntacticAnalyzer {
     public void opAdd() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.op_sum) {
             match(TokenTypes.op_sum);
-        } else if (lookahead.getName() == TokenTypes.op_sub) {
-            match(TokenTypes.op_sub);
-        } else {
-            throw new SyntacticException("Se esperaba un operador de suma o resta");
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.op_sub) {
+                match(TokenTypes.op_sub);
+            }
+            else {
+                throw new SyntacticException("Se esperaba un operador de suma o resta");
+            }
         }
     }
 
@@ -179,10 +187,13 @@ public class SyntacticAnalyzer {
             match(TokenTypes.parentheses2);
         }
         // (cuando viene ')')
-        else if (lookahead.getName() == TokenTypes.parentheses2) {
-            match(TokenTypes.parentheses2);
-        } else {
-            throw new SyntacticException("Se esperaba un tipo o ')'");
+        else {
+            if (lookahead.getName() == TokenTypes.parentheses2) {
+                match(TokenTypes.parentheses2);
+            }
+            else {
+                throw new SyntacticException("Se esperaba un tipo o ')'");
+            }
         }
     }
 
@@ -190,10 +201,14 @@ public class SyntacticAnalyzer {
         if (lookahead.getName() == TokenTypes.comma) {
             match(TokenTypes.comma);
             listaArgumentosFormales();
-        } else if (lookahead.getName() == TokenTypes.parentheses2) {
-            return; // lambda
-        } else {
-            throw new SyntacticException("Se esperaba ',' o ')'");
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.parentheses2) {
+                return; // lambda
+            }
+            else {
+                throw new SyntacticException("Se esperaba ',' o ')'");
+            }
         }
     }
 
@@ -206,7 +221,8 @@ public class SyntacticAnalyzer {
         tipo();
         if (lookahead.getName() == TokenTypes.id_obj) {
             match(TokenTypes.id_obj);
-        } else {
+        }
+        else {
             throw new SyntacticException("Se esperaba un identificador de objeto");
         }
     }
@@ -220,10 +236,13 @@ public class SyntacticAnalyzer {
         if (lookahead.getName() == TokenTypes.comma) {
             match(TokenTypes.comma);
             listaDeclaracionVariables();
-        } else if (lookahead.getName() == TokenTypes.semicolon) {
-            return; // lambda
-        } else {
-            throw new SyntacticException("Se esperaba ',' o ';'");
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.semicolon) {
+                return; // lambda
+            } else {
+                throw new SyntacticException("Se esperaba ',' o ';'");
+            }
         }
     }
 
@@ -238,43 +257,53 @@ public class SyntacticAnalyzer {
             tipo();
             listaDeclaracionVariables();
             match(TokenTypes.semicolon);
-        } else if (lookahead.getName() == TokenTypes.pstr || lookahead.getName() == TokenTypes.pbool ||
-                lookahead.getName() == TokenTypes.pint || lookahead.getName() == TokenTypes.pdouble ||
-                lookahead.getName() == TokenTypes.parray || lookahead.getName() == TokenTypes.id_class) {
-            tipo();
-            listaDeclaracionVariables();
-            match(TokenTypes.semicolon);
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.pstr ||
+                lookahead.getName() == TokenTypes.pbool ||
+                lookahead.getName() == TokenTypes.pint ||
+                lookahead.getName() == TokenTypes.pdouble ||
+                lookahead.getName() == TokenTypes.parray ||
+                lookahead.getName() == TokenTypes.id_class) {
+
+                tipo();
+                listaDeclaracionVariables();
+                match(TokenTypes.semicolon);
+            }
+            else {
+                throw new SyntacticException("Se esperaba un atributo");
+            }
         }
     }
 
     public void atributos() throws LexicalException, SyntacticException, ReaderException {
-        if (lookahead.getName() == TokenTypes.ppub || lookahead.getName() == TokenTypes.pstr ||
-                lookahead.getName() == TokenTypes.pbool || lookahead.getName() == TokenTypes.pint ||
-                lookahead.getName() == TokenTypes.pdouble || lookahead.getName() == TokenTypes.parray ||
-                lookahead.getName() == TokenTypes.id_class) {
+        if (lookahead.getName() == TokenTypes.ppub ||
+            lookahead.getName() == TokenTypes.pstr ||
+            lookahead.getName() == TokenTypes.pbool ||
+            lookahead.getName() == TokenTypes.pint ||
+            lookahead.getName() == TokenTypes.pdouble || lookahead.getName() == TokenTypes.parray ||
+            lookahead.getName() == TokenTypes.id_class) {
+
             atributo();
             atributos();
-        } else if (lookahead.getName() == TokenTypes.braces2) {
-            return; //lambda
         }
-
+        else {
+            if (lookahead.getName() == TokenTypes.braces2) {
+                return; //lambda
+            }
+            else {
+                throw new SyntacticException("Se esperaba atributo o '}'");
+            }
+        }
     }
 
     public void class2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.colon) {
             herencia();
         }
-        if (lookahead.getName() == TokenTypes.braces1) {
-                match(TokenTypes.braces1);
-                atributos();
-                if (lookahead.getName() == TokenTypes.braces2) {
-                    match(TokenTypes.braces2);
-                } else {
-                    throw new SyntacticException("Se esperaba '}'");
-                }
-        } else {
-            throw new SyntacticException ("Se esperaba '{'");
-        }
+        match(TokenTypes.braces1);
+        atributos();
+        match(TokenTypes.braces2);
     }
 
     public void class1() throws LexicalException, SyntacticException, ReaderException {
@@ -292,23 +321,34 @@ public class SyntacticAnalyzer {
         match(TokenTypes.braces2);
     }
 
-    public void miembro() {
+    public void miembro() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.pfn || lookahead.getName() == TokenTypes.pst) {
             metodo();
-        } else if (lookahead.getName() == TokenTypes.dot) {
-            constructor();
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.dot) {
+                constructor();
+            }
+            else {
+                throw new SyntacticException("Se esperaba método o constructor");
+            }
         }
     }
 
-    public void miembros() throws SyntacticException {
-        if (lookahead.getName() == TokenTypes.pfn || lookahead.getName() == TokenTypes.pst ||
-                lookahead.getName() == TokenTypes.dot) {
+    public void miembros() throws SyntacticException, LexicalException, ReaderException {
+        if (lookahead.getName() == TokenTypes.pfn ||
+            lookahead.getName() == TokenTypes.pst ||
+            lookahead.getName() == TokenTypes.dot) {
+
             miembro();
             miembros();
-        } else if (lookahead.getName() == TokenTypes.braces2) {
-            return; //lambda
-        } else {
-            throw new SyntacticException("Se esperaba '}' o 'fn' o 'st' o '.'");
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.braces2) {
+                return; //lambda
+            } else {
+                throw new SyntacticException("Se esperaba '}' o 'fn' o 'st' o '.'");
+            }
         }
     }
 
@@ -730,6 +770,79 @@ public class SyntacticAnalyzer {
         } else {
             throw new SyntacticException("Se esperaba " + tokenType + " y se encontró " + lookahead.getName());
         }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void llamadaMetodo() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.id_obj) {
+            match(TokenTypes.id_obj);
+        } else {
+            if (lookahead.getName() == TokenTypes.id_class) {
+                match(TokenTypes.id_class);
+            } else {
+                throw new SyntacticException("Se esperaba identificador. " +
+                        "Se encontró: " + lookahead.getName());
+            }
+        }
+        argumentosActuales();
+        llamadaMetodo2();
+    }
+
+    public void llamadaMetodo2() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.dot) {
+            encadenado();
+        }
+        else {
+            return; //lambda
+        }
+    }
+
+    public void llamadaMetodoEstatico() throws LexicalException, SyntacticException, ReaderException {
+        match(TokenTypes.id_class);
+        match(TokenTypes.dot);
+        llamadaMetodo();
+    }
+
+    public void llamadaConclassor() throws LexicalException, SyntacticException, ReaderException {
+        match(TokenTypes.pnew);
+        llamadaConclassor2();
+    }
+
+    private void llamadaConclassor2() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.id_class) {
+            match(TokenTypes.id_class);
+            argumentosActuales();
+            llamadaConclassor3();
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.pstr || lookahead.getName() == TokenTypes.pbool ||
+                    lookahead.getName() == TokenTypes.pint || lookahead.getName() == TokenTypes.pdouble) {
+                tipoPrimitivo();
+                match(TokenTypes.brackets1);
+                expOr();
+                match(TokenTypes.brackets2);
+                llamadaConclassor3();
+            }
+            else {
+                throw new SyntacticException("Se esperaba alguna de las siguientes opciones: identificador de clase, " +
+                        "str, bool, int o double. Se obtuvo: " +lookahead.getName());
+            }
+        }
+    }
+
+    private void llamadaConclassor3() {
+        primarioFollows();
     }
 
 
