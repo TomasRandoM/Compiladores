@@ -111,7 +111,6 @@ public class LexicalAnalyzer {
         return token;
     }
 
-
     /**
      * Metodo para identificar identificadores de objeto/funcion (o ciertas keywords)
      * @param c Character leído anteriormente en nextToken()
