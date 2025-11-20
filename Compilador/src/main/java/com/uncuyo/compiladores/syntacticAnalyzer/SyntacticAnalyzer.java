@@ -2063,10 +2063,27 @@ public class SyntacticAnalyzer {
      * @throws SyntacticException Excepción ocasionada por un error sintáctico
      * @author Paulina Suden y Tomás Rando
      */
-    private void llamadaConclassor3() {
-        primarioFollows();
+    private void llamadaConclassor3() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.dot) {
+            encadenado();
+        }
+        else {
+            if (primarioFollows()) {
+                //retorna, pues es lambda
+            } else {
+                throw new SyntacticException(lookahead, "Se esperaba '*', " +
+                        "'/', '%', 'div', '+', '-', '<', " +
+                        "'>', '<=', '>=', '==', '!=', '&&', '||'," +
+                        " ')', ']', ';', ',', '.'. Se encontró: " + lookahead.getName());
+            }
+        }
     }
 
+    /**
+     * Matchea el token que contiene un identificador de clase con su
+     * TokenType correspondiente.
+     * @author Paulina Suden y Tomas Rando
+     */
     public void matchIdClassSimilars() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.id_class) {
             match(TokenTypes.id_class);
@@ -2083,6 +2100,11 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * Verifica si el lookahead es un identificador de clase
+     * @author Paulina Suden y Tomas Rando
+     * @return boolean verificando si se encuentra algun identificador de clase en el token
+     */
     public boolean idClassSimilars() {
         return (lookahead.getName() == TokenTypes.id_class ||
                 lookahead.getName() == TokenTypes.pio ||
@@ -2090,6 +2112,11 @@ public class SyntacticAnalyzer {
                 );
     }
 
+    /**
+     * Verifica si el lookahead auxiliar es un identificador de clase
+     * @author Paulina Suden y Tomas Rando
+     * @return boolean verificando si se encuentra algun identificador de clase en el token
+     */
     public boolean idClassSimilarsLookahead2() {
         return (auxLookahead2.getName() == TokenTypes.id_class ||
                 auxLookahead2.getName() == TokenTypes.pio ||
