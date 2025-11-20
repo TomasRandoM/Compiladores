@@ -22,16 +22,42 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * ⟨Program⟩ ::= ⟨Lista-Definiciones⟩ ⟨Start⟩
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void program() throws LexicalException, ReaderException, SyntacticException {
+        lookahead = lexicalAnalyzer.nextToken();
         listaDefiniciones();
         start();
+        match(TokenTypes.end_of_file);
+        System.out.println("CORRECTO: ANALISIS SINTÁCTICO");
     }
 
+    /**
+     * ⟨Start⟩ ::= pstart ⟨Bloque-Metodo⟩
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void start() throws LexicalException, SyntacticException, ReaderException {
         match(TokenTypes.pstart);
         bloqueMetodo();
     }
 
+    /**
+     * <Lista-Definiciones> ::= <Class> <Lista-Definiciones>
+     * <Lista-Definiciones> ::= <Impl> <Lista-Definiciones>
+     * <Lista-Definiciones> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void listaDefiniciones() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.pclass) {
             class1();
@@ -40,39 +66,73 @@ public class SyntacticAnalyzer {
             impl();
             listaDefiniciones();
         } else if (lookahead.getName() == TokenTypes.pstart){
-            return;
+            //retorna, pues es lambda
         } else {
-            throw new SyntacticException("Se esperaba otra cosa");
+            throw new SyntacticException(lookahead, "Se esperaba 'class', 'impl' " +
+                    "o 'start'. Se encontró: " + lookahead.getName());
         }
 
     }
 
+    /**
+     * ⟨Visibilidad⟩ ::= ppub
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void visibilidad() throws LexicalException, SyntacticException, ReaderException {
         match(TokenTypes.ppub);
     }
 
+    /**
+     * ⟨Forma-Metodo⟩ ::= pst
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void formaMetodo() throws LexicalException, SyntacticException, ReaderException {
         match(TokenTypes.pst);
     }
 
+    /**
+     * ⟨Tipo-Primitivo⟩ ::= pstr
+     * ⟨Tipo-Primitivo⟩ ::= pbool
+     * ⟨Tipo-Primitivo⟩ ::= pint
+     * ⟨Tipo-Primitivo⟩ ::= pdouble
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void tipoPrimitivo() throws LexicalException, SyntacticException, ReaderException {
         switch (lookahead.getName()) {
             case pstr -> match(TokenTypes.pstr);
             case pbool -> match(TokenTypes.pbool);
             case pint -> match(TokenTypes.pint);
             case pdouble -> match(TokenTypes.pdouble);
-            default -> throw new SyntacticException("Se esperaba un tipo primitivo (str, bool, int, double)");
+            default -> throw new SyntacticException(lookahead, "Se esperaba un tipo primitivo (str, bool, int, double). Se encontró: "+ lookahead.getName());
         }
     }
 
+    /**
+     * ⟨Tipo⟩ ::= ⟨Tipo-Primitivo⟩
+     * ⟨Tipo⟩ ::= parray ⟨Tipo-Primitivo⟩
+     * ⟨Tipo⟩ ::=  id_class
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void tipo() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.parray) {
             match(TokenTypes.parray);
             tipoPrimitivo();
         }
         else {
-            if (lookahead.getName() == TokenTypes.id_class) {
-                match(TokenTypes.id_class);
+            if (idClassSimilars()) {
+                matchIdClassSimilars();
             }
             else {
                 if (lookahead.getName() == TokenTypes.pstr || lookahead.getName() == TokenTypes.pbool ||
@@ -80,28 +140,51 @@ public class SyntacticAnalyzer {
                     tipoPrimitivo();
                 }
                 else {
-                    throw new SyntacticException("Se esperaba otra cosa");
+                    throw new SyntacticException(lookahead, "Se esperaba array, identificador, str, bool, int, double. Se encontró: " +lookahead.getName());
                 }
             }
         }
     }
 
+    /**
+     * ⟨Tipo-Metodo⟩ ::= ⟨Tipo⟩
+     * ⟨Tipo-Metodo⟩ ::= pvoid
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void tipoMetodo() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.pvoid) {
             match(TokenTypes.pvoid);
         }
         else {
-            if (lookahead.getName() == TokenTypes.pstr || lookahead.getName() == TokenTypes.pbool ||
-                    lookahead.getName() == TokenTypes.pint || lookahead.getName() == TokenTypes.pdouble ||
-                    lookahead.getName() == TokenTypes.parray || lookahead.getName() == TokenTypes.id_class) {
+            if (lookahead.getName() == TokenTypes.pstr ||
+                    lookahead.getName() == TokenTypes.pbool ||
+                    lookahead.getName() == TokenTypes.pint ||
+                    lookahead.getName() == TokenTypes.pdouble ||
+                    lookahead.getName() == TokenTypes.parray ||
+                    idClassSimilars()
+            ) {
                 tipo();
             }
             else {
-                throw new SyntacticException("Se esperaba otra cosa");
+                throw new SyntacticException(lookahead, "Se esperaba 'void', 'str', " +
+                        "'bool', 'int', 'double', " +
+                        "'array' o un identificador. " +
+                        "Se encontró: " + lookahead.getName());
             }
         }
     }
 
+    /**
+     * <OpIgual> ::= op_rel_equal
+     * <OpIgual> ::= op_rel_notequal
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void opIgual() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.op_rel_equal) {
             match(TokenTypes.op_rel_equal);
@@ -111,21 +194,43 @@ public class SyntacticAnalyzer {
                 match(TokenTypes.op_rel_notequal);
             }
             else {
-                throw new SyntacticException("Se esperaba otra cosa");
+                throw new SyntacticException(lookahead, "Se " +
+                        "esperaba '==' o '!=. " +
+                        "Se encontró: " + lookahead.getName());
             }
         }
     }
 
+    /**
+     * <OpCompuesto> ::= op_rel_less
+     * <OpCompuesto> ::= op_rel_greater
+     * <OpCompuesto> ::= op_rel_lessequal
+     * <OpCompuesto> ::= op_rel_greaterequal
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void opCompuesto() throws LexicalException, SyntacticException, ReaderException {
         switch (lookahead.getName()) {
             case op_rel_less -> match(TokenTypes.op_rel_less);
             case op_rel_greater -> match(TokenTypes.op_rel_greater);
             case op_rel_greaterequal -> match(TokenTypes.op_rel_greaterequal);
             case op_rel_lessequal -> match(TokenTypes.op_rel_lessequal);
-            default -> throw new SyntacticException("Se esperaba un operador relacional (>, >=, <, <=)");
+            default -> throw new SyntacticException(lookahead, "Se esperaba un" +
+                    " operador relacional (>, >=, <, <=). " +
+                    "Se encontró: " + lookahead.getName());
         }
     }
 
+    /**
+     * <OpAd> ::= op_sum
+     * <OpAd> ::= op_sub
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void opAdd() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.op_sum) {
             match(TokenTypes.op_sum);
@@ -135,11 +240,23 @@ public class SyntacticAnalyzer {
                 match(TokenTypes.op_sub);
             }
             else {
-                throw new SyntacticException("Se esperaba un operador de suma o resta");
+                throw new SyntacticException(lookahead, "Se esperaba '+', '-'." +
+                        " Se encontró: " + lookahead.getName());
             }
         }
     }
 
+    /**
+     * <OpUnario> ::= op_sum
+     * <OpUnario> ::= op_sub
+     * <OpUnario> ::= op_not
+     * <OpUnario> ::= op_increment
+     * <OpUnario> ::= op_decrement
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void opUnario() throws LexicalException, SyntacticException, ReaderException {
         switch (lookahead.getName()) {
             case op_sum -> match(TokenTypes.op_sum);
@@ -147,20 +264,44 @@ public class SyntacticAnalyzer {
             case op_not -> match(TokenTypes.op_not);
             case op_decrement -> match(TokenTypes.op_decrement);
             case op_increment -> match(TokenTypes.op_increment);
-            default -> throw new SyntacticException("Se esperaba un operador unario");
+            default -> throw new SyntacticException(lookahead, "Se esperaba un operador de +, -, !, ++, --. Se encontró: " + lookahead.getName());
         }
     }
 
+    /**
+     * <OpMul> ::= op_mult
+     * <OpMul> ::= op_div
+     * <OpMul> ::= op_mod
+     * <OpMul> ::= pdiv
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void opMul() throws LexicalException, SyntacticException, ReaderException {
         switch (lookahead.getName()) {
             case op_mult -> match(TokenTypes.op_mult);
             case op_div -> match(TokenTypes.op_div);
             case op_mod -> match(TokenTypes.op_mod);
             case pdiv -> match(TokenTypes.pdiv);
-            default -> throw new SyntacticException("Se esperaba un operador aritmético??");
+            default -> throw new SyntacticException(lookahead, "Se " +
+                    "esperaba '+', 'div', '/' o '%'. " +
+                    "Se encontró: " + lookahead.getName());
         }
     }
 
+    /**
+     * <Literal> ::= pnil
+     * <Literal> ::= ptrue
+     * <Literal> ::= pfalse
+     * <Literal> ::= const_int
+     * <Literal> ::= const_string
+     * <Literal> ::= const_double
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void literal() throws LexicalException, SyntacticException, ReaderException {
         switch (lookahead.getName()) {
             case pnil -> match(TokenTypes.pnil);
@@ -169,20 +310,37 @@ public class SyntacticAnalyzer {
             case const_int -> match(TokenTypes.const_int);
             case const_string -> match(TokenTypes.const_string);
             case const_double -> match(TokenTypes.const_double);
-            default -> throw new SyntacticException("Se esperaba un literal??");
+            default -> throw new SyntacticException(lookahead, "Se esperaba nil, true, " +
+                    "false o una constante." +
+                    "Se encontró: " + lookahead.getName());
         }
     }
 
+    /**
+     * ⟨Argumentos-Formales⟩::= parentheses1 <Argumentos-Formales2>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void argumentosFormales() throws LexicalException, SyntacticException, ReaderException {
         match(TokenTypes.parentheses1);
         argumentosFormales2();
     }
 
+    /**
+     * <Argumentos-Formales2> ::= ⟨Lista-Argumentos-Formales⟩ parentheses2
+     * <Argumentos-Formales2> ::= parentheses2
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void argumentosFormales2() throws LexicalException, SyntacticException, ReaderException {
         // chequeamos los primeros de 'argumentoFormal' por las reglas 41, 43 y 46
         if (lookahead.getName() == TokenTypes.pstr || lookahead.getName() == TokenTypes.pbool ||
                 lookahead.getName() == TokenTypes.pint || lookahead.getName() == TokenTypes.pdouble ||
-                lookahead.getName() == TokenTypes.parray || lookahead.getName() == TokenTypes.id_class) {
+                lookahead.getName() == TokenTypes.parray || idClassSimilars()) {
 
             listaArgumentosFormales();
             match(TokenTypes.parentheses2);
@@ -193,11 +351,19 @@ public class SyntacticAnalyzer {
                 match(TokenTypes.parentheses2);
             }
             else {
-                throw new SyntacticException("Se esperaba un tipo o ')'");
+                throw new SyntacticException(lookahead, "Se esperaba str, bool, int, double, array o ')'. Se encontró: " + lookahead.getName());
             }
         }
     }
 
+    /**
+     * ⟨Lista-Argumentos-Formales2⟩ ::= comma ⟨Lista-Argumentos-Formales⟩
+     * ⟨Lista-Argumentos-Formales2⟩ ::=  λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void listaArgumentosFormales2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.comma) {
             match(TokenTypes.comma);
@@ -208,31 +374,62 @@ public class SyntacticAnalyzer {
                 return; // lambda
             }
             else {
-                throw new SyntacticException("Se esperaba ',' o ')'");
+                throw new SyntacticException(lookahead, "Se " +
+                        "esperaba ',' o ')'. " +
+                        "Se encontró: " + lookahead.getName());
             }
         }
     }
 
+    /**
+     * ⟨Lista-Argumentos-Formales⟩ ::= ⟨Argumento-Formal⟩ ⟨Lista-Argumentos-Formales2⟩
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void listaArgumentosFormales() throws LexicalException, SyntacticException, ReaderException {
         argumentoFormal();
         listaArgumentosFormales2();
     }
 
+    /**
+     * ⟨Argumento-Formal⟩ ::= ⟨Tipo⟩ id_obj
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void argumentoFormal() throws LexicalException, SyntacticException, ReaderException {
         tipo();
         if (lookahead.getName() == TokenTypes.id_obj) {
             match(TokenTypes.id_obj);
         }
         else {
-            throw new SyntacticException("Se esperaba un identificador de objeto");
+            throw new SyntacticException(lookahead, "Se esperaba un identificador de objeto. Se encontró: " + lookahead.getName());
         }
     }
 
+    /**
+     * ⟨Lista-Declaracion-Variables⟩::= id_obj <Lista-Declaracion-Variables2>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void listaDeclaracionVariables() throws LexicalException, SyntacticException, ReaderException {
         match(TokenTypes.id_obj);
         listaDeclaracionVariables2();
     }
 
+    /**
+     * <Lista-Declaracion-Variables2> ::=  comma ⟨Lista-Declaracion-Variables⟩
+     * <Lista-Declaracion-Variables2> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void listaDeclaracionVariables2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.comma) {
             match(TokenTypes.comma);
@@ -242,16 +439,32 @@ public class SyntacticAnalyzer {
             if (lookahead.getName() == TokenTypes.semicolon) {
                 return; // lambda
             } else {
-                throw new SyntacticException("Se esperaba ',' o ';'");
+                throw new SyntacticException(lookahead, "Se esperaba ',' o ';'. " +
+                        "Se encontró: " + lookahead.getName());
             }
         }
     }
 
+    /**
+     * ⟨Herencia⟩ ::= colon ⟨Tipo⟩
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void herencia() throws LexicalException, SyntacticException, ReaderException {
         match(TokenTypes.colon);
         tipo();
     }
 
+    /**
+     * ⟨Atributo⟩ ::= ⟨Visibilidad⟩ ⟨Tipo⟩ ⟨Lista-Declaracion-Variables⟩ semicolon
+     * ⟨Atributo⟩ ::= ⟨Tipo⟩ ⟨Lista-Declaracion-Variables⟩ semicolon
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void atributo() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.ppub) {
             visibilidad();
@@ -265,25 +478,35 @@ public class SyntacticAnalyzer {
                 lookahead.getName() == TokenTypes.pint ||
                 lookahead.getName() == TokenTypes.pdouble ||
                 lookahead.getName() == TokenTypes.parray ||
-                lookahead.getName() == TokenTypes.id_class) {
+                idClassSimilars()) {
 
                 tipo();
                 listaDeclaracionVariables();
                 match(TokenTypes.semicolon);
             }
             else {
-                throw new SyntacticException("Se esperaba un atributo");
+                throw new SyntacticException(lookahead, "Se esperaba 'pub', " +
+                        "'str', 'bool', 'int, 'double'," +
+                        " 'array' o un identificador de clase. Se encontró: " + lookahead.getName());
             }
         }
     }
 
+    /**
+     * <Atributos> ::= <Atributo> <Atributos>
+     * <Atributos> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void atributos() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.ppub ||
             lookahead.getName() == TokenTypes.pstr ||
             lookahead.getName() == TokenTypes.pbool ||
             lookahead.getName() == TokenTypes.pint ||
             lookahead.getName() == TokenTypes.pdouble || lookahead.getName() == TokenTypes.parray ||
-            lookahead.getName() == TokenTypes.id_class) {
+            idClassSimilars()) {
 
             atributo();
             atributos();
@@ -293,35 +516,77 @@ public class SyntacticAnalyzer {
                 return; //lambda
             }
             else {
-                throw new SyntacticException("Se esperaba atributo o '}'");
+                throw new SyntacticException(lookahead, "Se esperaba " +
+                        "pub, str, bool, int, " +
+                        "double, array, identificador o " +
+                        "'}'. Se encontró: " + lookahead.getName());
             }
         }
     }
 
+    /**
+     * <Class2> ::=  ⟨Herencia⟩ braces1 ⟨Atributos⟩ braces2
+     * <Class2> ::=  braces1 ⟨Atributos⟩ braces2
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void class2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.colon) {
             herencia();
         }
-        match(TokenTypes.braces1);
+        else {
+            if (lookahead.getName() == TokenTypes.braces1) {
+                match(TokenTypes.braces1);
+            }
+            else {
+                throw new SyntacticException(lookahead, "Se " +
+                        "esperaba '{', ':'. " +
+                        "Se encontró: " + lookahead.getName());
+            }
+        }
         atributos();
         match(TokenTypes.braces2);
     }
 
+    /**
+     * ⟨Class⟩ ::= pclass id_class <Class2>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void class1() throws LexicalException, SyntacticException, ReaderException {
         match(TokenTypes.pclass);
-        match(TokenTypes.id_class);
+        matchIdClassSimilars();
         class2();
     }
 
+    /**
+     * ⟨Impl⟩ ::= pimpl id_class braces1 ⟨Miembro⟩ <Miembros> braces2
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void impl() throws LexicalException, SyntacticException, ReaderException {
         match(TokenTypes.pimpl);
-        match(TokenTypes.id_class);
+        matchIdClassSimilars();
         match(TokenTypes.braces1);
         miembro();
         miembros();
         match(TokenTypes.braces2);
     }
 
+    /**
+     * ⟨Miembro⟩ ::= ⟨Metodo⟩
+     * ⟨Miembro⟩ ::= ⟨Constructor⟩
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void miembro() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.pfn || lookahead.getName() == TokenTypes.pst) {
             metodo();
@@ -331,11 +596,20 @@ public class SyntacticAnalyzer {
                 constructor();
             }
             else {
-                throw new SyntacticException("Se esperaba método o constructor");
+                throw new SyntacticException(lookahead, "Se esperaba fn, st, '.'. " +
+                        "Se encontró: " + lookahead.getName());
             }
         }
     }
 
+    /**
+     * <Miembros> ::= <Miembro> <Miembros>
+     * <Miembros> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void miembros() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.pfn ||
             lookahead.getName() == TokenTypes.pst ||
@@ -348,11 +622,19 @@ public class SyntacticAnalyzer {
             if (lookahead.getName() == TokenTypes.braces2) {
                 return; //lambda
             } else {
-                throw new SyntacticException("Se esperaba '}' o 'fn' o 'st' o '.'");
+                throw new SyntacticException(lookahead, "Se esperaba '}' " +
+                        "o 'fn' o 'st' o '.'. Se encontró: " + lookahead.getName());
             }
         }
     }
 
+    /**
+     * ⟨Bloque-Metodo⟩ ::= braces1 ⟨Mas-Decl-Var-Locales⟩ ⟨Sentencias⟩
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void bloqueMetodo() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.braces1) {
             match(TokenTypes.braces1);
@@ -360,10 +642,19 @@ public class SyntacticAnalyzer {
             sentencias();
         }
         else {
-            throw new SyntacticException("Se esperaba '{'");
+            throw new SyntacticException(lookahead, "Se esperaba '{'. " +
+                    "Se encontró: " + lookahead.getName());
         }
     }
 
+    /**
+     * <Sentencias> ::= <Sentencia> <Sentencias>
+     * <Sentencias> ::= braces2
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void sentencias() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.braces2) {
             match(TokenTypes.braces2);
@@ -373,7 +664,7 @@ public class SyntacticAnalyzer {
             lookahead.getName() == TokenTypes.parentheses1 ||
             lookahead.getName() == TokenTypes.pret ||
             lookahead.getName() == TokenTypes.pself ||
-            lookahead.getName() == TokenTypes.id_class ||
+            idClassSimilars() ||
             lookahead.getName() == TokenTypes.id_obj ||
             lookahead.getName() == TokenTypes.pwhile ||
             lookahead.getName() == TokenTypes.pif ||
@@ -382,14 +673,23 @@ public class SyntacticAnalyzer {
                 sentencias();
             }
             else {
-                throw new SyntacticException("Se esperaba '{', '(', 'ret', " +
-                        "'self', 'while', 'if', ';' o identificador");
+                throw new SyntacticException(lookahead, "Se esperaba '{', '(', 'ret', " +
+                        "'self', 'while', 'if', ';' o identificador. " +
+                        "Se encontró: " + lookahead.getName());
             }
         }
     }
 
+    /**
+     * ⟨Mas-Decl-Var-Locales⟩ ::=  ⟨Decl-Var-Locales⟩ ⟨Mas-Decl-Var-Locales⟩
+     * ⟨Mas-Decl-Var-Locales⟩ ::=   λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void masDeclVarLocales() throws LexicalException, ReaderException, SyntacticException {
-        if (lookahead.getName() == TokenTypes.id_class) {
+        if (idClassSimilars()) {
             auxLookahead = lexicalAnalyzer.nextToken();
             if (auxLookahead.getName() == TokenTypes.id_obj) {
                 declVarLocales();
@@ -403,7 +703,9 @@ public class SyntacticAnalyzer {
                     //Retorna, pues es lambda, pero se coloca al final del metodo
                 }
                 else {
-                    throw new SyntacticException("Se esperaba '.', '[', '=' o identificador de objeto");
+                    throw new SyntacticException(lookahead, "Se esperaba '.', '[', '=' " +
+                            "o identificador de objeto. " +
+                            "Se encontró: " + lookahead.getName());
                 }
             }
         }
@@ -431,33 +733,48 @@ public class SyntacticAnalyzer {
                     //Retorna, pues es lambda, pero se coloca al final del metodo
                 }
                 else {
-                    throw new SyntacticException("Se esperaba 'str', " +
+                    throw new SyntacticException(lookahead, "Se esperaba 'str', " +
                             "'bool', 'int', 'double', 'array', ';', 'while, " +
-                            "'self', 'ret', '(', '{', '}' o identificador de objeto");
+                            "'self', 'ret', '(', '{', '}' o identificador de objeto. Se encontró: " + lookahead.getName());
                 }
             }
         }
         return;
     }
 
+    /**
+     * ⟨Decl-Var-Locales⟩ ::= ⟨Tipo⟩ ⟨Lista-Declaracion-Variables⟩ semicolon
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void declVarLocales() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.pstr ||
             lookahead.getName() == TokenTypes.pbool ||
             lookahead.getName() == TokenTypes.pint ||
             lookahead.getName() == TokenTypes.pdouble ||
             lookahead.getName() == TokenTypes.parray ||
-            lookahead.getName() == TokenTypes.id_class
+            idClassSimilars()
         ) {
             tipo();
             listaDeclaracionVariables();
             match(TokenTypes.semicolon);
         }
         else {
-            throw new SyntacticException("Se esperaba 'str', " +
-                    "'bool', 'int', 'double', 'array' o identificador de clase");
+            throw new SyntacticException(lookahead, "Se esperaba 'str', " +
+                    "'bool', 'int', 'double', 'array' o identificador de clas. Se encontró: " + lookahead.getName());
         }
     }
 
+    /**
+     * ⟨Metodo⟩ ::= ⟨Forma-Metodo⟩ pfn <Metodo2>
+     * ⟨Metodo⟩ ::= pfn <Metodo2>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void metodo() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.pfn) {
             match(TokenTypes.pfn);
@@ -470,19 +787,26 @@ public class SyntacticAnalyzer {
                 metodo2();
             }
             else {
-                throw new SyntacticException("Se esperaba 'fn' o 'st'");
+                throw new SyntacticException(lookahead, "Se esperaba 'fn' o 'st'. Se encontró: " + lookahead.getName());
             }
         }
     }
 
-
+    /**
+     * <Metodo2> ::= ⟨Tipo-Metodo⟩ id_obj ⟨Argumentos-Formales⟩ ⟨Bloque-Metodo⟩
+     * <Metodo2> ::= id_obj ⟨Argumentos-Formales⟩ ⟨Bloque-Metodo⟩
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void metodo2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.pstr ||
             lookahead.getName() == TokenTypes.pbool ||
             lookahead.getName() == TokenTypes.pint ||
             lookahead.getName() == TokenTypes.pdouble ||
             lookahead.getName() == TokenTypes.parray ||
-            lookahead.getName() == TokenTypes.id_class ||
+            idClassSimilars() ||
             lookahead.getName() == TokenTypes.pvoid
         ) {
             tipoMetodo();
@@ -497,12 +821,19 @@ public class SyntacticAnalyzer {
                 bloqueMetodo();
             }
             else {
-                throw new SyntacticException("Se esperaba 'str', 'bool', " +
-                        "'int, 'double, 'array', 'void o identificador");
+                throw new SyntacticException(lookahead, "Se esperaba 'str', 'bool', " +
+                        "'int, 'double, 'array', 'void o identificador. Se encontró: " + lookahead.getName());
             }
         }
     }
 
+    /**
+     * ⟨Constructor⟩ ::= dot ⟨Argumentos-Formales⟩ ⟨Bloque-Metodo⟩
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void constructor() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             match(TokenTypes.dot);
@@ -510,10 +841,18 @@ public class SyntacticAnalyzer {
             bloqueMetodo();
         }
         else {
-            throw new SyntacticException("Se esperaba '.'");
+            throw new SyntacticException(lookahead, "Se esperaba '.'. Se encontró: " + lookahead.getName());
         }
     }
 
+
+    /**
+     * ⟨ExpresionParentizada2⟩ ::= <ExpOr> parentheses2 <ExpresionParentizada3>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void expresionParentizada2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.pnil ||
             lookahead.getName() == TokenTypes.ptrue ||
@@ -523,7 +862,7 @@ public class SyntacticAnalyzer {
             lookahead.getName() == TokenTypes.const_double ||
             lookahead.getName() == TokenTypes.parentheses1 ||
             lookahead.getName() == TokenTypes.pself ||
-            lookahead.getName() == TokenTypes.id_class ||
+            idClassSimilars() ||
             lookahead.getName() == TokenTypes.id_obj ||
             lookahead.getName() == TokenTypes.pnew ||
             lookahead.getName() == TokenTypes.op_sum ||
@@ -537,13 +876,20 @@ public class SyntacticAnalyzer {
             expresionParentizada3();
         }
         else {
-            throw new SyntacticException("Se esperaba 'nil', 'true', " +
+            throw new SyntacticException(lookahead, "Se esperaba 'nil', 'true', " +
                     "'false', ')', 'self', '+', '-', '!', '++', " +
-                    "'--', identificadores o constantes");
+                    "'--', identificadores o constantes. Se encontró: " + lookahead.getName());
         }
     }
 
-
+    /**
+     * <ExpresionParentizada3> ::= <Encadenado>
+     * <ExpresionParentizada3> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void expresionParentizada3() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             encadenado();
@@ -553,24 +899,39 @@ public class SyntacticAnalyzer {
                 //retorna, pues es lambda, pero se coloca al final del código
             }
             else {
-                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                throw new SyntacticException(lookahead, "Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
                         "'>', '<=', '>=', '==', '!=', '&&', '||'," +
                         " ')', ']', ';', ','. Se encontró: " + lookahead.getName());
             }
         }
     }
 
+    /**
+     * ⟨AccesoSelf⟩ ::= pself ⟨AccesoSelf2⟩
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void accesoSelf() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.pself) {
             match(TokenTypes.pself);
             accesoSelf2();
         }
         else {
-            throw new SyntacticException("Se esperaba 'self'. " +
+            throw new SyntacticException(lookahead, "Se esperaba 'self'. " +
                     "Se encontró: " + lookahead.getName());
         }
     }
 
+    /**
+     * ⟨AccesoSelf2⟩::= <Encadenado>
+     * ⟨AccesoSelf2⟩ ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void accesoSelf2() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             encadenado();
@@ -580,13 +941,21 @@ public class SyntacticAnalyzer {
                 //retorna, pues es lambda, pero se coloca al final del código
             }
             else {
-                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                throw new SyntacticException(lookahead, "Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
                         "'>', '<=', '>=', '==', '!=', '&&', '||'," +
                         " ')', ']', ';', ','. Se encontró: " + lookahead.getName());
             }
         }
     }
 
+    /**
+     * ⟨AccesoVar2⟩ ::= <AccesoVar3>
+     * ⟨AccesoVar2⟩ ::= brackets1 <ExpOr> brackets2 <AccesoVar3>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void accesoVar2() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.brackets1) {
             match(TokenTypes.brackets1);
@@ -601,7 +970,7 @@ public class SyntacticAnalyzer {
                 accesoVar3();
             }
             else {
-                throw new SyntacticException("Se esperaba '*', " +
+                throw new SyntacticException(lookahead, "Se esperaba '*', " +
                         "'/', '%', 'div', '+', '-', '<', " +
                         "'>', '<=', '>=', '==', '!=', '&&', '||'," +
                         " ')', ']', ';', ',', '.', '['." +
@@ -610,6 +979,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <AccesoVar3> ::= <Encadenado>
+     * <AccesoVar3> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void accesoVar3() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             encadenado();
@@ -619,14 +996,20 @@ public class SyntacticAnalyzer {
                 //retorna, pues es lambda, pero se coloca al final del código
             }
             else {
-                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                throw new SyntacticException(lookahead, "Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
                         "'>', '<=', '>=', '==', '!=', '&&', '||'," +
                         " ')', ']', ';', ','. Se encontró: " + lookahead.getName());
             }
         }
     }
 
-
+    /**
+     * ⟨Encadenado⟩ ::= dot id <Encadenado2>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void encadenado() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             match(TokenTypes.dot);
@@ -634,22 +1017,30 @@ public class SyntacticAnalyzer {
                 match(TokenTypes.id_obj);
             }
             else {
-                if (lookahead.getName() == TokenTypes.id_class) {
-                    match(TokenTypes.id_class);
+                if (idClassSimilars()) {
+                    matchIdClassSimilars();
                 }
                 else {
-                    throw new SyntacticException("Se esperaba identificador. " +
+                    throw new SyntacticException(lookahead, "Se esperaba identificador. " +
                             "Se encontró: " + lookahead.getName());
                 }
             }
             encadenado2();
         }
         else {
-            throw new SyntacticException("Se esperaba '.'. " +
+            throw new SyntacticException(lookahead, "Se esperaba '.'. " +
                     "Se encontró: "  + lookahead.getName());
         }
     }
 
+    /**
+     * <Encadenado2> ::= ⟨Llamada-Metodo-Encadenado⟩
+     * <Encadenado2> ::= ⟨Acceso-Variable-Encadenado⟩
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void encadenado2() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.parentheses1) {
             llamadaMetodoEncadenado();
@@ -662,7 +1053,7 @@ public class SyntacticAnalyzer {
                 accesoVariableEncadenado();
             }
             else {
-                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                throw new SyntacticException(lookahead, "Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
                         "'>', '<=', '>=', '==', '!=', '&&', '||'," +
                         " ')', ']', ';', ',', '.'," +
                         " '[', '('. Se encontró: " + lookahead.getName());
@@ -676,7 +1067,7 @@ public class SyntacticAnalyzer {
             llamadaMetodoEncadenado2();
         }
         else {
-            throw new SyntacticException("Se esperaba '('. " +
+            throw new SyntacticException(lookahead, "Se esperaba '('. " +
                     "Se encontró: " + lookahead.getName());
         }
     }
@@ -690,7 +1081,7 @@ public class SyntacticAnalyzer {
                 //retorna, pues es lambda, pero el return se coloca al final
             }
             else {
-                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                throw new SyntacticException(lookahead, "Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
                         "'>', '<=', '>=', '==', '!=', '&&', '||'," +
                         " ')', ']', ';', ','. Se encontró: " + lookahead.getName());
             }
@@ -711,7 +1102,7 @@ public class SyntacticAnalyzer {
                 accesoVariableEncadenado3();
             }
             else {
-                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                throw new SyntacticException(lookahead, "Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
                         "'>', '<=', '>=', '==', '!=', '&&', '||'," +
                         " ')', ']', ';', ',', '.'. Se encontró: " + lookahead.getName());
             }
@@ -727,7 +1118,7 @@ public class SyntacticAnalyzer {
                 //retorna, pues es lambda, pero el return se coloca al final
             }
             else {
-                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                throw new SyntacticException(lookahead, "Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
                         "'>', '<=', '>=', '==', '!=', '&&', '||'," +
                         " ')', ']', ';', ','. Se encontró: " + lookahead.getName());
             }
@@ -740,7 +1131,7 @@ public class SyntacticAnalyzer {
             argumentosActuales2();
         }
         else {
-            throw new SyntacticException("Se esperaba '('. " +
+            throw new SyntacticException(lookahead, "Se esperaba '('. " +
                     "Se encontró: " +  lookahead.getName());
         }
     }
@@ -754,7 +1145,7 @@ public class SyntacticAnalyzer {
             lookahead.getName() == TokenTypes.const_double ||
             lookahead.getName() == TokenTypes.parentheses1 ||
             lookahead.getName() == TokenTypes.pself ||
-            lookahead.getName() == TokenTypes.id_class ||
+            idClassSimilars() ||
             lookahead.getName() == TokenTypes.id_obj ||
             lookahead.getName() == TokenTypes.pnew ||
             lookahead.getName() == TokenTypes.op_sum ||
@@ -771,7 +1162,7 @@ public class SyntacticAnalyzer {
                 match(TokenTypes.parentheses2);
             }
             else {
-                throw new SyntacticException("Se esperaba 'nil', " +
+                throw new SyntacticException(lookahead, "Se esperaba 'nil', " +
                         "'true', 'false', '(', 'self', 'new', " +
                         "'+', '-', '!', '++', '--', ')', " +
                         "identificadores o constantes. Se " +
@@ -789,7 +1180,7 @@ public class SyntacticAnalyzer {
                 lookahead.getName() == TokenTypes.const_double ||
                 lookahead.getName() == TokenTypes.parentheses1 ||
                 lookahead.getName() == TokenTypes.pself ||
-                lookahead.getName() == TokenTypes.id_class ||
+                idClassSimilars() ||
                 lookahead.getName() == TokenTypes.id_obj ||
                 lookahead.getName() == TokenTypes.pnew ||
                 lookahead.getName() == TokenTypes.op_sum ||
@@ -802,7 +1193,7 @@ public class SyntacticAnalyzer {
             listaExpresiones2();
         }
         else {
-            throw new SyntacticException("Se esperaba 'nil', " +
+            throw new SyntacticException(lookahead, "Se esperaba 'nil', " +
                     "'true', 'false', '(', 'self', 'new', " +
                     "'+', '-', '!', '++', '--', " +
                     "identificadores o constantes. Se " +
@@ -820,7 +1211,7 @@ public class SyntacticAnalyzer {
                 //retorna, pues es lambda
             }
             else {
-                throw new SyntacticException("Se esperaba ',', ')'." +
+                throw new SyntacticException(lookahead, "Se esperaba ',', ')'." +
                         " Se encontró: " + lookahead.getName());
             }
         }
@@ -838,14 +1229,14 @@ public class SyntacticAnalyzer {
         }
         else {
             if (lookahead.getName() == TokenTypes.pself ||
-                lookahead.getName() == TokenTypes.id_class ||
+                idClassSimilars() ||
                 lookahead.getName() == TokenTypes.id_obj ||
                 lookahead.getName() == TokenTypes.pnew
             ) {
                 primario();
             }
             else {
-                throw new SyntacticException("Se esperaba 'nil', " +
+                throw new SyntacticException(lookahead, "Se esperaba 'nil', " +
                         "'true', 'false', 'self', 'new', " +
                         "identificadores o constantes. " +
                         "Se encontró: " + lookahead.getName());
@@ -863,18 +1254,18 @@ public class SyntacticAnalyzer {
                 llamadaConclassor();
             }
             else {
-                if (lookahead.getName() == TokenTypes.id_class) {
+                if (idClassSimilars()) {
                     auxLookahead = lexicalAnalyzer.nextToken();
                     auxLookahead2 = lexicalAnalyzer.nextToken();
                     if ((auxLookahead.getName() == TokenTypes.dot &&
-                            auxLookahead2.getName() == TokenTypes.id_class) ||
+                            idClassSimilarsLookahead2()) ||
                             (auxLookahead.getName() == TokenTypes.dot &&
                             auxLookahead2.getName() == TokenTypes.id_obj)
                     ) {
                         llamadaMetodoEstatico();
                     }
                     else {
-                        match(TokenTypes.id_class);
+                        matchIdClassSimilars();
                         primario2();
                     }
                 }
@@ -884,7 +1275,7 @@ public class SyntacticAnalyzer {
                         primario2();
                     }
                     else {
-                        throw new SyntacticException("Se esperaba 'self', 'new' " +
+                        throw new SyntacticException(lookahead, "Se esperaba 'self', 'new' " +
                                 "o un identificador. Se " +
                                 "encontró: " + lookahead.getName());
                     }
@@ -907,7 +1298,7 @@ public class SyntacticAnalyzer {
                 accesoVar2();
             }
             else {
-                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                throw new SyntacticException(lookahead, "Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
                         "'>', '<=', '>=', '==', '!=', '&&', '||'," +
                         " ')', ']', ';', ',', '.', '[', '('. Se encontró: " + lookahead.getName());
             }
@@ -923,7 +1314,7 @@ public class SyntacticAnalyzer {
                 //Retorna, pues es lambda
             }
             else {
-                throw new SyntacticException("Se esperaba '*', " +
+                throw new SyntacticException(lookahead, "Se esperaba '*', " +
                         "'/', '%', 'div', '+', '-', '<', " +
                         "'>', '<=', '>=', '==', '!=', '&&', '||'," +
                         " ')', ']', ';', ',', '.'. Se encontró: " + lookahead.getName());
@@ -962,7 +1353,7 @@ public class SyntacticAnalyzer {
                             bloque();
                         }
                         else {
-                            if (lookahead.getName() == TokenTypes.id_class ||
+                            if (idClassSimilars() ||
                                 lookahead.getName() == TokenTypes.id_obj ||
                                 lookahead.getName() == TokenTypes.pself
                             ) {
@@ -975,7 +1366,7 @@ public class SyntacticAnalyzer {
                                     match(TokenTypes.semicolon);
                                 }
                                 else {
-                                    throw new SyntacticException("Se esperaba ';', '(', '{', " +
+                                    throw new SyntacticException(lookahead, "Se esperaba ';', '(', '{', " +
                                             "'ret', 'self', 'while', 'if' " +
                                             "o un identificador. Se " +
                                             "encontró: " + lookahead.getName());
@@ -994,7 +1385,7 @@ public class SyntacticAnalyzer {
             sentencias();
         }
         else {
-            throw new SyntacticException("Se esperaba '{'. " +
+            throw new SyntacticException(lookahead, "Se esperaba '{'. " +
                     "Se encontró: " + lookahead.getName());
         }
     }
@@ -1006,7 +1397,7 @@ public class SyntacticAnalyzer {
             expOr();
         }
         else {
-            if (lookahead.getName() == TokenTypes.id_class ||
+            if (idClassSimilars() ||
                 lookahead.getName() == TokenTypes.id_obj
             ) {
                 accesoVarSimple();
@@ -1014,7 +1405,7 @@ public class SyntacticAnalyzer {
                 expOr();
             }
             else {
-                throw new SyntacticException("Se esperaba 'self' " +
+                throw new SyntacticException(lookahead, "Se esperaba 'self' " +
                         "o un identificador. Se " +
                         "encontró: " + lookahead.getName());
             }
@@ -1022,8 +1413,8 @@ public class SyntacticAnalyzer {
     }
 
     public void accesoVarSimple() throws LexicalException, SyntacticException, ReaderException {
-        if (lookahead.getName() == TokenTypes.id_class) {
-            match(TokenTypes.id_class);
+        if (idClassSimilars()) {
+            matchIdClassSimilars();
             accesoVarSimple2();
         }
         else {
@@ -1032,7 +1423,7 @@ public class SyntacticAnalyzer {
                 accesoVarSimple2();
             }
             else {
-                throw new SyntacticException("Se esperaba un identificador. " +
+                throw new SyntacticException(lookahead, "Se esperaba un identificador. " +
                         "Se encontró: " + lookahead.getName());
             }
         }
@@ -1048,7 +1439,7 @@ public class SyntacticAnalyzer {
                 match(TokenTypes.semicolon);
             }
             else {
-                throw new SyntacticException("Se esperaba 'nil', " +
+                throw new SyntacticException(lookahead, "Se esperaba 'nil', " +
                         "'true', 'false', '(', 'self', " +
                         "'new', '+', '-', '!', '++', '--', " +
                         "una constante o un identificador. Se " +
@@ -1068,8 +1459,7 @@ public class SyntacticAnalyzer {
             if (lookahead.getName() == TokenTypes.semicolon ||
                 lookahead.getName() == TokenTypes.pif ||
                 lookahead.getName() == TokenTypes.pwhile ||
-                lookahead.getName() == TokenTypes.id_obj ||
-                lookahead.getName() == TokenTypes.id_class ||
+                lookahead.getName() == TokenTypes.id_obj || idClassSimilars()||
                 lookahead.getName() == TokenTypes.pself ||
                 lookahead.getName() == TokenTypes.braces1 ||
                 lookahead.getName() == TokenTypes.braces2 ||
@@ -1079,7 +1469,7 @@ public class SyntacticAnalyzer {
                 //reduce, pues es lambda
             }
             else {
-                throw new SyntacticException("Se esperaba ';', " +
+                throw new SyntacticException(lookahead, "Se esperaba ';', " +
                         "'if', 'while', 'self', '{', '}', " +
                         "'ret', '(', o un identificador. " +
                         "Se encontró: " + lookahead.getName());
@@ -1100,7 +1490,7 @@ public class SyntacticAnalyzer {
                 encadenadosSimples();
             }
             else {
-                throw new SyntacticException("Se esperaba '[', " +
+                throw new SyntacticException(lookahead, "Se esperaba '[', " +
                         "'.' o '='. Se " +
                         "encontró: " + lookahead.getName());
             }
@@ -1118,7 +1508,7 @@ public class SyntacticAnalyzer {
                 //Reducir, pues es lambda
             }
             else {
-                throw new SyntacticException("Se esperaba '.' " +
+                throw new SyntacticException(lookahead, "Se esperaba '.' " +
                         "o '='. Se encontró: " +
                         lookahead.getName());
             }
@@ -1131,7 +1521,7 @@ public class SyntacticAnalyzer {
             encadenadosSimples();
         }
         else {
-            throw new SyntacticException("Se esperaba 'self'. " +
+            throw new SyntacticException(lookahead, "Se esperaba 'self'. " +
                     "Se encontró: " + lookahead.getName());
         }
     }
@@ -1139,22 +1529,22 @@ public class SyntacticAnalyzer {
     public void encadenadoSimple() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             match(TokenTypes.dot);
-            if (lookahead.getName() == TokenTypes.id_class) {
-                match(TokenTypes.id_class);
+            if (idClassSimilars()) {
+                matchIdClassSimilars();
             }
             else {
                 if (lookahead.getName() == TokenTypes.id_obj) {
                     match(TokenTypes.id_obj);
                 }
                 else {
-                    throw new SyntacticException("Se esperaba " +
+                    throw new SyntacticException(lookahead, "Se esperaba " +
                             "un identificador. Se encontró: " +
                             lookahead.getName());
                 }
             }
         }
         else {
-            throw new SyntacticException("Se esperaba '.'. Se " +
+            throw new SyntacticException(lookahead, "Se esperaba '.'. Se " +
                     "encontró: " + lookahead.getName());
         }
     }
@@ -1167,7 +1557,7 @@ public class SyntacticAnalyzer {
             match(TokenTypes.parentheses2);
         }
         else {
-            throw new SyntacticException("Se esperaba '('. " +
+            throw new SyntacticException(lookahead, "Se esperaba '('. " +
                     "Se encontró: " + lookahead.getName());
         }
     }
@@ -1178,7 +1568,7 @@ public class SyntacticAnalyzer {
             expOr2();
         }
         else {
-            throw new SyntacticException("Se esperaba 'nil', " +
+            throw new SyntacticException(lookahead, "Se esperaba 'nil', " +
                     "'true', 'false', '(', 'self', " +
                     "'new', '+', '-', '!', '++', '--', " +
                     "una constante o un identificador. Se " +
@@ -1201,7 +1591,7 @@ public class SyntacticAnalyzer {
                 //retorna, pues es lambda
             }
             else {
-                throw new SyntacticException("Se esperaba '||', " +
+                throw new SyntacticException(lookahead, "Se esperaba '||', " +
                         "')', ']', ';' o ','. " +
                         "Se encontró: " + lookahead.getName());
             }
@@ -1214,7 +1604,7 @@ public class SyntacticAnalyzer {
             expAnd2();
         }
         else {
-            throw new SyntacticException("Se esperaba 'nil', " +
+            throw new SyntacticException(lookahead, "Se esperaba 'nil', " +
                     "'true', 'false', '(', 'self', " +
                     "'new', '+', '-', '!', '++', '--', " +
                     "una constante o un identificador. Se " +
@@ -1238,7 +1628,7 @@ public class SyntacticAnalyzer {
                 //retorna, pues es lambda
             }
             else {
-                throw new SyntacticException("Se esperaba '&&', '||', " +
+                throw new SyntacticException(lookahead, "Se esperaba '&&', '||', " +
                         "')', ']', ';' o ','. " +
                         "Se encontró: " + lookahead.getName());
             }
@@ -1251,7 +1641,7 @@ public class SyntacticAnalyzer {
             expIgual2();
         }
         else {
-            throw new SyntacticException("Se esperaba 'nil', " +
+            throw new SyntacticException(lookahead, "Se esperaba 'nil', " +
                     "'true', 'false', '(', 'self', " +
                     "'new', '+', '-', '!', '++', '--', " +
                     "una constante o un identificador. Se " +
@@ -1278,7 +1668,7 @@ public class SyntacticAnalyzer {
                 //retorna, pues es lambda
             }
             else {
-                throw new SyntacticException("Se esperaba '==', '!=', '&&', '||', " +
+                throw new SyntacticException(lookahead, "Se esperaba '==', '!=', '&&', '||', " +
                         "')', ']', ';' o ','. " +
                         "Se encontró: " + lookahead.getName());
             }
@@ -1291,7 +1681,7 @@ public class SyntacticAnalyzer {
            expCompuesta2();
         }
         else {
-            throw new SyntacticException("Se esperaba 'nil', " +
+            throw new SyntacticException(lookahead, "Se esperaba 'nil', " +
                     "'true', 'false', '(', 'self', " +
                     "'new', '+', '-', '!', '++', '--', " +
                     "una constante o un identificador. Se " +
@@ -1321,7 +1711,7 @@ public class SyntacticAnalyzer {
                 //retorna, pues es lambda
             }
             else {
-                throw new SyntacticException("Se esperaba '<', '>', " +
+                throw new SyntacticException(lookahead, "Se esperaba '<', '>', " +
                         "'<=', '>=', '==', '!=', &&', '||', " +
                         "')', ']', ';' o ','. " +
                         "Se encontró: " + lookahead.getName());
@@ -1335,7 +1725,7 @@ public class SyntacticAnalyzer {
             expAd2();
         }
         else {
-            throw new SyntacticException("Se esperaba 'nil', " +
+            throw new SyntacticException(lookahead, "Se esperaba 'nil', " +
                     "'true', 'false', '(', 'self', " +
                     "'new', '+', '-', '!', '++', '--', " +
                     "una constante o un identificador. Se " +
@@ -1368,7 +1758,7 @@ public class SyntacticAnalyzer {
                 //retorna, pues es lambda
             }
             else {
-                throw new SyntacticException("Se esperaba '+', '-', '<', '>', " +
+                throw new SyntacticException(lookahead, "Se esperaba '+', '-', '<', '>', " +
                         "'<=', '>=', '==', '!=', &&', '||', " +
                         "')', ']', ';' o ','. " +
                         "Se encontró: " + lookahead.getName());
@@ -1382,7 +1772,7 @@ public class SyntacticAnalyzer {
             expMul2();
         }
         else {
-            throw new SyntacticException("Se esperaba 'nil', " +
+            throw new SyntacticException(lookahead, "Se esperaba 'nil', " +
                     "'true', 'false', '(', 'self', " +
                     "'new', '+', '-', '!', '++', '--', " +
                     "una constante o un identificador. Se " +
@@ -1419,7 +1809,7 @@ public class SyntacticAnalyzer {
                 //retorna, pues es lambda
             }
             else {
-                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', '>', " +
+                throw new SyntacticException(lookahead, "Se esperaba '*', '/', '%', 'div', '+', '-', '<', '>', " +
                         "'<=', '>=', '==', '!=', &&', '||', " +
                         "')', ']', ';' o ','. " +
                         "Se encontró: " + lookahead.getName());
@@ -1427,6 +1817,13 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     *
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void expUn() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.op_sum ||
             lookahead.getName() == TokenTypes.op_sub ||
@@ -1449,15 +1846,14 @@ public class SyntacticAnalyzer {
                     lookahead.getName() == TokenTypes.const_int ||
                     lookahead.getName() == TokenTypes.const_double ||
                     lookahead.getName() == TokenTypes.const_string ||
-                    lookahead.getName() == TokenTypes.pself ||
-                    lookahead.getName() == TokenTypes.id_class ||
+                    lookahead.getName() == TokenTypes.pself || idClassSimilars()||
                     lookahead.getName() == TokenTypes.id_obj ||
                     lookahead.getName() == TokenTypes.pnew
                 ) {
                     operando();
                 }
                 else {
-                    throw new SyntacticException("Se esperaba 'nil', " +
+                    throw new SyntacticException(lookahead, "Se esperaba 'nil', " +
                             "'true', 'false', '(', 'self', " +
                             "'new', '+', '-', '!', '++', '--', " +
                             "una constante o un identificador. Se " +
@@ -1467,6 +1863,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <ExpUnAux> ::= pint parentheses2 <ExpUn>
+     * <ExpUnAux> ::= <ExpresionParentizada2>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void expUnAux() throws LexicalException, SyntacticException, ReaderException {
         if (expOrFirst()) {
             expresionParentizada2();
@@ -1478,7 +1882,7 @@ public class SyntacticAnalyzer {
                 expUn();
             }
             else {
-                throw new SyntacticException("Se esperaba 'int', 'nil', " +
+                throw new SyntacticException(lookahead, "Se esperaba 'int', 'nil', " +
                         "'true', 'false', '(', 'self', " +
                         "'new', '+', '-', '!', '++', '--', " +
                         "una constante o un identificador. Se " +
@@ -1487,6 +1891,10 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * Metodo para reutilizar
+     * @author Paulina Suden y Tomás Rando
+     */
     public boolean expOrFirst() {
         return (lookahead.getName() == TokenTypes.pnil ||
                 lookahead.getName() == TokenTypes.ptrue ||
@@ -1498,7 +1906,7 @@ public class SyntacticAnalyzer {
                 lookahead.getName() == TokenTypes.pself ||
                 lookahead.getName() == TokenTypes.id_obj ||
                 lookahead.getName() == TokenTypes.pnew ||
-                lookahead.getName() == TokenTypes.id_class ||
+                idClassSimilars() ||
                 lookahead.getName() == TokenTypes.op_sum ||
                 lookahead.getName() == TokenTypes.op_sub ||
                 lookahead.getName() == TokenTypes.op_not ||
@@ -1507,6 +1915,11 @@ public class SyntacticAnalyzer {
         );
     }
 
+
+    /**
+     * Metodo para reutilizar
+     * @author Tomás Rando
+     */
     public boolean primarioFollows() {
         return (lookahead.getName() == TokenTypes.op_mult ||
                 lookahead.getName() == TokenTypes.op_div ||
@@ -1541,30 +1954,27 @@ public class SyntacticAnalyzer {
                 lookahead = lexicalAnalyzer.nextToken();
             }
         } else {
-            throw new SyntacticException("Se esperaba " + tokenType + " y se encontró " + lookahead.getName());
+            throw new SyntacticException(lookahead, "Se esperaba " + tokenType +
+                    ". Se encontró " + lookahead.getName());
         }
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
+    /**
+     * ⟨Llamada-Metodo⟩ ::= id ⟨Argumentos-Actuales⟩ ⟨Llamada-Metodo2⟩
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void llamadaMetodo() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.id_obj) {
             match(TokenTypes.id_obj);
         } else {
-            if (lookahead.getName() == TokenTypes.id_class) {
-                match(TokenTypes.id_class);
+            if (idClassSimilars()) {
+                matchIdClassSimilars();
             } else {
-                throw new SyntacticException("Se esperaba identificador. " +
+                throw new SyntacticException(lookahead, "Se esperaba identificador. " +
                         "Se encontró: " + lookahead.getName());
             }
         }
@@ -1572,6 +1982,14 @@ public class SyntacticAnalyzer {
         llamadaMetodo2();
     }
 
+    /**
+     * ⟨Llamada-Metodo2⟩ ::= <Encadenado>
+     * ⟨Llamada-Metodo2⟩ ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void llamadaMetodo2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             encadenado();
@@ -1581,20 +1999,42 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * ⟨Llamada-Metodo-Estatico⟩ ::= id_class dot ⟨Llamada-Metodo⟩
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void llamadaMetodoEstatico() throws LexicalException, SyntacticException, ReaderException {
-        match(TokenTypes.id_class);
+        matchIdClassSimilars();
         match(TokenTypes.dot);
         llamadaMetodo();
     }
 
+    /**
+     * ⟨Llamada-Conclassor⟩ ::= pnew  <Llamada-Conclassor2>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void llamadaConclassor() throws LexicalException, SyntacticException, ReaderException {
         match(TokenTypes.pnew);
         llamadaConclassor2();
     }
 
+    /**
+     * <Llamada-Conclassor2> ::= id_class ⟨Argumentos-Actuales⟩ <Llamada-Conclassor3>
+     * <Llamada-Conclassor2> ::= ⟨Tipo-Primitivo⟩ brackets1 <ExpOr> brackets2 <Llamada-Conclassor3>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     private void llamadaConclassor2() throws LexicalException, SyntacticException, ReaderException {
-        if (lookahead.getName() == TokenTypes.id_class) {
-            match(TokenTypes.id_class);
+        if (idClassSimilars()) {
+            matchIdClassSimilars();
             argumentosActuales();
             llamadaConclassor3();
         }
@@ -1608,15 +2048,52 @@ public class SyntacticAnalyzer {
                 llamadaConclassor3();
             }
             else {
-                throw new SyntacticException("Se esperaba alguna de las siguientes opciones: identificador de clase, " +
-                        "str, bool, int o double. Se obtuvo: " +lookahead.getName());
+                throw new SyntacticException(lookahead, "Se esperaba identificador de clase, " +
+                        "'str', 'bool', 'int' o 'double'. " +
+                        "Se encontró: " + lookahead.getName());
             }
         }
     }
 
+    /**
+     * <Llamada-Conclassor3> ::= <Encadenado>
+     * <Llamada-Conclassor3> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     private void llamadaConclassor3() {
         primarioFollows();
     }
 
+    public void matchIdClassSimilars() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.id_class) {
+            match(TokenTypes.id_class);
+        }
+        else {
+            if (lookahead.getName() == TokenTypes.pio) {
+                match(TokenTypes.pio);
+            }
+            else {
+                if (lookahead.getName() == TokenTypes.pobject) {
+                    match(TokenTypes.pobject);
+                }
+            }
+        }
+    }
 
+    public boolean idClassSimilars() {
+        return (lookahead.getName() == TokenTypes.id_class ||
+                lookahead.getName() == TokenTypes.pio ||
+                lookahead.getName() == TokenTypes.pobject
+                );
+    }
+
+    public boolean idClassSimilarsLookahead2() {
+        return (auxLookahead2.getName() == TokenTypes.id_class ||
+                auxLookahead2.getName() == TokenTypes.pio ||
+                auxLookahead2.getName() == TokenTypes.pobject
+        );
+    }
 }

@@ -1,5 +1,7 @@
 package com.uncuyo.compiladores.exceptions;
 
+import com.uncuyo.compiladores.lexicalAnalyzer.Token;
+
 /**
  * Exception del analizador sintáctico
  * @version 1.0.0
@@ -10,7 +12,11 @@ public class SyntacticException extends Exception {
      * Constructor
      * @param message String con el error producido
      */
-    public SyntacticException(String message) {
-        super("ERROR: READER" + '\n' + "| ERROR EN LA LECTURA DEL ARCHIVO: " + message + " |" + '\n');
+    public SyntacticException(Token lookahead, String message) {
+        super("ERROR: SINTÁCTICO" + '\n' + "| NUMERO DE LINEA (NUMERO DE COLUMNA) " +
+                "| DESCRIPCION: |" + '\n' + "| LINEA " +
+                lookahead.getRow() + " (COLUMNA " +
+                lookahead.getColumn() + ") " + "| " +
+                message + " |" + '\n');
     }
 }
