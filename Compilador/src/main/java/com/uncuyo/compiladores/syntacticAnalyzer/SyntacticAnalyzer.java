@@ -804,7 +804,33 @@ public class SyntacticAnalyzer {
             encadenado();
         }
         else {
-            return; //lambda
+            if (lookahead.getName() == TokenTypes.op_mult ||
+                    lookahead.getName() == TokenTypes.op_div ||
+                    lookahead.getName() == TokenTypes.op_mod ||
+                    lookahead.getName() == TokenTypes.pdiv ||
+                    lookahead.getName() == TokenTypes.op_sum ||
+                    lookahead.getName() == TokenTypes.op_sub ||
+                    lookahead.getName() == TokenTypes.op_rel_less ||
+                    lookahead.getName() == TokenTypes.op_rel_greater ||
+                    lookahead.getName() == TokenTypes.op_rel_lessequal ||
+                    lookahead.getName() == TokenTypes.op_rel_greaterequal ||
+                    lookahead.getName() == TokenTypes.op_rel_equal ||
+                    lookahead.getName() == TokenTypes.op_rel_notequal ||
+                    lookahead.getName() == TokenTypes.op_and ||
+                    lookahead.getName() == TokenTypes.op_or ||
+                    lookahead.getName() == TokenTypes.parentheses2 ||
+                    lookahead.getName() == TokenTypes.brackets2 ||
+                    lookahead.getName() == TokenTypes.semicolon ||
+                    lookahead.getName() == TokenTypes.comma
+            ) {
+                return;
+            }
+            else {
+                throw new SyntacticException("Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
+                        "'>', '<=', '>=', '==', '!=', '&&', '||'," +
+                        " ')', ']', ';', ',', '.'," +
+                        " '[', '('. Se encontró: " + lookahead.getName());
+            }
         }
     }
 
@@ -843,6 +869,40 @@ public class SyntacticAnalyzer {
 
     private void llamadaConclassor3() {
         primarioFollows();
+    }
+
+    private void expUnAux() throws LexicalException, SyntacticException, ReaderException {
+        if (lookahead.getName() == TokenTypes.pint) {
+            match(TokenTypes.pint);
+            match(TokenTypes.parentheses2);
+            expUn();
+        }
+        else {
+            (if (lookahead.getName() == TokenTypes.pnil ||
+                    lookahead.getName() == TokenTypes.ptrue ||
+                    lookahead.getName() == TokenTypes.pfalse ||
+                    lookahead.getName() == TokenTypes.const_int ||
+                    lookahead.getName() == TokenTypes.const_string ||
+                    lookahead.getName() == TokenTypes.const_double ||
+                    lookahead.getName() == TokenTypes.parentheses1 ||
+                    lookahead.getName() == TokenTypes.pself ||
+                    lookahead.getName() == TokenTypes.id_class ||
+                    lookahead.getName() == TokenTypes.id_obj ||
+                    lookahead.getName() == TokenTypes.pnew ||
+                    lookahead.getName() == TokenTypes.op_sum ||
+                    lookahead.getName() == TokenTypes.op_sub ||
+                    lookahead.getName() == TokenTypes.op_not ||
+                    lookahead.getName() == TokenTypes.op_increment ||
+                    lookahead.getName() == TokenTypes.op_decrement
+        ) {
+                expresionParentizada2();
+            }
+            else {
+                throw new SyntacticException("Se esperaba 'nil', 'true', " +
+                        "'false', ')', 'self', '+', '-', '!', '++', " +
+                        "'--', identificadores o constantes. " + "Se encontró: " + lookahead.getName());
+            }
+        }
     }
 
 
