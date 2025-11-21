@@ -756,5 +756,104 @@ public class SyntacticAnalyzerTest {
         });
     }
 
+    /**
+     * Correcto. Varias clases e impl antes de start.
+     * @author Paulina
+     */
+    @Test
+    public void test51Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test51.s").program();
+        });
+    }
+
+    /**
+     * Correcto. Herencia con atributo array usado en start.
+     * @author Paulina
+     */
+    @Test
+    public void test52Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test52.s").program();
+        });
+    }
+
+    /**
+     * Correcto. Cast y creación de array con expresión.
+     * @author Paulina
+     */
+    @Test
+    public void test53Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test53.s").program();
+        });
+    }
+
+    /**
+     * Correcto. Uso de self con encadenado y arreglo.
+     * @author Paulina
+     */
+    @Test
+    public void test54Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test54.s").program();
+        });
+    }
+
+    /**
+     * Correcto. Impl con métodos estáticos y start vacío.
+     * @author Paulina
+     */
+    @Test
+    public void test55Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test55.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. El constructor de clase requiere () luego de new.
+     * @author Paulina
+     */
+    @Test
+    public void test56Incorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/sintactico/test56.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. start no admite parámetros.
+     * @author Paulina
+     */
+    @Test
+    public void test57Incorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/sintactico/test57.s").program();
+        });
+    }
+
+    /**
+     * Correcto. If/else anidado sin llaves.
+     * @author Paulina
+     */
+    @Test
+    public void test58Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test58.s").program();
+        });
+    }
+
+    /**
+     * Correcto. Return con expresión compleja y encadenado.
+     * @author Paulina
+     */
+    @Test
+    public void test59Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test59.s").program();
+        });
+    }
+
 
 }
