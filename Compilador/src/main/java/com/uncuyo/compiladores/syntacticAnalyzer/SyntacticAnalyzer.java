@@ -11,8 +11,6 @@ public class SyntacticAnalyzer {
 
     private LexicalAnalyzer lexicalAnalyzer;
     private Token lookahead;
-    private Token auxLookahead = null;
-    private Token auxLookahead2 = null;
 
     public SyntacticAnalyzer(String inputFile) throws ReaderException{
         try {
@@ -505,8 +503,10 @@ public class SyntacticAnalyzer {
             lookahead.getName() == TokenTypes.pstr ||
             lookahead.getName() == TokenTypes.pbool ||
             lookahead.getName() == TokenTypes.pint ||
-            lookahead.getName() == TokenTypes.pdouble || lookahead.getName() == TokenTypes.parray ||
-            idClassSimilars()) {
+            lookahead.getName() == TokenTypes.pdouble ||
+            lookahead.getName() == TokenTypes.parray ||
+            idClassSimilars()
+        ) {
 
             atributo();
             atributos();
@@ -662,7 +662,6 @@ public class SyntacticAnalyzer {
             lookahead.getName() == TokenTypes.parentheses1 ||
             lookahead.getName() == TokenTypes.pret ||
             lookahead.getName() == TokenTypes.pself ||
-            idClassSimilars() ||
             lookahead.getName() == TokenTypes.id_obj ||
             lookahead.getName() == TokenTypes.pwhile ||
             lookahead.getName() == TokenTypes.pif ||
@@ -671,8 +670,8 @@ public class SyntacticAnalyzer {
                 sentencias();
             }
             else {
-                throw new SyntacticException(lookahead, "Se esperaba '{', '(', 'ret', " +
-                        "'self', 'while', 'if', ';' o identificador. " +
+                throw new SyntacticException(lookahead, "Se esperaba '{', '(', '}', 'ret', " +
+                        "'self', 'while', 'if', ';' o identificador de método o variable. " +
                         "Se encontró: " + lookahead.getName());
             }
         }
@@ -687,57 +686,36 @@ public class SyntacticAnalyzer {
      * @author Paulina Suden y Tomás Rando
      */
     public void masDeclVarLocales() throws LexicalException, ReaderException, SyntacticException {
-        if (idClassSimilars()) {
-            auxLookahead = lexicalAnalyzer.nextToken();
-            if (auxLookahead.getName() == TokenTypes.id_obj) {
-                declVarLocales();
-                masDeclVarLocales();
-            }
-            else {
-                if (auxLookahead.getName() == TokenTypes.brackets1 ||
-                    auxLookahead.getName() == TokenTypes.dot ||
-                    auxLookahead.getName() == TokenTypes.op_equal
-                ) {
-                    //Retorna, pues es lambda, pero se coloca al final del metodo
-                }
-                else {
-                    throw new SyntacticException(lookahead, "Se esperaba '.', '[', '=' " +
-                            "o identificador de objeto. " +
-                            "Se encontró: " + lookahead.getName());
-                }
-            }
+        if (lookahead.getName() == TokenTypes.pstr ||
+                lookahead.getName() == TokenTypes.pbool ||
+                lookahead.getName() == TokenTypes.pint ||
+                lookahead.getName() == TokenTypes.pdouble ||
+                lookahead.getName() == TokenTypes.parray ||
+                idClassSimilars()
+        ) {
+            declVarLocales();
+            masDeclVarLocales();
         }
         else {
-            if (lookahead.getName() == TokenTypes.pstr ||
-                    lookahead.getName() == TokenTypes.pbool ||
-                    lookahead.getName() == TokenTypes.pint ||
-                    lookahead.getName() == TokenTypes.pdouble ||
-                    lookahead.getName() == TokenTypes.parray
+            if (lookahead.getName() == TokenTypes.semicolon ||
+                    lookahead.getName() == TokenTypes.pif ||
+                    lookahead.getName() == TokenTypes.pwhile ||
+                    lookahead.getName() == TokenTypes.pself ||
+                    lookahead.getName() == TokenTypes.pret ||
+                    lookahead.getName() == TokenTypes.parentheses1 ||
+                    lookahead.getName() == TokenTypes.braces1 ||
+                    lookahead.getName() == TokenTypes.braces2 ||
+                    lookahead.getName() == TokenTypes.id_obj
             ) {
-                declVarLocales();
-                masDeclVarLocales();
+                //Retorna, pues es lambda, pero se coloca al final del metodo
             }
             else {
-                if (lookahead.getName() == TokenTypes.semicolon ||
-                        lookahead.getName() == TokenTypes.pif ||
-                        lookahead.getName() == TokenTypes.pwhile ||
-                        lookahead.getName() == TokenTypes.pself ||
-                        lookahead.getName() == TokenTypes.pret ||
-                        lookahead.getName() == TokenTypes.parentheses1 ||
-                        lookahead.getName() == TokenTypes.braces1 ||
-                        lookahead.getName() == TokenTypes.braces2 ||
-                        lookahead.getName() == TokenTypes.id_obj
-                ) {
-                    //Retorna, pues es lambda, pero se coloca al final del metodo
-                }
-                else {
-                    throw new SyntacticException(lookahead, "Se esperaba 'str', " +
-                            "'bool', 'int', 'double', 'array', ';', 'while, " +
-                            "'self', 'ret', '(', '{', '}' o identificador de objeto. Se encontró: " + lookahead.getName());
-                }
+                throw new SyntacticException(lookahead, "Se esperaba 'str', " +
+                        "'bool', 'int', 'double', 'array', ';', 'if', 'while, " +
+                        "'self', 'ret', '(', '{', '}' o identificador. " +
+                        "Se encontró: " + lookahead.getName());
             }
         }
-        return;
     }
 
     /**
@@ -1013,17 +991,12 @@ public class SyntacticAnalyzer {
             match(TokenTypes.dot);
             if (lookahead.getName() == TokenTypes.id_obj) {
                 match(TokenTypes.id_obj);
+                encadenado2();
             }
             else {
-                if (idClassSimilars()) {
-                    matchIdClassSimilars();
-                }
-                else {
-                    throw new SyntacticException(lookahead, "Se esperaba identificador. " +
-                            "Se encontró: " + lookahead.getName());
-                }
+                throw new SyntacticException(lookahead, "Se esperaba identificador de método o variable. " +
+                        "Se encontró: " + lookahead.getName());
             }
-            encadenado2();
         }
         else {
             throw new SyntacticException(lookahead, "Se esperaba '.'. " +
@@ -1332,19 +1305,7 @@ public class SyntacticAnalyzer {
             }
             else {
                 if (idClassSimilars()) {
-                    auxLookahead = lexicalAnalyzer.nextToken();
-                    auxLookahead2 = lexicalAnalyzer.nextToken();
-                    if ((auxLookahead.getName() == TokenTypes.dot &&
-                            idClassSimilarsLookahead2()) ||
-                            (auxLookahead.getName() == TokenTypes.dot &&
-                            auxLookahead2.getName() == TokenTypes.id_obj)
-                    ) {
-                        llamadaMetodoEstatico();
-                    }
-                    else {
-                        matchIdClassSimilars();
-                        primario2();
-                    }
+                    llamadaMetodoEstatico();
                 }
                 else {
                     if (lookahead.getName() == TokenTypes.id_obj) {
@@ -1352,7 +1313,8 @@ public class SyntacticAnalyzer {
                         primario2();
                     }
                     else {
-                        throw new SyntacticException(lookahead, "Se esperaba 'self', 'new' " +
+                        throw new SyntacticException(lookahead, "Se " +
+                                "esperaba 'self', 'new' " +
                                 "o un identificador. Se " +
                                 "encontró: " + lookahead.getName());
                     }
@@ -1458,8 +1420,7 @@ public class SyntacticAnalyzer {
                             bloque();
                         }
                         else {
-                            if (idClassSimilars() ||
-                                lookahead.getName() == TokenTypes.id_obj ||
+                            if (lookahead.getName() == TokenTypes.id_obj ||
                                 lookahead.getName() == TokenTypes.pself
                             ) {
                                 asignacion();
@@ -1473,7 +1434,7 @@ public class SyntacticAnalyzer {
                                 else {
                                     throw new SyntacticException(lookahead, "Se esperaba ';', '(', '{', " +
                                             "'ret', 'self', 'while', 'if' " +
-                                            "o un identificador. Se " +
+                                            "o un identificador de método o variable. Se " +
                                             "encontró: " + lookahead.getName());
                                 }
                             }
@@ -1517,16 +1478,14 @@ public class SyntacticAnalyzer {
             expOr();
         }
         else {
-            if (idClassSimilars() ||
-                lookahead.getName() == TokenTypes.id_obj
-            ) {
+            if (lookahead.getName() == TokenTypes.id_obj) {
                 accesoVarSimple();
                 match(TokenTypes.op_equal);
                 expOr();
             }
             else {
                 throw new SyntacticException(lookahead, "Se esperaba 'self' " +
-                        "o un identificador. Se " +
+                        "o un identificador de método o variable. Se " +
                         "encontró: " + lookahead.getName());
             }
         }
@@ -1540,19 +1499,13 @@ public class SyntacticAnalyzer {
      * @author Paulina Suden y Tomás Rando
      */
     public void accesoVarSimple() throws LexicalException, SyntacticException, ReaderException {
-        if (idClassSimilars()) {
-            matchIdClassSimilars();
+        if (lookahead.getName() == TokenTypes.id_obj) {
+            match(TokenTypes.id_obj);
             accesoVarSimple2();
         }
         else {
-            if (lookahead.getName() == TokenTypes.id_obj) {
-                match(TokenTypes.id_obj);
-                accesoVarSimple2();
-            }
-            else {
-                throw new SyntacticException(lookahead, "Se esperaba un identificador. " +
-                        "Se encontró: " + lookahead.getName());
-            }
+            throw new SyntacticException(lookahead, "Se esperaba un identificador de método o variable. " +
+                    "Se encontró: " + lookahead.getName());
         }
     }
 
@@ -1602,7 +1555,7 @@ public class SyntacticAnalyzer {
             if (lookahead.getName() == TokenTypes.semicolon ||
                 lookahead.getName() == TokenTypes.pif ||
                 lookahead.getName() == TokenTypes.pwhile ||
-                lookahead.getName() == TokenTypes.id_obj || idClassSimilars()||
+                lookahead.getName() == TokenTypes.id_obj ||
                 lookahead.getName() == TokenTypes.pself ||
                 lookahead.getName() == TokenTypes.braces1 ||
                 lookahead.getName() == TokenTypes.braces2 ||
@@ -1614,7 +1567,7 @@ public class SyntacticAnalyzer {
             else {
                 throw new SyntacticException(lookahead, "Se esperaba ';', " +
                         "'if', 'while', 'self', '{', '}', " +
-                        "'ret', '(', o un identificador. " +
+                        "'ret', '(', o un identificador de método o variable. " +
                         "Se encontró: " + lookahead.getName());
             }
         }
@@ -1700,26 +1653,8 @@ public class SyntacticAnalyzer {
      * @author Paulina Suden y Tomás Rando
      */
     public void encadenadoSimple() throws LexicalException, SyntacticException, ReaderException {
-        if (lookahead.getName() == TokenTypes.dot) {
-            match(TokenTypes.dot);
-            if (idClassSimilars()) {
-                matchIdClassSimilars();
-            }
-            else {
-                if (lookahead.getName() == TokenTypes.id_obj) {
-                    match(TokenTypes.id_obj);
-                }
-                else {
-                    throw new SyntacticException(lookahead, "Se esperaba " +
-                            "un identificador. Se encontró: " +
-                            lookahead.getName());
-                }
-            }
-        }
-        else {
-            throw new SyntacticException(lookahead, "Se esperaba '.'. Se " +
-                    "encontró: " + lookahead.getName());
-        }
+        match(TokenTypes.dot);
+        match(TokenTypes.id_obj);
     }
 
 
@@ -2118,7 +2053,8 @@ public class SyntacticAnalyzer {
                     lookahead.getName() == TokenTypes.const_int ||
                     lookahead.getName() == TokenTypes.const_double ||
                     lookahead.getName() == TokenTypes.const_string ||
-                    lookahead.getName() == TokenTypes.pself || idClassSimilars()||
+                    lookahead.getName() == TokenTypes.pself ||
+                    idClassSimilars()||
                     lookahead.getName() == TokenTypes.id_obj ||
                     lookahead.getName() == TokenTypes.pnew
                 ) {
@@ -2224,14 +2160,7 @@ public class SyntacticAnalyzer {
     public void match(TokenTypes tokenType) throws LexicalException, ReaderException, SyntacticException {
 
         if (lookahead.getName() == tokenType) {
-            if (auxLookahead != null) {
-                lookahead = auxLookahead;
-                auxLookahead = auxLookahead2;
-                auxLookahead2 = null;
-            }
-            else {
-                lookahead = lexicalAnalyzer.nextToken();
-            }
+            lookahead = lexicalAnalyzer.nextToken();
         } else {
             throw new SyntacticException(lookahead, "Se esperaba " + tokenType +
                     ". Se encontró " + lookahead.getName());
@@ -2250,12 +2179,8 @@ public class SyntacticAnalyzer {
         if (lookahead.getName() == TokenTypes.id_obj) {
             match(TokenTypes.id_obj);
         } else {
-            if (idClassSimilars()) {
-                matchIdClassSimilars();
-            } else {
-                throw new SyntacticException(lookahead, "Se esperaba identificador. " +
-                        "Se encontró: " + lookahead.getName());
-            }
+            throw new SyntacticException(lookahead, "Se esperaba identificador de método o variable. " +
+                    "Se encontró: " + lookahead.getName());
         }
         argumentosActuales();
         llamadaMetodo2();
@@ -2384,7 +2309,9 @@ public class SyntacticAnalyzer {
                     match(TokenTypes.pobject);
                 }
                 else {
-                    throw new SyntacticException(lookahead, "Se esperaba identificador, IO, object. Se encontró: " + lookahead.getName());
+                    throw new SyntacticException(lookahead, "Se esperaba " +
+                            "identificador, IO, object. " +
+                            "Se encontró: " + lookahead.getName());
                 }
             }
         }
@@ -2402,15 +2329,4 @@ public class SyntacticAnalyzer {
                 );
     }
 
-    /**
-     * Verifica si el lookahead auxiliar es un identificador de clase
-     * @author Paulina Suden y Tomas Rando
-     * @return boolean verificando si se encuentra algun identificador de clase en el token
-     */
-    public boolean idClassSimilarsLookahead2() {
-        return (auxLookahead2.getName() == TokenTypes.id_class ||
-                auxLookahead2.getName() == TokenTypes.pio ||
-                auxLookahead2.getName() == TokenTypes.pobject
-        );
-    }
 }
