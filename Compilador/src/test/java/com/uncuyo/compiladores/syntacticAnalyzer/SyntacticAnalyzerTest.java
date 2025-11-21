@@ -316,4 +316,445 @@ public class SyntacticAnalyzerTest {
         });
     }
 
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void test29Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test29.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void test30Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test30.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void test31Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test31.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void test32Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test32.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void test33Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test33.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void test34Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test34.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. En el while hay dos () antes de la {
+     * @author Tomas Rando
+     */
+    @Test
+    public void test35Incorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/sintactico/test35.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. new no tiene la lista de argumentos entre paréntesis
+     * @author Tomas Rando
+     */
+    @Test
+    public void test36Incorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/sintactico/test36.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. Falta la expresión del operador de incrementar en la linea 4
+     * @author Tomas Rando
+     */
+    @Test
+    public void test37Incorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/sintactico/test37.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. El constructor requiere ()
+     * @author Tomas Rando
+     */
+    @Test
+    public void test38Incorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/sintactico/test38.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. Faltan () en el if
+     * @author Tomas Rando
+     */
+    @Test
+    public void test39Incorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/sintactico/test39.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. Falta ] en la línea 5.
+     * @author Tomas Rando
+     */
+    @Test
+    public void test40Incorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/sintactico/test40.s").program();
+        });
+    }
+
+    /**
+     * Correcto. Se testea el array
+     * @author Tomas Rando
+     */
+    @Test
+    public void test41Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test41.s").program();
+        });
+    }
+
+    /**
+     * Correcto. Se testea el encadenamiento largo con el acceso a un atributo al final
+     * @author Tomas Rando
+     */
+    @Test
+    public void test42Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test42.s").program();
+        });
+    }
+
+    /**
+     * Correcto
+     * @author Tomas Rando
+     */
+    @Test
+    public void test43Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test43.s").program();
+        });
+    }
+
+    /**
+     * Correcto
+     * @author Tomas Rando
+     */
+    @Test
+    public void test44Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test44.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. Falta cerrar el start
+     * @author Tomas Rando
+     */
+    @Test
+    public void test45Incorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/sintactico/test45.s").program();
+        });
+    }
+
+    /**
+     * Correcto. Se testea la herencia
+     * @author Tomas Rando
+     */
+    @Test
+    public void test46Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test46.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. Falta la clase de la cual hereda
+     * @author Tomas Rando
+     */
+    @Test
+    public void test47Incorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/sintactico/test47.s").program();
+        });
+    }
+
+    /**
+     * Correcto
+     * @author Tomas Rando
+     */
+    @Test
+    public void test48Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test48.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. El start debe ir después de las definiciones de clases/impl
+     * @author Tomas Rando
+     */
+    @Test
+    public void test49Incorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/sintactico/test49.s").program();
+        });
+    }
+
+    /**
+     * Correcto
+     * @author Tomas Rando
+     */
+    @Test
+    public void test50Correct() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/sintactico/test50.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. Clase declarada despues de start.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testClassAfterStartIncorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/ClassAfterStart.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. Clase dentro de otra clase.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testClassInsideClassIncorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/ClassInsideClass.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. Constructor dentro de start.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testConstructorInsideStartIncorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/ConstructorInsideStart.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. Constructor fuera de clase.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testConstructorOutsideOfClassIncorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/ConstructorOutsideOfClass.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. Archivo vacio.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testEmptyFileIncorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/EmptyFile.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. Variable global fuera de clase.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testGlobalVariableIncorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/GlobalVariable.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto. Metodo dentro de metodo.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testMethodInsideMethodIncorrect() {
+        assertThrows(SyntacticException.class, () -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/MethodInsideMethod.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testArithmeticExpressionsCorrect() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/ArithmeticExpresions.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testBasicDeclarationsCorrect() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/BasicDeclarations.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testBlockTestCorrect() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/BlockTest.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testClassDeclarationsCorrect() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/ClassDeclarations.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testCompoundSentencesCorrect() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/CompoundSentences.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testFibonacciExampleCorrect() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/FibonacciExample.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testFunctionsCorrect() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/Functions.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testLogicOperatorsCorrect() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/LogicOperators.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testRelationalOperatorsCorrect() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/RelationalOperators.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testSimpleStartBlockCorrect() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/SimpleStartBlock.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     * @author Tomas Rando
+     */
+    @Test
+    public void testStartBlockDeclarationsCorrect() {
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/testsExternos/sintactico/StartBlockDeclarations.s").program();
+        });
+    }
+
+
 }

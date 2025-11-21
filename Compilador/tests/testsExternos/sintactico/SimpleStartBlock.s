@@ -1,0 +1,4 @@
+start
+{ 
+  IO hola;
+}
