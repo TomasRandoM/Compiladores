@@ -518,7 +518,7 @@ public class SyntacticAnalyzer {
             else {
                 throw new SyntacticException(lookahead, "Se esperaba " +
                         "pub, str, bool, int, " +
-                        "double, array, identificador o " +
+                        "double, array, identificador de clase o " +
                         "'}'. Se encontró: " + lookahead.getName());
             }
         }
@@ -536,16 +536,14 @@ public class SyntacticAnalyzer {
         if (lookahead.getName() == TokenTypes.colon) {
             herencia();
         }
-        else {
-            if (lookahead.getName() == TokenTypes.braces1) {
-                match(TokenTypes.braces1);
-            }
-            else {
-                throw new SyntacticException(lookahead, "Se " +
-                        "esperaba '{', ':'. " +
-                        "Se encontró: " + lookahead.getName());
-            }
+        if (lookahead.getName() == TokenTypes.braces1) {
+            match(TokenTypes.braces1);
         }
+        else {
+            throw new SyntacticException(lookahead, "Se " +
+                    "esperaba '{', ':'. " +
+                    "Se encontró: " + lookahead.getName());
+            }
         atributos();
         match(TokenTypes.braces2);
     }
@@ -2384,6 +2382,9 @@ public class SyntacticAnalyzer {
             else {
                 if (lookahead.getName() == TokenTypes.pobject) {
                     match(TokenTypes.pobject);
+                }
+                else {
+                    throw new SyntacticException(lookahead, "Se esperaba identificador, IO, object. Se encontró: " + lookahead.getName());
                 }
             }
         }
