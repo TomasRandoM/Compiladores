@@ -1,4 +1,4 @@
-//incorrecto como es array falta []
+// incorrecto: Fibonacci es un id_class
 start {
-    array Int a;
+    Int Fibonacci;
 }
