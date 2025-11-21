@@ -1061,6 +1061,13 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * ⟨Llamada-Metodo-Encadenado⟩ ::=  ⟨Argumentos-Actuales⟩ ⟨Llamada-Metodo-Encadenado2⟩
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void llamadaMetodoEncadenado() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.parentheses1) {
             argumentosActuales();
@@ -1072,6 +1079,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * ⟨Llamada-Metodo-Encadenado2⟩ ::= <Encadenado>
+     * ⟨Llamada-Metodo-Encadenado2⟩ ::=  λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void llamadaMetodoEncadenado2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             encadenado();
@@ -1088,6 +1103,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * ⟨Acceso-Variable-Encadenado⟩ ::= <Acceso-Variable-Encadenado3>
+     * ⟨Acceso-Variable-Encadenado⟩ ::= brackets1  <ExpOr> brackets2 <Acceso-Variable-Encadenado3>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void accesoVariableEncadenado() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.brackets1) {
             match(TokenTypes.brackets1);
@@ -1109,6 +1132,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <Acceso-Variable-Encadenado3> ::= <Encadenado>
+     * <Acceso-Variable-Encadenado3> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void accesoVariableEncadenado3() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             encadenado();
@@ -1125,6 +1156,13 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * ⟨Argumentos-Actuales⟩ ::= parentheses1  <Argumentos-Actuales2>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void argumentosActuales() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.parentheses1) {
             match(TokenTypes.parentheses1);
@@ -1136,6 +1174,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <Argumentos-Actuales2> ::= ⟨Lista-Expresiones⟩ parentheses2
+     * <Argumentos-Actuales2> ::= parentheses2
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void argumentosActuales2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.pnil ||
             lookahead.getName() == TokenTypes.ptrue ||
@@ -1171,6 +1217,13 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * ⟨Lista-Expresiones⟩ ::= <ExpOr> ⟨Lista-Expresiones2⟩
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void listaExpresiones() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.pnil ||
                 lookahead.getName() == TokenTypes.ptrue ||
@@ -1201,6 +1254,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * ⟨Lista-Expresiones2⟩ ::= comma ⟨Lista-Expresiones⟩
+     * ⟨Lista-Expresiones2⟩ ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void listaExpresiones2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.comma) {
             match(TokenTypes.comma);
@@ -1217,6 +1278,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <Operando> ::= <Literal>
+     * <Operando> ::= <Primario>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void operando() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.pnil ||
             lookahead.getName() == TokenTypes.ptrue ||
@@ -1245,6 +1314,16 @@ public class SyntacticAnalyzer {
     }
 
 
+    /**
+     * <Primario> ::= <AccesoSelf>
+     * <Primario> ::= id <Primario2>
+     * <Primario> ::= <Llamada-Método-Estático>
+     * <Primario> ::= <Llamada-Conclassor>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void primario() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.pself) {
             accesoSelf();
@@ -1285,6 +1364,14 @@ public class SyntacticAnalyzer {
     }
 
 
+    /**
+     * <Primario2> ::= <Argumentos-Actuales> <Primario3>
+     * <Primario2> ::= <AccesoVar2>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void primario2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.parentheses1) {
             argumentosActuales();
@@ -1305,6 +1392,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <Primario3> ::= <Encadenado>
+     * <Primario3> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void primario3() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             encadenado();
@@ -1322,7 +1417,19 @@ public class SyntacticAnalyzer {
         }
     }
 
-
+    /**
+     * <Sentencia> ::= semicolon
+     * <Sentencia> ::= <Asignación> semicolon
+     * <Sentencia> ::= <Sentencia-Simple> semicolon
+     * <Sentencia> ::= pif parentheses1 <ExpOr> parentheses2 <Sentencia> <SentenciaIf>
+     * <Sentencia> ::= pwhile parentheses1 <ExpOr> parentheses2 <Sentencia>
+     * <Sentencia> ::= <Bloque>
+     * <Sentencia> ::= ret <SentenciaRet>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void sentencia() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.semicolon) {
             match(TokenTypes.semicolon);
@@ -1379,6 +1486,13 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <Bloque> ::= braces1 <Sentencias>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void bloque() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.braces1) {
             match(TokenTypes.braces1);
@@ -1390,6 +1504,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <Asignación> ::= <AccesoVar-Simple> op_equal <ExpOr>
+     * <Asignación> ::= <AccesoSelf-Simple> op_equal <ExpOr>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void asignacion() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.pself) {
             accesoSelfSimple();
@@ -1412,6 +1534,13 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <AccesoVar-Simple> ::= id <AccesoVar-Simple2>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void accesoVarSimple() throws LexicalException, SyntacticException, ReaderException {
         if (idClassSimilars()) {
             matchIdClassSimilars();
@@ -1429,6 +1558,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <SentenciaRet> ::= semicolon
+     * <SentenciaRet> ::= <ExpOr> semicolon
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void sentenciaRet() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.semicolon) {
             match(TokenTypes.semicolon);
@@ -1448,6 +1585,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <SentenciaIf> ::= pelse <Sentencia>
+     * <SentenciaIf> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void sentenciaIf() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.pelse) {
             match(TokenTypes.pelse);
@@ -1477,6 +1622,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <AccesoVar-Simple2> ::= <Encadenados-Simples>
+     * <AccesoVar-Simple2> ::= brackets1 <ExpOr> brackets2
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void accesoVarSimple2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.brackets1) {
             match(TokenTypes.brackets1);
@@ -1498,6 +1651,14 @@ public class SyntacticAnalyzer {
     }
 
 
+    /**
+     * <Encadenados-Simples> ::= <Encadenado-Simple> <Encadenados-Simples>
+     * <Encadenados-Simples> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void encadenadosSimples() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             encadenadoSimple();
@@ -1515,6 +1676,13 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <AccesoSelf-Simple> ::= pself <Encadenados-Simples>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void accesoSelfSimple() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.pself) {
             match(TokenTypes.pself);
@@ -1526,6 +1694,13 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <Encadenado-Simple> ::= dot id
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void encadenadoSimple() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             match(TokenTypes.dot);
@@ -1550,6 +1725,13 @@ public class SyntacticAnalyzer {
     }
 
 
+    /**
+     * <Sentencia-Simple> ::= parentheses1 <ExpOr> parentheses2
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void sentenciaSimple() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.parentheses1) {
             match(TokenTypes.parentheses1);
@@ -1562,6 +1744,13 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <ExpOr> ::= <ExpAnd> <ExpOr2>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void expOr() throws SyntacticException, LexicalException, ReaderException {
         if (expOrFirst()) {
             expAnd();
@@ -1576,6 +1765,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <ExpOr2> ::= op_or <ExpAnd> <ExpOr2>
+     * <ExpOr2> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void expOr2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.op_or) {
             match(TokenTypes.op_or);
@@ -1598,6 +1795,13 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <ExpAnd> ::= <ExpIgual> <ExpAnd2>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void expAnd() throws SyntacticException, LexicalException, ReaderException {
         if (expOrFirst()) {
             expIgual();
@@ -1612,6 +1816,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <ExpAnd2> ::= op_and <ExpIgual> <ExpAnd2>
+     * <ExpAnd2> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void expAnd2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.op_and) {
             match(TokenTypes.op_and);
@@ -1635,6 +1847,13 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <ExpIgual> ::= <ExpCompuesta> <ExpIgual2>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void expIgual() throws SyntacticException, LexicalException, ReaderException {
         if (expOrFirst()) {
             expCompuesta();
@@ -1649,6 +1868,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <ExpIgual2> ::= <OpIgual> <ExpCompuesta> <ExpIgual2>
+     * <ExpIgual2> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void expIgual2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.op_rel_equal ||
             lookahead.getName() == TokenTypes.op_rel_notequal
@@ -1675,6 +1902,13 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <ExpCompuesta> ::= <ExpAd> <ExpCompuesta2>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void expCompuesta() throws SyntacticException, LexicalException, ReaderException {
         if (expOrFirst()) {
            expAd();
@@ -1689,6 +1923,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <ExpCompuesta2> ::= <OpCompuesto> <ExpAd>
+     * <ExpCompuesta2> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void expCompuesta2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.op_rel_less ||
             lookahead.getName() == TokenTypes.op_rel_greater ||
@@ -1719,6 +1961,13 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <ExpAd> ::= <ExpMul> <ExpAd2>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void expAd() throws SyntacticException, LexicalException, ReaderException {
         if (expOrFirst()) {
             expMul();
@@ -1733,6 +1982,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <ExpAd2> ::= <OpAd> <ExpMul> <ExpAd2>
+     * <ExpAd2> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void expAd2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.op_sum ||
             lookahead.getName() == TokenTypes.op_sub
@@ -1766,6 +2023,13 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <ExpMul> ::= <ExpUn> <ExpMul2>
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void expMul() throws SyntacticException, LexicalException, ReaderException {
         if (expOrFirst()) {
             expUn();
@@ -1780,6 +2044,14 @@ public class SyntacticAnalyzer {
         }
     }
 
+    /**
+     * <ExpMul2> ::= <OpMul> <ExpUn> <ExpMul2>
+     * <ExpMul2> ::= λ
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void expMul2() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.op_mult ||
             lookahead.getName() == TokenTypes.op_div ||
@@ -1818,7 +2090,9 @@ public class SyntacticAnalyzer {
     }
 
     /**
-     *
+     * <ExpUn> ::= <OpUnario> <ExpUn>
+     * <ExpUn> ::= <Operando>
+     * <ExpUn> ::= parenthesis1 <ExpUnAux>
      * @throws ReaderException Excepción del reader
      * @throws LexicalException Excepción ocasionada por un error léxico
      * @throws SyntacticException Excepción ocasionada por un error sintáctico
@@ -1942,6 +2216,13 @@ public class SyntacticAnalyzer {
         );
     }
 
+    /**
+     * Metodo que matchea un token
+     * @throws ReaderException Excepción del reader
+     * @throws LexicalException Excepción ocasionada por un error léxico
+     * @throws SyntacticException Excepción ocasionada por un error sintáctico
+     * @author Paulina Suden y Tomás Rando
+     */
     public void match(TokenTypes tokenType) throws LexicalException, ReaderException, SyntacticException {
 
         if (lookahead.getName() == tokenType) {
@@ -1995,7 +2276,15 @@ public class SyntacticAnalyzer {
             encadenado();
         }
         else {
-            return; //lambda
+            if (primarioFollows()) {
+                return; //lambda
+            }
+            else {
+                throw new SyntacticException(lookahead, "Se esperaba '*', " +
+                        "'/', '%', 'div', '+', '-', '<', " +
+                        "'>', '<=', '>=', '==', '!=', '&&', '||'," +
+                        " ')', ']', ';', ',', '.'. Se encontró: " + lookahead.getName());
+            }
         }
     }
 
