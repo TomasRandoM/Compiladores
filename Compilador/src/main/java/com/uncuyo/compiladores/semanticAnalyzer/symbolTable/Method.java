@@ -117,7 +117,7 @@ public class Method {
         if (variables.containsKey(variable.getName())) {
             throw new SemanticException(variable.getToken(),
                     "La variable " + variable.getName() + " " +
-                            "ya fue definido en este ámbito");
+                            "ya fue definida en este ámbito");
         }
         variables.put(variable.getName(), variable);
     }

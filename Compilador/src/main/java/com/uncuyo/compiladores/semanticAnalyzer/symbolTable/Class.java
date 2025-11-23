@@ -14,6 +14,8 @@ public class Class {
     private Map<String, Attribute> attributes = new HashMap<>();
     private Map<String, Method> methods = new HashMap<>();
     private Constructor constructor;
+    private boolean implInitialized;
+    private boolean classInitialized;
 
     public Class(Token token) {
         this.name = token.getLexeme();
@@ -82,6 +84,22 @@ public class Class {
 
     public Constructor getConstructor() {
         return constructor;
+    }
+
+    public void setClassInitialized(boolean classInitialized) {
+        this.classInitialized = classInitialized;
+    }
+
+    public boolean isClassInitialized() {
+        return classInitialized;
+    }
+
+    public boolean isImplInitialized() {
+        return implInitialized;
+    }
+
+    public void setImplInitialized(boolean implInitialized) {
+        this.implInitialized = implInitialized;
     }
 
     public void setConstructor(Constructor constructor) {
