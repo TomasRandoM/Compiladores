@@ -2,10 +2,13 @@ package com.uncuyo.compiladores.syntacticAnalyzer;
 
 import com.uncuyo.compiladores.exceptions.LexicalException;
 import com.uncuyo.compiladores.exceptions.ReaderException;
+import com.uncuyo.compiladores.exceptions.SemanticException;
 import com.uncuyo.compiladores.exceptions.SyntacticException;
 import com.uncuyo.compiladores.lexicalAnalyzer.LexicalAnalyzer;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 import com.uncuyo.compiladores.lexicalAnalyzer.TokenTypes;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.*;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Class;
 
 public class SyntacticAnalyzer {
 
@@ -27,7 +30,7 @@ public class SyntacticAnalyzer {
      * @throws SyntacticException Excepción ocasionada por un error sintáctico
      * @author Paulina Suden y Tomás Rando
      */
-    public void program() throws LexicalException, ReaderException, SyntacticException {
+    public void program() throws LexicalException, ReaderException, SyntacticException, SemanticException {
         lookahead = lexicalAnalyzer.nextToken();
         listaDefiniciones();
         start();
@@ -43,6 +46,8 @@ public class SyntacticAnalyzer {
      * @author Paulina Suden y Tomás Rando
      */
     public void start() throws LexicalException, SyntacticException, ReaderException {
+        Method method = new Method(lookahead, null, false);
+        SymbolTable.setCurrentMethod(method);
         match(TokenTypes.pstart);
         bloqueMetodo();
     }
@@ -56,7 +61,7 @@ public class SyntacticAnalyzer {
      * @throws SyntacticException Excepción ocasionada por un error sintáctico
      * @author Paulina Suden y Tomás Rando
      */
-    public void listaDefiniciones() throws LexicalException, SyntacticException, ReaderException {
+    public void listaDefiniciones() throws LexicalException, SyntacticException, ReaderException, SemanticException {
         if (lookahead.getName() == TokenTypes.pclass) {
             class1();
             listaDefiniciones();
@@ -452,6 +457,7 @@ public class SyntacticAnalyzer {
      */
     public void herencia() throws LexicalException, SyntacticException, ReaderException {
         match(TokenTypes.colon);
+        SymbolTable.getCurrentClass().setParentClass(lookahead.getLexeme());
         tipo();
     }
 
@@ -466,8 +472,8 @@ public class SyntacticAnalyzer {
     public void atributo() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.ppub) {
             visibilidad();
-            tipo();
-            listaDeclaracionVariables();
+            Type type = tipo();
+            listaDeclaracionVariables(type, true, "attribute");
             match(TokenTypes.semicolon);
         }
         else {
@@ -478,8 +484,8 @@ public class SyntacticAnalyzer {
                 lookahead.getName() == TokenTypes.parray ||
                 idClassSimilars()) {
 
-                tipo();
-                listaDeclaracionVariables();
+                Type type = tipo();
+                listaDeclaracionVariables(type, false, "attribute");
                 match(TokenTypes.semicolon);
             }
             else {
@@ -555,8 +561,11 @@ public class SyntacticAnalyzer {
      * @throws SyntacticException Excepción ocasionada por un error sintáctico
      * @author Paulina Suden y Tomás Rando
      */
-    public void class1() throws LexicalException, SyntacticException, ReaderException {
+    public void class1() throws LexicalException, SyntacticException, ReaderException, SemanticException {
         match(TokenTypes.pclass);
+        Class class1 = new Class(lookahead);
+        SymbolTable.addClass(class1, "class");
+        SymbolTable.setCurrentClass(class1);
         matchIdClassSimilars();
         class2();
     }
@@ -568,8 +577,11 @@ public class SyntacticAnalyzer {
      * @throws SyntacticException Excepción ocasionada por un error sintáctico
      * @author Paulina Suden y Tomás Rando
      */
-    public void impl() throws LexicalException, SyntacticException, ReaderException {
+    public void impl() throws LexicalException, SyntacticException, ReaderException, SemanticException {
         match(TokenTypes.pimpl);
+        Class class1 = new Class(lookahead);
+        SymbolTable.addClass(class1, "impl");
+        SymbolTable.setCurrentClass(class1);
         matchIdClassSimilars();
         match(TokenTypes.braces1);
         miembro();
@@ -585,7 +597,7 @@ public class SyntacticAnalyzer {
      * @throws SyntacticException Excepción ocasionada por un error sintáctico
      * @author Paulina Suden y Tomás Rando
      */
-    public void miembro() throws LexicalException, SyntacticException, ReaderException {
+    public void miembro() throws LexicalException, SyntacticException, ReaderException, SemanticException {
         if (lookahead.getName() == TokenTypes.pfn || lookahead.getName() == TokenTypes.pst) {
             metodo();
         }
@@ -608,7 +620,7 @@ public class SyntacticAnalyzer {
      * @throws SyntacticException Excepción ocasionada por un error sintáctico
      * @author Paulina Suden y Tomás Rando
      */
-    public void miembros() throws SyntacticException, LexicalException, ReaderException {
+    public void miembros() throws SyntacticException, LexicalException, ReaderException, SemanticException {
         if (lookahead.getName() == TokenTypes.pfn ||
             lookahead.getName() == TokenTypes.pst ||
             lookahead.getName() == TokenTypes.dot) {
@@ -739,7 +751,8 @@ public class SyntacticAnalyzer {
         }
         else {
             throw new SyntacticException(lookahead, "Se esperaba 'str', " +
-                    "'bool', 'int', 'double', 'array' o identificador de clas. Se encontró: " + lookahead.getName());
+                    "'bool', 'int', 'double', 'array' o identificador de clas. " +
+                    "Se encontró: " + lookahead.getName());
         }
     }
 
@@ -751,16 +764,16 @@ public class SyntacticAnalyzer {
      * @throws SyntacticException Excepción ocasionada por un error sintáctico
      * @author Paulina Suden y Tomás Rando
      */
-    public void metodo() throws LexicalException, SyntacticException, ReaderException {
+    public void metodo() throws LexicalException, SyntacticException, ReaderException, SemanticException {
         if (lookahead.getName() == TokenTypes.pfn) {
             match(TokenTypes.pfn);
-            metodo2();
+            metodo2(false);
         }
         else {
             if (lookahead.getName() == TokenTypes.pst) {
                 formaMetodo();
                 match(TokenTypes.pfn);
-                metodo2();
+                metodo2(true);
             }
             else {
                 throw new SyntacticException(lookahead, "Se esperaba 'fn' o 'st'. Se encontró: " + lookahead.getName());
@@ -776,7 +789,7 @@ public class SyntacticAnalyzer {
      * @throws SyntacticException Excepción ocasionada por un error sintáctico
      * @author Paulina Suden y Tomás Rando
      */
-    public void metodo2() throws LexicalException, SyntacticException, ReaderException {
+    public void metodo2(boolean isStatic) throws LexicalException, SyntacticException, ReaderException, SemanticException {
         if (lookahead.getName() == TokenTypes.pstr ||
             lookahead.getName() == TokenTypes.pbool ||
             lookahead.getName() == TokenTypes.pint ||
@@ -785,20 +798,29 @@ public class SyntacticAnalyzer {
             idClassSimilars() ||
             lookahead.getName() == TokenTypes.pvoid
         ) {
-            tipoMetodo();
+            Type type = tipoMetodo();
+            Method method = new Method(lookahead, type, isStatic);
+            SymbolTable.setCurrentMethod(method);
+            SymbolTable.getCurrentClass().addMethods(method);
             match(TokenTypes.id_obj);
             argumentosFormales();
             bloqueMetodo();
         }
         else {
             if (lookahead.getName() == TokenTypes.id_obj) {
+                Type type = new Type(lookahead, "void");
+                Method method = new Method(lookahead, type, isStatic);
+                SymbolTable.setCurrentMethod(method);
+                SymbolTable.getCurrentClass().addMethods(method);
                 match(TokenTypes.id_obj);
                 argumentosFormales();
                 bloqueMetodo();
             }
             else {
-                throw new SyntacticException(lookahead, "Se esperaba 'str', 'bool', " +
-                        "'int, 'double, 'array', 'void o identificador. Se encontró: " + lookahead.getName());
+                throw new SyntacticException(lookahead, "Se " +
+                        "esperaba 'str', 'bool', " +
+                        "'int, 'double, 'array', 'void " +
+                        "o identificador. Se encontró: " + lookahead.getName());
             }
         }
     }
@@ -813,6 +835,11 @@ public class SyntacticAnalyzer {
     public void constructor() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.dot) {
             match(TokenTypes.dot);
+            Type type = new Type(SymbolTable.getCurrentClass()
+                    .getToken(), "class");
+            Constructor constructor = new Constructor(type);
+            SymbolTable.setCurrentMethod(constructor);
+            SymbolTable.getCurrentClass().setConstructor(constructor);
             argumentosFormales();
             bloqueMetodo();
         }
