@@ -8,7 +8,9 @@ import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 public class Type {
 
     private String name;
+    private Type arrType;
     private Token token;
+
 
     /**
      * Constructor de Type
@@ -44,6 +46,14 @@ public class Type {
                 break;
         }
         this.token = token;
+    }
+
+    public void setArrType(Type arrType) {
+        this.arrType = arrType;
+    }
+
+    public Type getArrType() {
+        return arrType;
     }
 
     public String getName() {
