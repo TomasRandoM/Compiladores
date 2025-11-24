@@ -102,7 +102,12 @@ public class Class {
         this.implInitialized = implInitialized;
     }
 
-    public void setConstructor(Constructor constructor) {
-        this.constructor = constructor;
+    public void setConstructor(Constructor constructor) throws SemanticException {
+        if (this.constructor == null) {
+            this.constructor = constructor;
+        }
+        else {
+            throw new SemanticException(constructor.getToken(), "Una clase no puede tener más de un constructor");
+        }
     }
 }
