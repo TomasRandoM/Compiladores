@@ -832,12 +832,13 @@ public class SyntacticAnalyzer {
      * @throws SyntacticException Excepción ocasionada por un error sintáctico
      * @author Paulina Suden y Tomás Rando
      */
-    public void constructor() throws SyntacticException, LexicalException, ReaderException {
+    public void constructor() throws SyntacticException, LexicalException, ReaderException, SemanticException {
         if (lookahead.getName() == TokenTypes.dot) {
+            Token auxlookahead = lookahead;
             match(TokenTypes.dot);
             Type type = new Type(SymbolTable.getCurrentClass()
                     .getToken(), "class");
-            Constructor constructor = new Constructor(type);
+            Constructor constructor = new Constructor(type, auxlookahead);
             SymbolTable.setCurrentMethod(constructor);
             SymbolTable.getCurrentClass().setConstructor(constructor);
             argumentosFormales();
