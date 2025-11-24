@@ -861,10 +861,11 @@ public class SyntacticAnalyzer {
      */
     public void constructor() throws SyntacticException, LexicalException, ReaderException, SemanticException {
         if (lookahead.getName() == TokenTypes.dot) {
+            Token auxlookahead = lookahead;
             match(TokenTypes.dot);
             Type type = new Type(SymbolTable.getCurrentClass()
                     .getToken(), "class");
-            Constructor constructor = new Constructor(type);
+            Constructor constructor = new Constructor(type, auxlookahead);
             SymbolTable.setCurrentMethod(constructor);
             SymbolTable.getCurrentClass().setConstructor(constructor);
             argumentosFormales();
