@@ -117,6 +117,12 @@ public class SymbolTable {
         SymbolTable.currentMethod = currentMethod;
     }
 
+    /**
+     * Llama y encadena los chequeos de declaraciones. Los chequeos podrian haber sido
+     * incluidos todos en el mismo metodo, pero se separaron para una mayor
+     * claridad
+     * @throws SemanticException Errores de declaraciones
+     */
     public static void checkDeclarations() throws SemanticException {
         checkCircularInheritanceAndCorrectClassDeclaration();
         checkRedefinedMethodsAndInheritedAttributes();
@@ -124,15 +130,21 @@ public class SymbolTable {
 
     /**
      * Chequea que no exista herencia circular y que
-     * las clases de las cuales otras heredan esten correctamente declaradas
+     * las clases de las cuales otras heredan esten correctamente declaradas. Aprovechando que
+     * se recorren todas las clases, tambien se verifica que estas posean un constructor definido
      * @author Tomas Rando
-     * @throws SemanticException Herencia circular o clase ancestra no declarada
+     * @throws SemanticException Herencia circular, clase ancestra no declarada o constructor no definido
      */
     private static void checkCircularInheritanceAndCorrectClassDeclaration() throws SemanticException {
         String parent;
         Class auxClass;
         Class lastClass;
         for (Class class1 : classes.values()) {
+            if (class1.getConstructor() == null) {
+                throw new SemanticException(class1.getToken(), "La " +
+                        "clase: " + class1.getName() +
+                        " no posee un constructor definido.");
+            }
             parent = class1.getParentClass();
             lastClass = class1;
             while (parent != null) {
