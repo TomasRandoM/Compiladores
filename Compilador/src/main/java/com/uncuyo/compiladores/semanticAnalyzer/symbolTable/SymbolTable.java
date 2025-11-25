@@ -33,6 +33,18 @@ public class SymbolTable {
      * las variables y demas a la hora de ir conformando la tabla de simbolos
      */
     private static Method currentMethod;
+    
+    public static void resetSymbolTable() {
+        setCurrentClass(null);
+        setStartMethodStored(null);
+        setCurrentMethod(null);
+        Map<String, Class> classes1 = new HashMap<>();
+        setClasses(classes1);
+    }
+    
+    public static void setClasses(Map<String, Class> classes2) {
+        classes = classes2;
+    }
 
     /**
      * Agrega una clase a la tabla de símbolos.
@@ -48,6 +60,7 @@ public class SymbolTable {
                             "La clase '" + c.getName() + "' ya fue declarada."
                     );
                 }
+                c1.setClassInitialized(true);
             }
             else {
                 if (c1.isImplInitialized()) {
@@ -56,8 +69,16 @@ public class SymbolTable {
                             "La impl de la clase '" + c.getName() + "' ya fue declarada."
                     );
                 }
+                c1.setImplInitialized(true);
             }
             return c1;
+        }
+
+        if (option.equals("class")) {
+            c.setClassInitialized(true);
+        }
+        else {
+            c.setImplInitialized(true);
         }
         classes.put(c.getName(), c);
         return c;
@@ -78,6 +99,9 @@ public class SymbolTable {
         return classes.containsKey(name);
     }
 
+    public static void setStartMethodStored(Method start) {
+        startMethodStored = start;
+    }
     /**
      * Devuelve todas las clases
      */
@@ -142,38 +166,48 @@ public class SymbolTable {
         Class auxClass;
         Class lastClass;
         for (Class class1 : classes.values()) {
-            if (class1.getConstructor() == null) {
-                throw new SemanticException(class1.getToken(), "La " +
-                        "clase: " + class1.getName() +
-                        " no posee un constructor definido.");
-            }
-            parent = class1.getParentClass();
-            lastClass = class1;
-            if (parent != null) {
-                if (parent.equals("Array") ||
-                        parent.equals("Int") ||
-                        parent.equals("Str") ||
-                        parent.equals("Bool") ||
-                        parent.equals("Double")
-                ) {
-                    throw new SemanticException(class1.getToken(), "La clase: " +
-                            class1.getName() + " hereda de la clase: " + parent);
+            if (!checkPredefinedClasses(class1.getName())) {
+                if (class1.getConstructor() == null) {
+                    throw new SemanticException(class1.getToken(), "La " +
+                            "clase: " + class1.getName() +
+                            " no posee un constructor definido.");
                 }
-            }
+                parent = class1.getParentClass();
+                lastClass = class1;
+                if (!class1.isClassInitialized()) {
+                    throw new SemanticException(class1.getToken(), "La declaración " +
+                            "de la clase " + class1.getName() + " no está definida.");
+                }
+                if (!class1.isImplInitialized()) {
+                    throw new SemanticException(class1.getToken(), "La implementación " +
+                            "de la clase " + class1.getName() + " no está definida.");
+                }
+                if (parent != null) {
+                    if (parent.equals("Array") ||
+                            parent.equals("Int") ||
+                            parent.equals("Str") ||
+                            parent.equals("Bool") ||
+                            parent.equals("Double")
+                    ) {
+                        throw new SemanticException(class1.getToken(), "La clase: " +
+                                class1.getName() + " hereda de la clase: " + parent);
+                    }
+                }
 
-            while (parent != null) {
-                if (parent.equals(class1.getName())) {
-                    throw new SemanticException(class1.getToken(), "Herencia circular " +
-                            "encontrada en la clase: " + class1.getName());
+                while (parent != null) {
+                    if (parent.equals(class1.getName())) {
+                        throw new SemanticException(class1.getToken(), "Herencia circular " +
+                                "encontrada en la clase: " + class1.getName());
+                    }
+                    auxClass = getClass(parent);
+                    if (auxClass == null) {
+                        throw new SemanticException(lastClass.getToken(), "La clase: " +
+                                lastClass.getName() + " hereda " +
+                                "de una clase que no fue declarada.");
+                    }
+                    lastClass = auxClass;
+                    parent = auxClass.getParentClass();
                 }
-                auxClass = getClass(parent);
-                if (auxClass == null) {
-                    throw new SemanticException(lastClass.getToken(), "La clase: " +
-                            lastClass.getName() + " hereda " +
-                            "de una clase que no fue declarada.");
-                }
-                lastClass = auxClass;
-                parent = auxClass.getParentClass();
             }
         }
     }
@@ -191,41 +225,50 @@ public class SymbolTable {
         Class parentClass;
         Map<String, Attribute> attributes;
         for (Class class1 : classes.values()) {
-            methods = class1.getMethods();
-            attributes = class1.getAttributes();
-            parent = class1.getParentClass();
-            parentClass = getClass(parent);
-            while (parent != null) {
-                for  (Method method : parentClass.getMethods().values()) {
-                    if (methods.containsKey(method.getName())) {
-                        checkRedefinedMethod(class1, methods.get(method.getName()), method);
-                    }
-                }
-
-                for (Attribute attribute : parentClass.getAttributes().values()) {
-                    if (attributes.containsKey(attribute.getName())) {
-                        Attribute a = attributes.get(attribute.getName());
-                        throw new SemanticException(a.getToken(),
-                                "La clase: " + class1 + " posee el atributo: " +
-                                        a.getName() + " que ya fue definido en una " +
-                                        "clase ancestro.");
-                    }
-                }
-                parent = parentClass.getParentClass();
+            if (!checkPredefinedClasses(class1.getName())) {
+                methods = class1.getMethods();
+                attributes = class1.getAttributes();
+                parent = class1.getParentClass();
                 parentClass = getClass(parent);
+                while (parent != null) {
+                    for (Method method : parentClass.getMethods().values()) {
+                        if (methods.containsKey(method.getName())) {
+                            checkRedefinedMethod(class1, methods.get(method.getName()), method);
+                        }
+                    }
+
+                    for (Attribute attribute : parentClass.getAttributes().values()) {
+                        if (attributes.containsKey(attribute.getName())) {
+                            Attribute a = attributes.get(attribute.getName());
+                            throw new SemanticException(a.getToken(),
+                                    "La clase: " + class1.getName() + " posee el atributo: " +
+                                            a.getName() + " que ya fue definido en una " +
+                                            "clase ancestro.");
+                        }
+                    }
+                    parent = parentClass.getParentClass();
+                    parentClass = getClass(parent);
+                }
             }
         }
     }
 
     /**
      * Chequea que dos metodos tengan la misma cantidad de parametros y del mismo tipo. Ademas, verifica
-     * que el retorno de los metodos sea el mismo.
+     * que el retorno de los metodos sea el mismo y que el método no sea static.
      * @param class1 Class que posee el metodo que sobreescribe al ancestro
      * @param baseMethod Metodo que sobreescribe al ancestro
      * @param parentMethod Metodo que es sobreescrito
      * @throws SemanticException El metodo se encuentra mal redefinido
      */
     private static void checkRedefinedMethod(Class class1, Method baseMethod, Method parentMethod) throws SemanticException {
+
+        if (parentMethod.isStaticMethod()) {
+            throw new SemanticException(baseMethod.getToken(),
+                    "La clase " + class1.getName() +
+                            " intenta redefinir el método de clase (static) " +
+                            parentMethod.getName() + ", lo cual no está permitido.");
+        }
 
         if (!baseMethod.getType().getName().equals(parentMethod.getType().getName())) {
             throw new SemanticException(baseMethod.getToken(),
@@ -260,10 +303,13 @@ public class SymbolTable {
      */
     private static void checkTypes() throws SemanticException {
         for (Class class1 : classes.values()) {
-            checkAttributes(class1.getAttributes());
-            checkMethods(class1.getMethods());
-            checkVariables(startMethodStored.getVariables());
+            if (!checkPredefinedClasses(class1.getName())) {
+                checkAttributes(class1.getAttributes());
+                checkMethods(class1.getMethods());
+                checkConstructor(class1.getConstructor());
+            }
         }
+        checkVariables(startMethodStored.getVariables());
     }
 
     /**
@@ -295,7 +341,34 @@ public class SymbolTable {
                         "El tipo de retorno del método: " + method.getName() +
                                 " no se encuentra declarado.");
             }
+            checkParameters(method.getParameters());
             checkVariables(method.getVariables());
+        }
+    }
+
+    /**
+     * Verifica los parametros y las variables del constructor
+     * @param constructor Constructor
+     * @throws SemanticException
+     */
+    private static void checkConstructor(Constructor constructor) throws SemanticException {
+        checkParameters(constructor.getParameters());
+        checkVariables(constructor.getVariables());
+    }
+
+    /**
+     * Verifica que los tipos de los parametros sean correctos
+     * @param parameters Map<String, Parameter>
+     * @throws SemanticException Si el tipo de algun parametro no se encuentra declarado
+     */
+    private static void checkParameters(Map<String, Parameter> parameters) throws SemanticException {
+        for (Parameter parameter : parameters.values()) {
+            if (getClass(parameter.getType().getName()) == null) {
+                throw new SemanticException(parameter.getType().getToken(),
+                        "El tipo " + parameter.getType().getName() +
+                                " del paramétro " + parameter.getName() +
+                                " no se encuentra definido.");
+            }
         }
     }
 
@@ -312,5 +385,33 @@ public class SymbolTable {
                                 " no se encuentra declarado.");
             }
         }
+    }
+
+    /**
+     * Agrega las clases predefinidas a la SymbolTable
+     */
+    public static void agregarClasesPredefinidas() {
+        Class intClass = new Class(null, "Int");
+        Class boolClass = new Class(null, "Bool");
+        Class strClass = new Class(null, "Str");
+        Class doubleClass = new Class(null, "Double");
+        Class objectClass = new Class(null, "Object");
+        Class IOClass = new Class(null, "IO");
+
+        classes.put("Int", intClass);
+        classes.put("Boolean",boolClass );
+        classes.put("Str", strClass);
+        classes.put("Double", doubleClass);
+        classes.put("Object", objectClass);
+        classes.put("IO", IOClass);
+    }
+
+    private static boolean checkPredefinedClasses(String name) {
+        return (name.equals("Int") ||
+                name.equals("Bool") ||
+                name.equals("Str") ||
+                name.equals("Double") ||
+                name.equals("Object") ||
+                name.equals("IO"));
     }
 }

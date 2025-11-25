@@ -32,11 +32,13 @@ public class SyntacticAnalyzer {
      */
     public void program() throws LexicalException, ReaderException, SyntacticException, SemanticException {
         lookahead = lexicalAnalyzer.nextToken();
+        SymbolTable.agregarClasesPredefinidas();
         listaDefiniciones();
         start();
         match(TokenTypes.end_of_file);
         System.out.println("CORRECTO: ANALISIS SINTÁCTICO");
         SymbolTable.checkDeclarations();
+
     }
 
     /**
@@ -49,6 +51,7 @@ public class SyntacticAnalyzer {
     public void start() throws LexicalException, SyntacticException, ReaderException, SemanticException {
         Method method = new Method(lookahead, null, false);
         SymbolTable.setCurrentMethod(method);
+        SymbolTable.setStartMethodStored(method);
         match(TokenTypes.pstart);
         bloqueMetodo();
     }

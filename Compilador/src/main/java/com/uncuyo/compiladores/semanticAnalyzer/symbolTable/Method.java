@@ -114,6 +114,13 @@ public class Method {
      * @throws SemanticException Excepcion si la variable ya ha sido definida en el ambito
      */
     public void addVariable(Variable variable) throws SemanticException {
+        if (parameters.containsKey(variable.getName())) {
+            throw new SemanticException(variable.getToken(),
+                    "La variable " + variable.getName() + " " +
+                            "posee el mismo identificador que un " +
+                            "parámetro del método");
+        }
+
         if (variables.containsKey(variable.getName())) {
             throw new SemanticException(variable.getToken(),
                     "La variable " + variable.getName() + " " +

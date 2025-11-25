@@ -27,6 +27,7 @@ public class SemanticSymbolTableTest {
      */
     @Test
     public void testImplRedefinitionIncorrect() {
+        SymbolTable.resetSymbolTable();
         assertThrows(SemanticException.class, () -> {
             new SyntacticAnalyzer("tests/semanticoDeclaraciones/failing/implRedefinition.s").program();
         });
@@ -38,6 +39,7 @@ public class SemanticSymbolTableTest {
      */
     @Test
     public void testUndefinedAncestorIncorrect() {
+        SymbolTable.resetSymbolTable();
         assertThrows(SemanticException.class, () -> {
             new SyntacticAnalyzer("tests/semanticoDeclaraciones/failing/undefinedAncestor.s").program();
         });
@@ -49,6 +51,7 @@ public class SemanticSymbolTableTest {
      */
     @Test
     public void testUndefinedMethodTypeIncorrect() {
+        SymbolTable.resetSymbolTable();
         assertThrows(SemanticException.class, () -> {
             new SyntacticAnalyzer("tests/semanticoDeclaraciones/failing/undefinedMethodType.s").program();
         });
@@ -60,6 +63,7 @@ public class SemanticSymbolTableTest {
      */
     @Test
     public void testUndefinedVariableTypeIncorrect() {
+        SymbolTable.resetSymbolTable();
         assertThrows(SemanticException.class, () -> {
             new SyntacticAnalyzer("tests/semanticoDeclaraciones/failing/undefinedVariableType.s").program();
         });
@@ -71,6 +75,7 @@ public class SemanticSymbolTableTest {
      */
     @Test
     public void testInheritanceCorrect() {
+        SymbolTable.resetSymbolTable();
         assertDoesNotThrow(() -> {
             new SyntacticAnalyzer("tests/semanticoDeclaraciones/passing/inheritance.s").program();
         });
