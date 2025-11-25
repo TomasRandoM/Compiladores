@@ -1,10 +1,11 @@
-class A { }
+//Correcto
+class C { }
 
-        impl A {
+        impl C {
             .(Int x) { }
         }
 
-        class B : A { }
+        class B : C { }
 
         impl B {
             .(Int x) { }

@@ -1,3 +1,4 @@
+//Correcto
 class X : IO {
     Int v;
 }

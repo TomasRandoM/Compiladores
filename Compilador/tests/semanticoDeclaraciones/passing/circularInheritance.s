@@ -1,3 +1,4 @@
+//Correcto
 class A {
     Int x;
 }
