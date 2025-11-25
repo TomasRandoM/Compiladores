@@ -22,6 +22,11 @@ public class Class {
         this.token = token;
     }
 
+    public Class(Token token, String name) {
+        this.name = name;
+        this.token = token;
+    }
+
     public String getName() {
         return name;
     }
