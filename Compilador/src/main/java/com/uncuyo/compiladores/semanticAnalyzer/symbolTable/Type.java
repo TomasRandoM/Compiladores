@@ -41,6 +41,9 @@ public class Type {
             case "Double":
                 name = "Double";
                 break;
+            case "Array":
+                name = "Array";
+                break;
             default:
                 System.out.println("Error al llamar a Type");
                 break;
