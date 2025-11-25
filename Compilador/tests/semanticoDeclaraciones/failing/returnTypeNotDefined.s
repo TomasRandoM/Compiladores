@@ -1,4 +1,4 @@
-//Incorrecto. B redefine getX() de A pero con diferente tipo de parámetros
+//Incorrecto. El tipo de retorno de getX() (C), no está definido
 class A {
     Int x;}
 
@@ -6,16 +6,14 @@ impl A {
     .() {
         x = 0;
     }
-    fn Int getX(Int x) {
-        ret x;
-    }}
+}
 
 class B : A {
 }
 
 impl B {
     .() {}
-    fn Int getX(Double x) {
+    fn C getX() {
         ret 1;}}
 
 start {
@@ -23,6 +21,5 @@ start {
     B b;
     a = new A();
     b = new B();
-    (a.getX());
     (b.getX());
 }

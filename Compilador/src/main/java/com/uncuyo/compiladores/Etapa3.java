@@ -4,6 +4,7 @@ import com.uncuyo.compiladores.exceptions.LexicalException;
 import com.uncuyo.compiladores.exceptions.ReaderException;
 import com.uncuyo.compiladores.exceptions.SyntacticException;
 import com.uncuyo.compiladores.exceptions.WriterException;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.SymbolTable;
 import com.uncuyo.compiladores.syntacticAnalyzer.SyntacticAnalyzer;
 
 /**

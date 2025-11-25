@@ -1,12 +1,16 @@
-//Incorrecto. B redefine getX() de A pero con diferente tipo de parámetros
+//Incorrecto. El método getX() de A posee dos declaraciones de variable con el mismo nombre
 class A {
-    Int x;}
+    Int x;
+    Int c;
+    }
 
 impl A {
     .() {
         x = 0;
     }
-    fn Int getX(Int x) {
+    fn Int getX() {
+        Double y;
+        Int y;
         ret x;
     }}
 
@@ -15,7 +19,7 @@ class B : A {
 
 impl B {
     .() {}
-    fn Int getX(Double x) {
+    fn Int getX() {
         ret 1;}}
 
 start {
