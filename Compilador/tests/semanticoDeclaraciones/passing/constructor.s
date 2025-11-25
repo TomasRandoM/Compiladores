@@ -1,3 +1,4 @@
+ //Correcto
  class A { }
  impl A {
     .(Int x, Str y) {

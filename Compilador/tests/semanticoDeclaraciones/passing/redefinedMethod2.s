@@ -1,18 +1,19 @@
-class A { }
+//Correcto
+class C { }
 
-impl A {
+impl C {
     .() {}
     fn Int f(Int a, Str b) { ret a; }
 }
 
-class B : A { }
+class D : C { }
 
-impl B {
+impl D {
     .() {}
     fn Int f(Int a, Str b) { ret a; }
 }
 
 start {
-    B b;
-    b = new B();
+    D b;
+    b = new D();
 }
