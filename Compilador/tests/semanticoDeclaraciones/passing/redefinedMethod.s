@@ -1,28 +1,26 @@
-//Correcto. B redefine getX(Int x) de A
-class A {
-    Int x;}
+//correcto: se redefine el metodo f().
+ class A {
+ }
 
-impl A {
-    .() {
-        x = 0;
-    }
-    fn Int getX(Int x) {
-        ret x;
-    }}
+ impl A {
+     .() {}
+     fn Int f(Int a, Str b)
+        { ret 1; }
+ }
 
-class B : A {
-}
+ class B : A {}
 
-impl B {
-    .() {}
-    fn Int getX(Int x) {
-        ret 1;}}
+ impl B {
+     .() {}
+     fn Int f(Int j, Str m) {
+         Int y;
+         y = 3;
+         ret 1; }
+     }
 
 start {
     A a;
     B b;
     a = new A();
     b = new B();
-    (a.getX());
-    (b.getX());
 }

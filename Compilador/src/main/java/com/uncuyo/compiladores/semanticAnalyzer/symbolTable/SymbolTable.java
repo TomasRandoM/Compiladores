@@ -215,7 +215,8 @@ public class SymbolTable {
                     if (auxClass == null) {
                         throw new SemanticException(lastClass.getToken(), "La clase: " +
                                 lastClass.getName() + " hereda " +
-                                "de una clase que no fue declarada.");
+                                "de una clase '" + parent +
+                                "' que no fue declarada.");
                     }
                     lastClass = auxClass;
                     parent = auxClass.getParentClass();
@@ -343,7 +344,8 @@ public class SymbolTable {
         for (Attribute attribute : attributes.values()) {
             if (getClass(attribute.getType().getName()) == null) {
                 throw new SemanticException(attribute.getType().getToken(),
-                        "El tipo del atributo: " + attribute.getName() +
+                        "El tipo '" + attribute.getType().getName() +
+                                "' del atributo " + attribute.getName() +
                                 " no se encuentra declarado.");
             }
         }
@@ -360,7 +362,8 @@ public class SymbolTable {
                     (!method.getType().getName().equals("void"))
             ) {
                 throw new SemanticException(method.getType().getToken(),
-                        "El tipo de retorno del método: " + method.getName() +
+                        "El tipo de retorno '" + method.getType().getName() +
+                                "' del método " + method.getName() +
                                 " no se encuentra declarado.");
             }
             checkParameters(method.getParameters());
@@ -403,7 +406,8 @@ public class SymbolTable {
         for (Variable variable : variables.values()) {
             if (getClass(variable.getType().getName()) == null) {
                 throw new SemanticException(variable.getType().getToken(),
-                        "El tipo de la variable: " + variable.getName() +
+                        "El tipo '" + variable.getType().getName() +
+                                "' de la variable " + variable.getName() +
                                 " no se encuentra declarado.");
             }
         }
@@ -421,7 +425,7 @@ public class SymbolTable {
         Class IOClass = new Class(null, "IO");
 
         classes.put("Int", intClass);
-        classes.put("Boolean",boolClass );
+        classes.put("Bool",boolClass );
         classes.put("Str", strClass);
         classes.put("Double", doubleClass);
         classes.put("Object", objectClass);
