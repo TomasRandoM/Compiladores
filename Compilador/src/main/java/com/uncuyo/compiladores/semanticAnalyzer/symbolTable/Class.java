@@ -16,6 +16,8 @@ public class Class {
     private Constructor constructor;
     private boolean implInitialized;
     private boolean classInitialized;
+    private Token implToken;
+    private Token classToken;
 
     public Class(Token token) {
         this.name = token.getLexeme();
@@ -25,6 +27,21 @@ public class Class {
     public Class(Token token, String name) {
         this.name = name;
         this.token = token;
+    }
+
+    public Token getImplToken() {
+        return implToken;
+    }
+    public void setImplToken(Token implToken) {
+        this.implToken = implToken;
+    }
+
+    public Token getClassToken() {
+        return classToken;
+    }
+
+    public void setClassToken(Token classToken) {
+        this.classToken = classToken;
     }
 
     public String getName() {

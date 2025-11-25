@@ -58,6 +58,7 @@ public class SymbolTable {
                     );
                 }
                 c1.setClassInitialized(true);
+                c1.setClassToken(c.getToken());
             }
             else {
                 if (c1.isImplInitialized()) {
@@ -67,15 +68,18 @@ public class SymbolTable {
                     );
                 }
                 c1.setImplInitialized(true);
+                c1.setImplToken(c.getToken());
             }
             return c1;
         }
 
         if (option.equals("class")) {
             c.setClassInitialized(true);
+            c.setClassToken(c.getToken());
         }
         else {
             c.setImplInitialized(true);
+            c.setImplToken(c.getToken());
         }
         classes.put(c.getName(), c);
         return c;
@@ -162,7 +166,7 @@ public class SymbolTable {
         for (Class class1 : classes.values()) {
             if (!checkPredefinedClasses(class1.getName())) {
                 if (class1.getConstructor() == null) {
-                    throw new SemanticException(class1.getToken(), "La " +
+                    throw new SemanticException(class1.getImplToken(), "La " +
                             "clase: " + class1.getName() +
                             " no posee un constructor definido.");
                 }
