@@ -7,11 +7,11 @@ import com.uncuyo.compiladores.exceptions.WriterException;
 import com.uncuyo.compiladores.syntacticAnalyzer.SyntacticAnalyzer;
 
 /**
- * Clase que representa el ejecutor de la etapa 2
+ * Clase que representa el ejecutor de la etapa 3
  *
  * @author Tomás Rando
  */
-public class Etapa2 {
+public class Etapa3 {
     public static void main(String[] args) throws ReaderException, LexicalException, WriterException, SyntacticException {
 
         //Chequeo de recibimiento de parámetros
