@@ -126,12 +126,14 @@ public class SymbolTable {
     public static void checkDeclarations() throws SemanticException {
         checkCircularInheritanceAndCorrectClassDeclaration();
         checkRedefinedMethodsAndInheritedAttributes();
+        checkTypes();
     }
 
     /**
      * Chequea que no exista herencia circular y que
      * las clases de las cuales otras heredan esten correctamente declaradas. Aprovechando que
-     * se recorren todas las clases, tambien se verifica que estas posean un constructor definido
+     * se recorren todas las clases, tambien se verifica que estas posean un constructor definido y que no
+     * hereden de alguna clase base prohibida (Array, Int, Str, Bool, Double)
      * @author Tomas Rando
      * @throws SemanticException Herencia circular, clase ancestra no declarada o constructor no definido
      */
@@ -147,6 +149,18 @@ public class SymbolTable {
             }
             parent = class1.getParentClass();
             lastClass = class1;
+            if (parent != null) {
+                if (parent.equals("Array") ||
+                        parent.equals("Int") ||
+                        parent.equals("Str") ||
+                        parent.equals("Bool") ||
+                        parent.equals("Double")
+                ) {
+                    throw new SemanticException(class1.getToken(), "La clase: " +
+                            class1.getName() + " hereda de la clase: " + parent);
+                }
+            }
+
             while (parent != null) {
                 if (parent.equals(class1.getName())) {
                     throw new SemanticException(class1.getToken(), "Herencia circular " +
@@ -211,7 +225,7 @@ public class SymbolTable {
      * @param parentMethod Metodo que es sobreescrito
      * @throws SemanticException El metodo se encuentra mal redefinido
      */
-    public static void checkRedefinedMethod(Class class1, Method baseMethod, Method parentMethod) throws SemanticException {
+    private static void checkRedefinedMethod(Class class1, Method baseMethod, Method parentMethod) throws SemanticException {
 
         if (!baseMethod.getType().getName().equals(parentMethod.getType().getName())) {
             throw new SemanticException(baseMethod.getToken(),
@@ -235,6 +249,67 @@ public class SymbolTable {
                         class1.getName() + " redefine " +
                         "el método: " + baseMethod.getName() + " incorrectamente. " +
                         "Los parámetros son de distinto tipo");
+            }
+        }
+    }
+
+    /**
+     * Para cada clase verifica los tipos de sus atributos y sus metodos. Maneja el caso especial
+     * del start individualmente debido a que no se encuentra dentro de una clase.
+     * @throws SemanticException
+     */
+    private static void checkTypes() throws SemanticException {
+        for (Class class1 : classes.values()) {
+            checkAttributes(class1.getAttributes());
+            checkMethods(class1.getMethods());
+            checkVariables(startMethodStored.getVariables());
+        }
+    }
+
+    /**
+     * Verifica si los tipos de las variables de instancia se encuentran declarados
+     * @param attributes Map<String, Attribute>
+     * @throws SemanticException Si el tipo del atributo no se encuentra declarado
+     */
+    private static void checkAttributes(Map<String,  Attribute> attributes) throws SemanticException {
+        for (Attribute attribute : attributes.values()) {
+            if (getClass(attribute.getType().getName()) == null) {
+                throw new SemanticException(attribute.getType().getToken(),
+                        "El tipo del atributo: " + attribute.getName() +
+                                " no se encuentra declarado.");
+            }
+        }
+    }
+
+    /**
+     * Verifica que los tipos de los retornos esten declarados o sean void.
+     * @param methods Map<String, Method>
+     * @throws SemanticException Si el tipo de retorno no se encuentra declarado
+     */
+    private static void checkMethods(Map<String, Method> methods) throws SemanticException {
+        for (Method method : methods.values()) {
+            if ((getClass(method.getType().getName()) == null) &&
+                    (!method.getType().getName().equals("void"))
+            ) {
+                throw new SemanticException(method.getType().getToken(),
+                        "El tipo de retorno del método: " + method.getName() +
+                                " no se encuentra declarado.");
+            }
+            checkVariables(method.getVariables());
+        }
+    }
+
+    /**
+     * Verifica que los tipos de las variables locales esten declarados
+     * @param variables Map<String, Variable>
+     * @throws SemanticException Si el tipo de la variable no se encuentra declarado
+     */
+    private static void checkVariables(Map<String, Variable> variables) throws SemanticException {
+        for (Variable variable : variables.values()) {
+            if (getClass(variable.getType().getName()) == null) {
+                throw new SemanticException(variable.getType().getToken(),
+                        "El tipo de la variable: " + variable.getName() +
+                                " no se encuentra declarado.");
             }
         }
     }

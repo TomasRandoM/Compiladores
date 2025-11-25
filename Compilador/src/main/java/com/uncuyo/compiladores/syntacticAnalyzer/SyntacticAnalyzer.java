@@ -36,6 +36,7 @@ public class SyntacticAnalyzer {
         start();
         match(TokenTypes.end_of_file);
         System.out.println("CORRECTO: ANALISIS SINTÁCTICO");
+        SymbolTable.checkDeclarations();
     }
 
     /**
@@ -591,7 +592,7 @@ public class SyntacticAnalyzer {
     public void class1() throws LexicalException, SyntacticException, ReaderException, SemanticException {
         match(TokenTypes.pclass);
         Class class1 = new Class(lookahead);
-        SymbolTable.addClass(class1, "class");
+        class1 = SymbolTable.addClass(class1, "class");
         SymbolTable.setCurrentClass(class1);
         matchIdClassSimilars();
         class2();
@@ -607,7 +608,7 @@ public class SyntacticAnalyzer {
     public void impl() throws LexicalException, SyntacticException, ReaderException, SemanticException {
         match(TokenTypes.pimpl);
         Class class1 = new Class(lookahead);
-        SymbolTable.addClass(class1, "impl");
+        class1 = SymbolTable.addClass(class1, "impl");
         SymbolTable.setCurrentClass(class1);
         matchIdClassSimilars();
         match(TokenTypes.braces1);
@@ -2355,17 +2356,17 @@ public class SyntacticAnalyzer {
         Token token = lookahead;
         if (lookahead.getName() == TokenTypes.id_class) {
             match(TokenTypes.id_class);
-            return new Type(token, token.getLexeme());
+            return new Type(token,"class");
         }
         else {
             if (lookahead.getName() == TokenTypes.pio) {
                 match(TokenTypes.pio);
-                return new Type(token,"IO");
+                return new Type(token,"class");
             }
             else {
                 if (lookahead.getName() == TokenTypes.pobject) {
                     match(TokenTypes.pobject);
-                    return new Type(token, "Object");
+                    return new Type(token, "class");
                 }
                 else {
                     throw new SyntacticException(lookahead, "Se esperaba " +
