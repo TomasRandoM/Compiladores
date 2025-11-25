@@ -241,7 +241,8 @@ public class SymbolTable {
                 while (parent != null) {
                     for (Method method : parentClass.getMethods().values()) {
                         if (methods.containsKey(method.getName())) {
-                            checkRedefinedMethod(class1, methods.get(method.getName()), method);
+
+                            checkRedefinedMethod(class1, methods.get(method.getName()), method, parentClass);
                         }
                     }
 
@@ -269,13 +270,22 @@ public class SymbolTable {
      * @param parentMethod Metodo que es sobreescrito
      * @throws SemanticException El metodo se encuentra mal redefinido
      */
-    private static void checkRedefinedMethod(Class class1, Method baseMethod, Method parentMethod) throws SemanticException {
+    private static void checkRedefinedMethod(Class class1, Method baseMethod, Method parentMethod, Class class2) throws SemanticException {
 
         if (parentMethod.isStaticMethod()) {
             throw new SemanticException(baseMethod.getToken(),
-                    "La clase " + class1.getName() +
+                    "La clase " + class2.getName() +
                             " intenta redefinir el método de clase (static) " +
-                            parentMethod.getName() + ", lo cual no está permitido.");
+                            parentMethod.getName() + " de la clase " + class1.getName()
+                    + ", lo cual no está permitido.");
+        }
+
+        if (baseMethod.isStaticMethod()) {
+            throw new SemanticException(baseMethod.getToken(),
+                    "La clase " + class2.getName() +
+                            " intenta redefinir el método de clase " +
+                            parentMethod.getName() + " de la clase " + class1.getName()
+                            + " a un método estático, lo cual no está permitido.");
         }
 
         if (!baseMethod.getType().getName().equals(parentMethod.getType().getName())) {
