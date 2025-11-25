@@ -36,8 +36,9 @@ public class SyntacticAnalyzer {
         listaDefiniciones();
         start();
         match(TokenTypes.end_of_file);
-        System.out.println("CORRECTO: ANALISIS SINTÁCTICO");
+        System.out.println("CORRECTO: ANÁLISIS SINTÁCTICO");
         SymbolTable.checkDeclarations();
+        System.out.println("CORRECTO: ANÁLISIS SEMÁNTICO");
 
     }
 
