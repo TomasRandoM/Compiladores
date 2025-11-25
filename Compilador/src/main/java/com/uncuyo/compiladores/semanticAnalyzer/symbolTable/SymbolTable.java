@@ -165,11 +165,6 @@ public class SymbolTable {
     private static void checkCircularInheritanceAndCorrectClassDeclaration() throws SemanticException {
         for (Class class1 : classes.values()) {
             if (!checkPredefinedClasses(class1.getName())) {
-                if (class1.getConstructor() == null) {
-                    throw new SemanticException(class1.getImplToken(), "La " +
-                            "clase: " + class1.getName() +
-                            " no posee un constructor definido.");
-                }
                 if (!class1.isClassInitialized()) {
                     throw new SemanticException(class1.getToken(), "La declaración " +
                             "de la clase " + class1.getName() + " no está definida.");
@@ -178,7 +173,11 @@ public class SymbolTable {
                     throw new SemanticException(class1.getToken(), "La implementación " +
                             "de la clase " + class1.getName() + " no está definida.");
                 }
-
+                if (class1.getConstructor() == null) {
+                    throw new SemanticException(class1.getImplToken(), "La " +
+                            "clase: " + class1.getName() +
+                            " no posee un constructor definido.");
+                }
                 String parent = class1.getParentClass();
                 Class lastClass = class1;
 

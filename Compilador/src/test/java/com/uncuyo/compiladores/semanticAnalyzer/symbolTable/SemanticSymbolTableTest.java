@@ -86,10 +86,10 @@ public class SemanticSymbolTableTest {
      * @author Tomas Rando
      */
     @Test
-    public void testRedefinedMethodCorrect() {
+    public void testRedefinedMethod3Correct() {
         SymbolTable.resetSymbolTable();
         assertDoesNotThrow(() -> {
-            new SyntacticAnalyzer("tests/semanticoDeclaraciones/passing/redefinedMethod.s").program();
+            new SyntacticAnalyzer("tests/semanticoDeclaraciones/passing/redefinedMethod3.s").program();
         });
     }
 
@@ -98,10 +98,10 @@ public class SemanticSymbolTableTest {
      * @author Tomas Rando
      */
     @Test
-    public void testConstructorCorrect() {
+    public void testConstructor3Correct() {
         SymbolTable.resetSymbolTable();
         assertDoesNotThrow(() -> {
-            new SyntacticAnalyzer("tests/semanticoDeclaraciones/passing/constructor.s").program();
+            new SyntacticAnalyzer("tests/semanticoDeclaraciones/passing/constructor3.s").program();
         });
     }
 

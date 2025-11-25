@@ -1,4 +1,6 @@
-//Incorrecto. La clase A no posee class
+//Correcto. La clase A sí posee constructor
+class A {
+    Int x;}
 
 impl A {
     .() {
