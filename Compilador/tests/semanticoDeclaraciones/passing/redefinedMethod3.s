@@ -1,4 +1,4 @@
-//Incorrecto. B redefine getX() de A pero con diferente tipo de parámetros
+//Correcto. B redefine getX(Int x) de A
 class A {
     Int x;}
 
@@ -15,7 +15,7 @@ class B : A {
 
 impl B {
     .() {}
-    fn Int getX(Double x) {
+    fn Int getX(Int x) {
         ret 1;}}
 
 start {

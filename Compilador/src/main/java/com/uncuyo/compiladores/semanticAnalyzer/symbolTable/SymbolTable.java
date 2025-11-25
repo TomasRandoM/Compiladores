@@ -58,6 +58,7 @@ public class SymbolTable {
                     );
                 }
                 c1.setClassInitialized(true);
+                c1.setClassToken(c.getToken());
             }
             else {
                 if (c1.isImplInitialized()) {
@@ -67,15 +68,18 @@ public class SymbolTable {
                     );
                 }
                 c1.setImplInitialized(true);
+                c1.setImplToken(c.getToken());
             }
             return c1;
         }
 
         if (option.equals("class")) {
             c.setClassInitialized(true);
+            c.setClassToken(c.getToken());
         }
         else {
             c.setImplInitialized(true);
+            c.setImplToken(c.getToken());
         }
         classes.put(c.getName(), c);
         return c;
@@ -161,11 +165,6 @@ public class SymbolTable {
     private static void checkCircularInheritanceAndCorrectClassDeclaration() throws SemanticException {
         for (Class class1 : classes.values()) {
             if (!checkPredefinedClasses(class1.getName())) {
-                if (class1.getConstructor() == null) {
-                    throw new SemanticException(class1.getToken(), "La " +
-                            "clase: " + class1.getName() +
-                            " no posee un constructor definido.");
-                }
                 if (!class1.isClassInitialized()) {
                     throw new SemanticException(class1.getToken(), "La declaración " +
                             "de la clase " + class1.getName() + " no está definida.");
@@ -174,7 +173,11 @@ public class SymbolTable {
                     throw new SemanticException(class1.getToken(), "La implementación " +
                             "de la clase " + class1.getName() + " no está definida.");
                 }
-
+                if (class1.getConstructor() == null) {
+                    throw new SemanticException(class1.getImplToken(), "La " +
+                            "clase: " + class1.getName() +
+                            " no posee un constructor definido.");
+                }
                 String parent = class1.getParentClass();
                 Class lastClass = class1;
 
