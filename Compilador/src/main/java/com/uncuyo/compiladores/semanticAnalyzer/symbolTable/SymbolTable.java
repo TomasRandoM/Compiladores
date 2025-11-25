@@ -2,10 +2,7 @@ package com.uncuyo.compiladores.semanticAnalyzer.symbolTable;
 
 import com.uncuyo.compiladores.exceptions.SemanticException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Tabla de simbolos
@@ -162,9 +159,6 @@ public class SymbolTable {
      * @throws SemanticException Herencia circular, clase ancestra no declarada o constructor no definido
      */
     private static void checkCircularInheritanceAndCorrectClassDeclaration() throws SemanticException {
-        String parent;
-        Class auxClass;
-        Class lastClass;
         for (Class class1 : classes.values()) {
             if (!checkPredefinedClasses(class1.getName())) {
                 if (class1.getConstructor() == null) {
@@ -172,8 +166,6 @@ public class SymbolTable {
                             "clase: " + class1.getName() +
                             " no posee un constructor definido.");
                 }
-                parent = class1.getParentClass();
-                lastClass = class1;
                 if (!class1.isClassInitialized()) {
                     throw new SemanticException(class1.getToken(), "La declaración " +
                             "de la clase " + class1.getName() + " no está definida.");
@@ -182,6 +174,10 @@ public class SymbolTable {
                     throw new SemanticException(class1.getToken(), "La implementación " +
                             "de la clase " + class1.getName() + " no está definida.");
                 }
+
+                String parent = class1.getParentClass();
+                Class lastClass = class1;
+
                 if (parent != null) {
                     if (parent.equals("Array") ||
                             parent.equals("Int") ||
@@ -194,12 +190,24 @@ public class SymbolTable {
                     }
                 }
 
+                Set<String> visitedParents = new HashSet<>(); //guardamos los padres ya visitados
+
                 while (parent != null) {
+
+                    if (visitedParents.contains(parent)) {
+                        throw new SemanticException((class1.getToken()), "Herencia circular detectada. " +
+                                "Ciclo en: "+ parent);
+                    }
+
+                    visitedParents.add(parent);
+
                     if (parent.equals(class1.getName())) {
                         throw new SemanticException(class1.getToken(), "Herencia circular " +
                                 "encontrada en la clase: " + class1.getName());
                     }
-                    auxClass = getClass(parent);
+
+                    Class auxClass = getClass(parent);
+
                     if (auxClass == null) {
                         throw new SemanticException(lastClass.getToken(), "La clase: " +
                                 lastClass.getName() + " hereda " +
