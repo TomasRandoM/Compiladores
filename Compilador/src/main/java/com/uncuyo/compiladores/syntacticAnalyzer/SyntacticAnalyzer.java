@@ -1,9 +1,6 @@
 package com.uncuyo.compiladores.syntacticAnalyzer;
 
-import com.uncuyo.compiladores.exceptions.LexicalException;
-import com.uncuyo.compiladores.exceptions.ReaderException;
-import com.uncuyo.compiladores.exceptions.SemanticException;
-import com.uncuyo.compiladores.exceptions.SyntacticException;
+import com.uncuyo.compiladores.exceptions.*;
 import com.uncuyo.compiladores.lexicalAnalyzer.LexicalAnalyzer;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 import com.uncuyo.compiladores.lexicalAnalyzer.TokenTypes;

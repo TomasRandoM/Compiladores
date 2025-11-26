@@ -1,6 +1,9 @@
 package com.uncuyo.compiladores.semanticAnalyzer.symbolTable;
 
 import com.uncuyo.compiladores.exceptions.SemanticException;
+import com.uncuyo.compiladores.exceptions.WriterException;
+import com.uncuyo.compiladores.lexicalAnalyzer.Token;
+import com.uncuyo.compiladores.utils.JsonGenerator;
 
 import java.util.*;
 
@@ -41,6 +44,10 @@ public class SymbolTable {
     
     public static void setClasses(Map<String, Class> classes2) {
         classes = classes2;
+    }
+
+    public static Method getStartMethodStored() {
+        return startMethodStored;
     }
 
     /**
@@ -431,7 +438,7 @@ public class SymbolTable {
         classes.put("IO", IOClass);
     }
 
-    private static boolean checkPredefinedClasses(String name) {
+    public static boolean checkPredefinedClasses(String name) {
         return (name.equals("Int") ||
                 name.equals("Bool") ||
                 name.equals("Str") ||
