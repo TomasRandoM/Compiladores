@@ -1,7 +1,5 @@
 package com.uncuyo.compiladores.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.uncuyo.compiladores.exceptions.WriterException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.*;

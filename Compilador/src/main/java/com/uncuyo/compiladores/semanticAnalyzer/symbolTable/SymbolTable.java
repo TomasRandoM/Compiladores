@@ -159,6 +159,7 @@ public class SymbolTable {
         checkCircularInheritanceAndCorrectClassDeclaration();
         checkRedefinedMethodsAndInheritedAttributes();
         checkTypes();
+        resolveAllInheritance();
     }
 
     /**
@@ -422,7 +423,7 @@ public class SymbolTable {
     /**
      * Agrega las clases predefinidas a la SymbolTable
      */
-    public static void agregarClasesPredefinidas() {
+    public static void addPredefinedClasses() {
         Class intClass = new Class(null, "Int");
         Class boolClass = new Class(null, "Bool");
         Class strClass = new Class(null, "Str");
@@ -446,4 +447,13 @@ public class SymbolTable {
                 name.equals("Object") ||
                 name.equals("IO"));
     }
+
+    public static void resolveAllInheritance() throws SemanticException {
+        for (Class c : classes.values()) {
+            if (!checkPredefinedClasses(c.getName())) {
+                c.resolveInheritance();
+            }
+        }
+    }
+
 }

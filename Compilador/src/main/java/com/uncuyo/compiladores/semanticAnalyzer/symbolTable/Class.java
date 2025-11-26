@@ -3,16 +3,15 @@ package com.uncuyo.compiladores.semanticAnalyzer.symbolTable;
 import com.uncuyo.compiladores.exceptions.SemanticException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Class {
 
     private String name;
     private Token token;
     private String parentClass;
-    private Map<String, Attribute> attributes = new HashMap<>();
-    private Map<String, Method> methods = new HashMap<>();
+    private Map<String, Attribute> attributes = new LinkedHashMap<>();
+    private Map<String, Method> methods = new LinkedHashMap<>();
     private Constructor constructor;
     private boolean implInitialized;
     private boolean classInitialized;
@@ -28,6 +27,46 @@ public class Class {
         this.name = name;
         this.token = token;
     }
+
+    public void resolveInheritance() throws SemanticException {
+
+        LinkedHashMap<String, Method> orderedMethods = new LinkedHashMap<>();
+        LinkedHashMap<String, Attribute> orderedAttributes = new LinkedHashMap<>();
+
+        String parent = this.getParentClass();
+
+        // primero voy al padre
+        if (parent != null) {
+            Class parentClass = SymbolTable.getClass(parent);
+
+            if (parentClass == null) {
+                throw new SemanticException(this.getToken(),
+                        "La clase: " + this.getName() + " hereda de una clase no declarada: " + parent);
+            }
+
+            //llamo recursivamente hasta que parent == null
+            parentClass.resolveInheritance();
+
+            // pongo los metodos y atributos en orden
+            orderedAttributes.putAll(parentClass.attributes);
+            orderedMethods.putAll(parentClass.methods);
+        }
+
+        // agrego los propios de la clase al final
+        for (Attribute a : this.getAttributes().values()) {
+            orderedAttributes.put(a.getName(), a);
+        }
+        for (Method m : this.getMethods().values()) {
+            // se se redefine un método del padre lo pisa
+            orderedMethods.put(m.getName(), m);
+        }
+
+        // lo actualizamos
+        this.attributes = orderedAttributes;
+        this.methods = orderedMethods;
+
+    }
+
 
     public Token getImplToken() {
         return implToken;
@@ -71,6 +110,8 @@ public class Class {
     public Map<String, Attribute> getAttributes() {
         return attributes;
     }
+
+
 
     /**
      * Agrega un atributo al hashmap
