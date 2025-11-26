@@ -29,7 +29,7 @@ public class SyntacticAnalyzer {
      */
     public void program() throws LexicalException, ReaderException, SyntacticException, SemanticException {
         lookahead = lexicalAnalyzer.nextToken();
-        SymbolTable.agregarClasesPredefinidas();
+        SymbolTable.addPredefinedClasses();
         listaDefiniciones();
         start();
         match(TokenTypes.end_of_file);
