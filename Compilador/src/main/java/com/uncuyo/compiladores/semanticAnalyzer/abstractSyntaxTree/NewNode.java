@@ -8,26 +8,26 @@ import java.util.List;
 
 /**
  * Clase que representa un new (de clase y de array).
- * Extiende {@link ExpressionNode}
+ * Extiende {@link OperandNode}
  */
-public class NewNode extends ExpressionNode {
+public class NewNode extends OperandNode{
     /**
-     * Token que representa la palabra reservada new
+     * Token que representa el subtipo, si es una clase corresponde al token de una clase, si es un array corresponde
+     * al token del tipo primitivo
      */
-    private Token token;
+    private Token type;
     /**
      * String que representa que tipo de NewNode es. Puede ser "class" o "array"
      */
     private String option;
     /**
-     * Token que representa el subtipo, si es una clase corresponde al token de una clase, si es un array corresponde
-     * al token del tipo primitivo
-     */
-    private Token subType;
-    /**
      * ChainedNode que representa un encadenamiento. Puede ser null
      */
     private ChainedNode chainedNode;
+    /**
+     * chainedNode representa la expresion dentro de un array
+     */
+    private ExpressionNode expressionNode;
     /**
      * Lista de parametros en caso de que sea un constructor de clase. Puede ser null
      */
@@ -35,19 +35,27 @@ public class NewNode extends ExpressionNode {
 
     /**
      * Constructor de NewNode
-     * @param token
-     * @param option
+     * @param type Token
+     * @param option String
      */
-    public NewNode(Token token, String option) {
-        this.token = token;
+    public NewNode(Token type, String option) {
+        if (option.equals("class")) {
+            this.option = "class";
+        }
+        else {
+            if (option.equals("array")) {
+                this.option = "array";
+            }
+        }
+        this.type = type;
     }
 
     /**
      * Setter de subtype
-     * @param subType
+     * @param type
      */
-    public void setSubType(Token subType) {
-        this.subType = subType;
+    public void setType(Token type) {
+        this.type = type;
     }
 
     /**
@@ -59,12 +67,8 @@ public class NewNode extends ExpressionNode {
         return null;
     }
 
-    public Token getToken() {
-        return token;
-    }
-
-    public void setToken(Token token) {
-        this.token = token;
+    public Token getType() {
+        return type;
     }
 
     public String getOption() {
@@ -75,16 +79,20 @@ public class NewNode extends ExpressionNode {
         this.option = option;
     }
 
-    public Token getSubType() {
-        return subType;
-    }
-
     public ChainedNode getChainedNode() {
         return chainedNode;
     }
 
     public void setChainedNode(ChainedNode chainedNode) {
         this.chainedNode = chainedNode;
+    }
+
+    public ExpressionNode getExpressionNode() {
+        return chainedNode;
+    }
+
+    public void setExpressionNode(ExpressionNode expressionNode) {
+        this.expressionNode = expressionNode;
     }
 
     public List<ExpressionNode> getParameterList() {

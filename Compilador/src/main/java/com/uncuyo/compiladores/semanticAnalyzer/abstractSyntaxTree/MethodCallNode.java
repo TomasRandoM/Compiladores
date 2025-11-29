@@ -11,6 +11,9 @@ import java.util.List;
  */
 public class MethodCallNode extends OperandNode {
 
+    private String className;
+
+    private boolean isStatic;
     /**
      * Token que representa el id del metodo
      */
@@ -26,11 +29,18 @@ public class MethodCallNode extends OperandNode {
 
     /**
      * Constructor de la clase
-     * @param token
+     * @param token Token
+     * @param isStatic boolean
+     * @param className String con el nombre de la clase
      */
-    public MethodCallNode(Token token) {
+    public MethodCallNode(String className, Token token, boolean isStatic) {
+        this.className = className;
+        this.isStatic = isStatic;
         this.token = token;
     }
+
+
+
 
     public Token getToken() {
         return token;
@@ -48,11 +58,11 @@ public class MethodCallNode extends OperandNode {
         this.parameterList = parameterList;
     }
 
-    public ChainNode getChainNode() {
+    public ChainedNode getChainNode() {
         return chainNode;
     }
 
-    public void setChainNode(ChainNode chainNode) {
+    public void setChainNode(ChainedNode chainNode) {
         this.chainNode = chainNode;
     }
 

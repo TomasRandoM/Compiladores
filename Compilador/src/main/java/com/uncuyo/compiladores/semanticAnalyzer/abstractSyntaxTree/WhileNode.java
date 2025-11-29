@@ -15,6 +15,11 @@ public class WhileNode extends SentenceNode {
      */
     private SentenceNode sentenceNode;
 
+    public WhileNode(ExpressionNode expressionNode, SentenceNode sentenceNode) {
+        this.expressionNode = expressionNode;
+        this.sentenceNode = sentenceNode;
+    }
+
     /**
      * Metodo para chequear la semantica
      **/

@@ -11,6 +11,10 @@ public class SimpleSentenceNode extends SentenceNode {
      */
     private ExpressionNode expressionNode;
 
+    public SimpleSentenceNode(ExpressionNode expressionNode) {
+        this.expressionNode = expressionNode;
+    }
+
     /**
      * Metodo para checkear semanticamente
      */

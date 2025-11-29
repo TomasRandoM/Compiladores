@@ -16,10 +16,16 @@ public class AssignmentNode extends SentenceNode {
      * Nodo derecho de la asignacion
      */
     private ExpressionNode rightNode;
+
     /**
-     * Token que representa el operador y da informacion acerca de la linea si hubiese error
+     * Constructor de AssignmentNode
+     * @param leftNode ExpressionNode
+     * @param rightNode ExpressionNode
      */
-    private Token operator;
+    public AssignmentNode(ExpressionNode leftNode, ExpressionNode rightNode) {
+        this.leftNode = leftNode;
+        this.rightNode = rightNode;
+    }
 
     /**
      * Metodo para checkear semanticamente

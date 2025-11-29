@@ -48,4 +48,6 @@ public class ChainedAccessNode extends ChainedNode {
     public Type check() {
         return null;
     }
+
+
 }

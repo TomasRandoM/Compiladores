@@ -6,7 +6,7 @@ import com.uncuyo.compiladores.lexicalAnalyzer.Token;
  * Clase que representa un acceso encadenado desde un acceso a un array.
  * Extiende {@link ChainedAccessNode}
  */
-public class ChainedArrayAccess extends ChainedAccessNode {
+public class ChainedArrayAccessNode extends ChainedAccessNode {
 
     /**
      * Representa la expresion que indica la posicion del array
@@ -17,7 +17,7 @@ public class ChainedArrayAccess extends ChainedAccessNode {
      * Constructor de ChainedArrayAccess
      * @param name
      */
-    public ChainedArrayAccess(Token name) {
+    public ChainedArrayAccessNode(Token name) {
         super(name);
     }
 

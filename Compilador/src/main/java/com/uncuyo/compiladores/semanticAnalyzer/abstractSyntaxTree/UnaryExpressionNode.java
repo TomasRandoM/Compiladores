@@ -18,6 +18,10 @@ public class UnaryExpressionNode extends ExpressionNode {
      */
     Token operator;
 
+    public UnaryExpressionNode(ExpressionNode expressionNode, Token operator) {
+        this.expressionNode = expressionNode;
+        this.operator = operator;
+    }
 
     /**
      * Metodo para chequear los tipos

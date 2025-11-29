@@ -4,32 +4,21 @@ import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Type;
 
 /**
- * Clase que representa el acceso a un array
- * Extiende {@link OperandNode}
+ * Metodo que representa una expresion parentizada
+ * Extiende {@link ExpressionNode}
  */
-public class ArrayAccessNode extends OperandNode{
+public class ParenthesizedExpressionNode extends ExpressionNode {
+
     /**
-     * Token que representa al array
-     */
-    private Token token;
-    /**
-     * Representa la expresion dentro del array
+     * Representa la expresion
      */
     private ExpressionNode expressionNode;
     /**
-     * Representa encadenamiento en un array
+     * Representa el encadenamiento
      */
     private ChainedNode chainedNode;
 
-    public ArrayAccessNode() {
-    }
-
-    public Token getToken() {
-        return token;
-    }
-
-    public void setToken(Token token) {
-        this.token = token;
+    public ParenthesizedExpressionNode() {
     }
 
     public ExpressionNode getExpressionNode() {
@@ -49,12 +38,11 @@ public class ArrayAccessNode extends OperandNode{
     }
 
     /**
-     * Metodo que chequea el tipo
+     * Metodo para chequear el tipo
      * @return
      */
-    public Type check() {
+    public Type check(){
         return null;
     }
-
 
 }

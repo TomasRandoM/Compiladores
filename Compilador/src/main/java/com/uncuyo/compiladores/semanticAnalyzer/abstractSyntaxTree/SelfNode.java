@@ -14,6 +14,36 @@ public class SelfNode extends OperandNode {
      */
     private String classId;
 
+    private ChainedNode chainedNode;
+
+    public SelfNode(Token token) {
+        this.token = token;
+    }
+
+    public Token getToken() {
+        return token;
+    }
+
+    public void setToken(Token token) {
+        this.token = token;
+    }
+
+    public String getClassId() {
+        return classId;
+    }
+
+    public void setClassId(String classId) {
+        this.classId = classId;
+    }
+
+    public ChainedNode getChainedNode() {
+        return chainedNode;
+    }
+
+    public void setChainedNode(ChainedNode chainedNode) {
+        this.chainedNode = chainedNode;
+    }
+
     /**
      * Constructor de la clase SelfNode
      * @param token

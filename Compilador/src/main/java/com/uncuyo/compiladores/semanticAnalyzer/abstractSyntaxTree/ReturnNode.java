@@ -12,6 +12,14 @@ public class ReturnNode extends SentenceNode {
     private ExpressionNode expressionNode;
 
     /**
+     * Constructor de ReturnNode
+     * @param expressionNode ExpressionNode
+     */
+    public ReturnNode(ExpressionNode expressionNode) {
+        this.expressionNode = expressionNode;
+    }
+
+    /**
      * Metodo para checkear la semantica
      */
     public void check() {}
