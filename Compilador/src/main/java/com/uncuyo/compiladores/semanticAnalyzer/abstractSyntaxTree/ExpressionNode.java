@@ -1,5 +1,7 @@
 package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
+import com.uncuyo.compiladores.exceptions.SemanticASTException;
+import com.uncuyo.compiladores.exceptions.SemanticException;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Type;
 
 /**
@@ -11,5 +13,5 @@ public abstract class ExpressionNode {
      * Metodo que chequea los tipos
      * @return Type
      */
-    public abstract Type check();
+    public abstract Type check() throws SemanticASTException;
 }
