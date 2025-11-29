@@ -1,5 +1,6 @@
 package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
+import com.uncuyo.compiladores.exceptions.SemanticASTException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Type;
 
@@ -19,6 +20,10 @@ public class ParenthesizedExpressionNode extends ExpressionNode {
     private ChainedNode chainedNode;
 
     public ParenthesizedExpressionNode() {
+    }
+
+    public Token getToken() throws SemanticASTException {
+        return expressionNode.getToken();
     }
 
     public ExpressionNode getExpressionNode() {

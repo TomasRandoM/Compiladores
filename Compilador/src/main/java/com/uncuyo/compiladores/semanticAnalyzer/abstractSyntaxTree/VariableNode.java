@@ -28,4 +28,13 @@ public class VariableNode extends OperandNode {
     public Type check(){
         return null;
     }
+
+    @Override
+    public Token getToken() {
+        return token;
+    }
+
+    public void setToken(Token token) {
+        this.token = token;
+    }
 }

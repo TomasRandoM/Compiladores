@@ -1,5 +1,6 @@
 package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
+import com.uncuyo.compiladores.exceptions.SemanticASTException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Type;
 
@@ -54,7 +55,53 @@ public class LiteralNode extends OperandNode {
      * Metodo que chequea los tipos
      * @return Type
      */
-    public Type check() {
-        return null;
+    public Type check() throws SemanticASTException {
+        Type type;
+        if (option.equals("true") || option.equals("false")) {
+            type = new Type(token, "Bool");
+        }
+        else {
+            if (option.equals("nil")) {
+                type = new Type(token, "nil");
+            }
+            else {
+                if (option.equals("const_int")) {
+                    type = new Type(token, "Int");
+                }
+                else {
+                    if (option.equals("const_double")) {
+                        type = new Type(token, "Double");
+                    }
+                    else {
+                        if (option.equals("const_string")) {
+                            type = new Type(token, "Str");
+                        }
+                        else {
+                            throw new SemanticASTException(token, "Se esperaba Int, " +
+                                    "Double, nil, Str o Bool. " +
+                                    "Se encontró: " + option);
+                        }
+                    }
+                }
+            }
+        }
+        return type;
+    }
+
+    @Override
+    public Token getToken() {
+        return token;
+    }
+
+    public void setToken(Token token) {
+        this.token = token;
+    }
+
+    public String getOption() {
+        return option;
+    }
+
+    public void setOption(String option) {
+        this.option = option;
     }
 }
