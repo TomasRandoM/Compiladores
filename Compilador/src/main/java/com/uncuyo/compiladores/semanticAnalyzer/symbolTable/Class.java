@@ -48,7 +48,12 @@ public class Class {
             parentClass.resolveInheritance();
 
             // pongo los metodos y atributos en orden
-            orderedAttributes.putAll(parentClass.attributes);
+            //orderedAttributes.putAll(parentClass.attributes);
+            for (Attribute attribute : parentClass.attributes.values()) {
+                if (attribute.getIsPublic()) {
+                    orderedAttributes.put(attribute.getName(), attribute);
+                }
+            }
             orderedMethods.putAll(parentClass.methods);
         }
 
