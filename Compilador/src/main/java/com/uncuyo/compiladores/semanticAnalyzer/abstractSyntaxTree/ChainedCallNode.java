@@ -14,17 +14,14 @@ public class ChainedCallNode extends ChainedNode {
     /**
      * Token que representa el nombre del metodo llamado
      */
-    Token name;
-    /**
-     * Nodo encadenado si hubiese
-     */
-    ChainedNode chainedNode;
+    private Token name;
+
     /**
      * Lista de parametros (expresiones)
      */
-    List<ExpressionNode> parameterList = new ArrayList<>();
+    private List<ExpressionNode> parameterList = new ArrayList<>();
 
-    public Token getName() {
+    public Token getToken() {
         return name;
     }
 
@@ -63,5 +60,17 @@ public class ChainedCallNode extends ChainedNode {
     public Type check() {
         //Pendiente
         return null;
+    }
+
+    /**
+     * Metodo para manejar la resolucion de nombres. Recibe el nombre de la clase anterior. Se
+     * fija en la tabla de simbolos si esa clase posee el metodo actual. Luego, el retorno de
+     * ese metodo se convierte en el siguiente lastClass y se llama a chequear el siguiente
+     * encadenamiento.
+     * Ejemplo: Si tengo el caso A.b().c(). Al principio se llamara a chequear b() con el lastClass A.
+     * @param lastClass String con el tipo de la clase anterior o el tipo de retorno del anterior metodo
+     */
+    public void checkNames(String lastClass) {
+        //Resolucion de nombres
     }
 }

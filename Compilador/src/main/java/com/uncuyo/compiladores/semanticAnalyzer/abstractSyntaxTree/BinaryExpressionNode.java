@@ -62,7 +62,7 @@ public class BinaryExpressionNode extends ExpressionNode {
                     type = leftNode;
                 }
                 else {
-                    throw new SemanticASTException(operator, "Se esperaba Int o Double. " +
+                    throw new SemanticASTException(leftNode.getToken(), "Se esperaba Int o Double. " +
                             "Se encontró: " + leftNode.getName());
                 }
             }
@@ -90,12 +90,14 @@ public class BinaryExpressionNode extends ExpressionNode {
                             type = new Type(operator, "Double");
                     }
                     else {
-                        throw new SemanticASTException(operator, "Se esperaban tipos Int o Double. " +
+                        throw new SemanticASTException(leftNode.getToken(), "Se esperaban " +
+                                "tipos Int o Double. " +
                                 "Se encontró: " + leftNode.getName());
                     }
                 }
                 else {
-                    throw new SemanticASTException(operator, "Se esperaba tipo Int o Double. " +
+                    throw new SemanticASTException(rightNode.getToken(), "Se esperaba " +
+                            "tipo Int o Double. " +
                             "Se encontró: " + rightNode.getName());
                 }
             }
@@ -112,8 +114,10 @@ public class BinaryExpressionNode extends ExpressionNode {
                         }
                     }
                     else {
-                        throw new SemanticASTException(operator, "Los tipos de los operandos deben ser ambos Int." +
-                                " Se encontró: " + leftNode.getName() + " y " + rightNode.getName());
+                        throw new SemanticASTException(operator, "Los tipos de los operandos " +
+                                "deben ser ambos Int." +
+                                " Se encontró: " + leftNode.getName() +
+                                " y " + rightNode.getName());
                     }
                 }
                 else {
@@ -128,13 +132,15 @@ public class BinaryExpressionNode extends ExpressionNode {
                                 type = new Type(operator, "Bool");
                             }
                             else {
-                                throw new SemanticASTException(operator, "Se esperaban tipos Double o Int. Se encontró: "
+                                throw new SemanticASTException(rightNode.getToken(), "Se esperaban " +
+                                        "tipos Double o Int. Se encontró: "
                                         + rightNode.getName() + ".");
                            }
                         }
                         else {
-                            throw new SemanticASTException(operator, "Se esperaban tipos Double o Int. Se encontró: "
-                            + leftNode.getName() + ".");
+                            throw new SemanticASTException(leftNode.getToken(), "Se esperaban " +
+                                    "tipos Double o Int. Se encontró: " +
+                                    leftNode.getName() + ".");
                         }
                     }
                     else {
@@ -187,5 +193,33 @@ public class BinaryExpressionNode extends ExpressionNode {
 
         type.setToken(operator);
         return type;
+    }
+
+    public Token getToken() {
+        return operator;
+    }
+
+    public Token getOperator() {
+        return operator;
+    }
+
+    public void setOperator(Token operator) {
+        this.operator = operator;
+    }
+
+    public ExpressionNode getLeft() {
+        return left;
+    }
+
+    public void setLeft(ExpressionNode left) {
+        this.left = left;
+    }
+
+    public ExpressionNode getRight() {
+        return right;
+    }
+
+    public void setRight(ExpressionNode right) {
+        this.right = right;
     }
 }

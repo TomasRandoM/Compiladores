@@ -1,10 +1,14 @@
 package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
+import com.uncuyo.compiladores.exceptions.SemanticASTException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Parameter;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.SymbolTable;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Type;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Clase que representa un new (de clase y de array).
@@ -62,12 +66,71 @@ public class NewNode extends OperandNode{
      * Chequea las semantica
      * @return
      */
-    public Type check() {
-        //Pendiente
-        return null;
+    public Type check() throws SemanticASTException {
+        Type newType;
+        if (option.equals("class")) {
+            //Resolución de nombres
+            if (SymbolTable.getClass(type.getLexeme()) == null) {
+                throw new SemanticASTException(type, "La clase " +
+                        type.getLexeme() + " referenciada " +
+                        "no se encuentra declarada");
+            }
+            //Constructor si posee porque lo chequeamos en la tabla de símbolos
+            checkParameters(type, parameterList, type.getLexeme());
+            if (chainedNode != null) {
+                //Resolución de nombres (para los encadenados)
+                chainedNode.checkNames(type.getLexeme());
+                //Nos trae el último tipo de la serie de encadenamientos
+                newType = chainedNode.check();
+            }
+            else {
+                newType = new Type(type, "class");
+            }
+        }
+        else {
+            if (chainedNode != null) {
+                throw new SemanticASTException(chainedNode.getToken(), "Un array no puede tener un encadenamiento");
+            }
+            else {
+                //Si pudiese haber arrays de tipo diferente aca debería haber resolución de nombres
+                newType = new Type(type, "Array");
+                newType.setArrType(new Type(type, type.getLexeme()));
+            }
+        }
+        return newType;
     }
 
+    public void checkParameters(Token token, List<ExpressionNode> expressionList, String class1) throws SemanticASTException {
+        Map<String, Parameter> parameters = SymbolTable.getClass(class1).getConstructor().getParameters();
+
+        if (parameters.size() != expressionList.size()) {
+            throw new SemanticASTException(token, "El número de parámetros " +
+                    "del constructor no coincide con los brindados");
+        }
+
+        int index = 0;
+        for (Map.Entry<String, Parameter> entry : parameters.entrySet()) {
+            Type parameterType = entry.getValue().getType();
+            Type providedType = expressionList.get(index).check();
+            if (parameterType.getName().equals(providedType.getName())) {
+                index++;
+            }
+            else {
+                throw new SemanticASTException(entry.getValue().getToken(), "Tipo incorrecto en " +
+                        "parámetros del constructor de la " +
+                        "clase " + class1 + ". Se obtuvo: " +
+                        providedType.getName() + ".Se esperaba " +
+                        parameterType.getName());
+            }
+        }
+    }
+
+    //Getters y setters
     public Token getType() {
+        return type;
+    }
+
+    public Token getToken() {
         return type;
     }
 

@@ -44,6 +44,10 @@ public class Type {
             case "Array":
                 name = "Array";
                 break;
+            //No es un tipo como tal, pero se coloca para poder manejarlo en el semántico
+            case "nil":
+                name = "nil";
+                break;
             default:
                 System.out.println("Error al llamar a Type");
                 break;
