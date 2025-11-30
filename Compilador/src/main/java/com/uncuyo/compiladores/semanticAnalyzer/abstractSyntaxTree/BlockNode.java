@@ -1,5 +1,6 @@
 package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
+import com.uncuyo.compiladores.exceptions.SemanticASTException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 
 import java.util.ArrayList;
@@ -60,8 +61,9 @@ public class BlockNode extends SentenceNode {
     /**
      * Metodo para chequear semanticamente
      */
-
-    public void check() {
-     //Pendiente
+    public void check() throws SemanticASTException {
+     for (SentenceNode sentence : sentences) {
+         sentence.check();
+     }
     }
 }

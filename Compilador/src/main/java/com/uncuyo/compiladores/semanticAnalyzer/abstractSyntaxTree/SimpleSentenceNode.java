@@ -1,5 +1,7 @@
 package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
+import com.uncuyo.compiladores.exceptions.SemanticASTException;
+
 /**
  * Nodo que representa una sentencia simple
  * Extiende {@link SentenceNode}
@@ -19,5 +21,7 @@ public class SimpleSentenceNode extends SentenceNode {
      * Metodo para checkear semanticamente
      */
     @Override
-    public void check() {}
+    public void check() throws SemanticASTException {
+        expressionNode.check();
+    }
 }

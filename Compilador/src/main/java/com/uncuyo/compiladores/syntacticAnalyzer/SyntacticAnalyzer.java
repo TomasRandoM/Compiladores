@@ -1014,7 +1014,7 @@ public class SyntacticAnalyzer {
      */
     public SelfNode accesoSelf() throws SyntacticException, LexicalException, ReaderException {
         if (lookahead.getName() == TokenTypes.pself) {
-            SelfNode selfNode = new SelfNode(lookahead);
+            SelfNode selfNode = new SelfNode(lookahead, AST.getCurrentClass(), AST.getCurrentMethod());
             match(TokenTypes.pself);
             ChainedNode chainedNode = accesoSelf2();
             selfNode.setChainedNode(chainedNode);
@@ -1078,7 +1078,7 @@ public class SyntacticAnalyzer {
             ) {
                 ChainedNode chainedNode = accesoVar3();
                 if (chainedNode == null) {
-                    operandNode = new VariableNode(token);
+                    operandNode = new VariableNode(token, AST.getCurrentClass(), AST.getCurrentMethod());
                 } else {
                     ChainedAccessNode chainedAccessNode = new ChainedAccessNode(token);
                     chainedAccessNode.setChainedNode(chainedNode);
@@ -1801,7 +1801,7 @@ public class SyntacticAnalyzer {
             ) {
                 ChainedNode chainedNode = encadenadosSimples();
                 if (chainedNode == null) {
-                    operandNode = new VariableNode(token);
+                    operandNode = new VariableNode(token, AST.getCurrentClass(), AST.getCurrentMethod());
                 }
                 else {
                     ChainedAccessNode chainedAccessNode = new ChainedAccessNode(token);
@@ -1861,7 +1861,7 @@ public class SyntacticAnalyzer {
             Token token = lookahead;
             match(TokenTypes.pself);
             ChainedAccessNode chainedAccessNode = encadenadosSimples();
-            selfNode = new SelfNode(token, AST.getCurrentClass());
+            selfNode = new SelfNode(token, AST.getCurrentClass(), AST.getCurrentMethod());
             selfNode.setChainedNode(chainedAccessNode);
         }
         else {
