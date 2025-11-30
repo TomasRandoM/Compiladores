@@ -57,7 +57,7 @@ public class Class {
             orderedAttributes.put(a.getName(), a);
         }
         for (Method m : this.getMethods().values()) {
-            // se se redefine un método del padre lo pisa
+            // se se redefine un metodo del padre lo pisa
             orderedMethods.put(m.getName(), m);
         }
 

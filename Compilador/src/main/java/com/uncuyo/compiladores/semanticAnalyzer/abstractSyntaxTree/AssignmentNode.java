@@ -1,6 +1,8 @@
 package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
+import com.uncuyo.compiladores.exceptions.SemanticASTException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Type;
 
 /**
  * Clase que representa los nodos de asignación
@@ -29,8 +31,18 @@ public class AssignmentNode extends SentenceNode {
 
     /**
      * Metodo para checkear semanticamente
+     * Verifica que ambos lados de la asignación tengan el mismo tipo
      */
-    public void check() {
-        //pendiente
+    public void check() throws SemanticASTException {
+        Type leftType = leftNode.check();
+        Type rightType = rightNode.check();
+
+        if (leftType != rightType) {
+            throw new SemanticASTException(rightType.getToken(), "El tipo asignado " +
+                    "es incorrecto. " +
+                    "Se esperaba: " + leftType.getName() +
+                    ". Se obtuvo: " + rightType.getName());
+        }
+
     }
 }

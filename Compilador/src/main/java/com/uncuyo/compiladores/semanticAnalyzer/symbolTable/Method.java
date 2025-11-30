@@ -13,11 +13,29 @@ import java.util.Map;
  */
 public class Method {
 
+    /**
+     * Nombre del metodo
+     */
     private String name;
+    /**
+     * Tipo de retorno del metodo
+     */
     private Type type;
+    /**
+     * Token del id del metodo
+     */
     private Token token;
+    /**
+     * Booleano que indica si es estatico
+     */
     private boolean isStaticMethod;
+    /**
+     * Variables locales del metodo
+     */
     private Map<String, Variable> variables = new HashMap<>();
+    /**
+     * Parametros del metodo
+     */
     private Map<String, Parameter> parameters = new LinkedHashMap<>();
 
     /**

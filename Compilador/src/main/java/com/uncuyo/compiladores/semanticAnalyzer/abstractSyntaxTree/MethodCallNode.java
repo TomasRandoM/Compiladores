@@ -1,9 +1,14 @@
 package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
+import com.uncuyo.compiladores.exceptions.SemanticASTException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Method;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Parameter;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.SymbolTable;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Type;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Metodo que representa una llamada a un metodo
@@ -11,21 +16,32 @@ import java.util.List;
  */
 public class MethodCallNode extends OperandNode {
 
+    /**
+     * Nombre de la clase del metodo. Si es estatico contendra el nombre de la clase al ser llamado, es decir,
+     * si hubiese sido llamado A.a();, contendria A. En otro caso, contendra el nombre de la clase que
+     * posee al metodo declarado
+     */
     private String className;
 
+    /**
+     * Boolean que indica si es estatico o no
+     */
     private boolean isStatic;
+
     /**
      * Token que representa el id del metodo
      */
     private Token token;
+
     /**
      * Lista que representa los parametros del metodo
      */
     private List<ExpressionNode> parameterList;
+
     /**
      * ChainNode que representa los encadenamientos
      */
-    private ChainedNode chainNode;
+    private ChainedNode chainedNode;
 
     /**
      * Constructor de la clase
@@ -59,19 +75,76 @@ public class MethodCallNode extends OperandNode {
     }
 
     public ChainedNode getChainNode() {
-        return chainNode;
+        return chainedNode;
     }
 
     public void setChainNode(ChainedNode chainNode) {
-        this.chainNode = chainNode;
+        this.chainedNode = chainNode;
     }
 
     /**
-     * Metodo para chequear los tipos
-     * @return Type
+     * Metodo para chequear los tipos. Verifica si es estatico, si esta declarado correctamente, si tiene
+     * encadenado llama a hacer el chequeo y verifica los parametros
+     * @return Type Devuelve el tipo de retorno del metodo o el tipo que viene desde el encadenado
      */
     @Override
-    public Type check() {
-        return null;
+    public Type check() throws SemanticASTException {
+        Type type;
+        Method method = SymbolTable.getClass(className).getMethods().get(token.getLexeme());
+        if (method == null) {
+            throw new SemanticASTException(token, "El " +
+                    "método " + token.getLexeme() +
+                    " invocado no se " +
+                    "encuentra declarado en " +
+                    "el ámbito actual");
+        }
+        if (isStatic && !method.isStaticMethod()) {
+            throw new SemanticASTException(token, "El método " +
+                    token.getLexeme() +
+                    " invocado no es estático");
+        }
+        checkParameters(token, parameterList, method, className);
+        if (chainedNode != null) {
+            chainedNode.checkNames(method.getType().getName());
+            type = chainedNode.check();
+        }
+        else {
+            type = method.getType();
+        }
+        type.setToken(token);
+        return type;
+    }
+
+    /**
+     *
+     * @param token Token de la llamada al metodo
+     * @param expressionList Lista de parametros
+     * @param method Metodo analizado
+     * @param class1 Nombre de la clase dueña del metodo
+     * @throws SemanticASTException Excepcion si los parametros son incorrectos en tipo o en cantidad
+     * @author Tomas Rando
+     */
+    public void checkParameters(Token token, List<ExpressionNode> expressionList, Method method, String class1) throws SemanticASTException {
+        Map<String, Parameter> parameters = method.getParameters();
+
+        if (parameters.size() != expressionList.size()) {
+            throw new SemanticASTException(token, "El número de parámetros " +
+                    "del constructor no coincide con los brindados");
+        }
+
+        int index = 0;
+        for (Map.Entry<String, Parameter> entry : parameters.entrySet()) {
+            Type parameterType = entry.getValue().getType();
+            Type providedType = expressionList.get(index).check();
+            if (parameterType.getName().equals(providedType.getName())) {
+                index++;
+            }
+            else {
+                throw new SemanticASTException(entry.getValue().getToken(), "Tipo incorrecto en " +
+                        "parámetros del método " + method.getName() + ". Se obtuvo: " +
+                        providedType.getName() + ".Se esperaba " +
+                        parameterType.getName());
+            }
+        }
     }
 }
