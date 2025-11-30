@@ -56,13 +56,18 @@ public class VariableNode extends OperandNode {
             }
             else {
                 if (currentClass.getAttributes().get(token.getLexeme()) != null) {
+                    if (currentMethod.isStaticMethod()) {
+                        throw new SemanticASTException(this.token, "El atributo " +
+                                "de instancia " + token.getLexeme() +
+                                " es accedido desde un contexto estático.");
+                    }
                     type = currentClass.getAttributes().get(token.getLexeme()).getType();
                     type.setToken(this.token);
                 }
                 else {
                     throw new SemanticASTException(this.token, "La variable " +
                             token.getLexeme() + " no ha sido " +
-                            "correctamente declarada");
+                            "correctamente declarada en este contexto.");
                 }
             }
         }

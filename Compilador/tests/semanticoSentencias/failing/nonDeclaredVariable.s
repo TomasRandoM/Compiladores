@@ -1,0 +1,13 @@
+// Incorrecto. Variable y no declarada
+class A {
+    Int x;
+}
+
+impl A {
+    fn a() {
+        y = 5;
+    }
+}
+
+start {
+}
