@@ -1,7 +1,10 @@
 package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
+import com.uncuyo.compiladores.exceptions.SemanticASTException;
+import com.uncuyo.compiladores.exceptions.SyntacticException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
-import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Type;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.*;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Class;
 
 /**
  * Clase que representa el acceso encadenado.
@@ -53,8 +56,52 @@ public class ChainedAccessNode extends ChainedNode {
      * Ejemplo: Si tengo el caso A.b().c(). Al principio se llamara a chequear b() con el lastClass A.
      * @param lastClass String con el tipo de la clase anterior o el tipo de retorno del anterior metodo
      */
-    public void checkNames(String lastClass) {
-        //Resolucion de nombres
+    public Type checkNames(String lastClass) throws SemanticASTException {
+        Type finalType;
+        //Obtengo la clase
+        Class baseClass = SymbolTable.getClass(lastClass);
+
+        if (baseClass == null) {
+            throw new SemanticASTException(name, "La clase " + lastClass +
+                    " no ha sido declarada en este contexto.");
+        }
+
+        //Busco el atributo en esa clase
+        Attribute attribute = baseClass.getAttributes().get(name.getLexeme());
+
+        if (!attribute.getIsPublic()) {
+            throw new SemanticASTException(name,
+                    "El atributo '" + name.getLexeme() + "' no es público y " +
+                            "no puede ser accedido desde esta clase.");
+        }
+
+
+        if (attribute == null) {
+            throw new SemanticASTException(name, "El atributo " + name.getLexeme() +
+                    " no ha sido declarado en la clase " + baseClass.getName());
+        }
+
+        //Obtengo el tipo del atributo
+        finalType = attribute.getType();
+
+        //verifico que el tipo exista
+        Class classType = SymbolTable.getClass(finalType.getName());
+        if (classType == null) {
+            throw new SemanticASTException(name, "El tipo " + finalType.getName() +
+                    " no existe");
+        }
+
+        //Verifico si hay más encadenados:
+        if (this.chainedNode != null) {
+            finalType = this.chainedNode.checkNames(finalType.getName());
+        }
+
+        return finalType;
+    }
+
+    @Override
+    public Type checkNames(Type lastType) throws SemanticASTException {
+        return null;
     }
 
 }

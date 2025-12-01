@@ -46,8 +46,14 @@ public class ParenthesizedExpressionNode extends ExpressionNode {
      * Metodo para chequear el tipo
      * @return
      */
-    public Type check(){
-        return null;
+    public Type check() throws SemanticASTException {
+        Type type = this.expressionNode.check();
+
+        if (this.chainedNode != null) {
+            type = this.chainedNode.checkNames(type.getName());
+        }
+
+        return type;
     }
 
 }
