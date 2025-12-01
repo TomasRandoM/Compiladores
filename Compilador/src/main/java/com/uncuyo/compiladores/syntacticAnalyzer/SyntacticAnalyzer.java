@@ -31,7 +31,7 @@ public class SyntacticAnalyzer {
      * @throws SyntacticException Excepción ocasionada por un error sintáctico
      * @author Paulina Suden y Tomás Rando
      */
-    public void program() throws LexicalException, ReaderException, SyntacticException, SemanticException {
+    public void program() throws LexicalException, ReaderException, SyntacticException, SemanticException, SemanticASTException {
         lookahead = lexicalAnalyzer.nextToken();
         SymbolTable.addPredefinedClasses();
         listaDefiniciones();
@@ -39,7 +39,9 @@ public class SyntacticAnalyzer {
         match(TokenTypes.end_of_file);
         System.out.println("CORRECTO: ANÁLISIS SINTÁCTICO");
         SymbolTable.checkDeclarations();
-        System.out.println("CORRECTO: ANÁLISIS SEMÁNTICO");
+        System.out.println("CORRECTO: ANÁLISIS SEMÁNTICO - DECLARACIONES");
+        AST.check();
+        System.out.println("CORRECTO: ANÁLISIS SEMÁNTICO - SENTENCIAS");
 
     }
 
@@ -54,6 +56,7 @@ public class SyntacticAnalyzer {
         Method method = new Method(lookahead, null, false);
         SymbolTable.setCurrentMethod(method);
         SymbolTable.setStartMethodStored(method);
+        AST.setCurrentClass(null);
         AST.setCurrentMethod(method.getName());
         match(TokenTypes.pstart);
         bloqueMetodo();
@@ -927,6 +930,7 @@ public class SyntacticAnalyzer {
                     .getToken(), "class");
             Constructor constructor = new Constructor(type, auxlookahead);
             SymbolTable.setCurrentMethod(constructor);
+            AST.setCurrentMethod(null);
             SymbolTable.getCurrentClass().setConstructor(constructor);
             argumentosFormales();
             bloqueMetodo();
@@ -1080,7 +1084,7 @@ public class SyntacticAnalyzer {
                 if (chainedNode == null) {
                     operandNode = new VariableNode(token, AST.getCurrentClass(), AST.getCurrentMethod());
                 } else {
-                    ChainedAccessNode chainedAccessNode = new ChainedAccessNode(token);
+                    ChainedAccessNode chainedAccessNode = new ChainedAccessNode(token, AST.getCurrentClass(), AST.getCurrentMethod());
                     chainedAccessNode.setChainedNode(chainedNode);
                     operandNode = chainedAccessNode;
                 }
@@ -1238,7 +1242,7 @@ public class SyntacticAnalyzer {
     public ChainedNode accesoVariableEncadenado(Token token) throws LexicalException, SyntacticException, ReaderException {
         ChainedNode chainedNode;
         if (lookahead.getName() == TokenTypes.brackets1) {
-            ChainedArrayAccessNode chainedArrayAccessNode = new ChainedArrayAccessNode(token);
+            ChainedArrayAccessNode chainedArrayAccessNode = new ChainedArrayAccessNode(token, AST.getCurrentClass(), AST.getCurrentMethod());
             match(TokenTypes.brackets1);
             ExpressionNode expressionNode = expOr();
             chainedArrayAccessNode.setExpression(expressionNode);
@@ -1666,6 +1670,7 @@ public class SyntacticAnalyzer {
     public AssignmentNode asignacion() throws LexicalException, SyntacticException, ReaderException {
         AssignmentNode sentenceNode;
         if (lookahead.getName() == TokenTypes.pself) {
+            System.out.println(lookahead.getLexeme());
             ExpressionNode leftNode = accesoSelfSimple();
             match(TokenTypes.op_equal);
             ExpressionNode rightNode = expOr();
@@ -1675,7 +1680,9 @@ public class SyntacticAnalyzer {
             if (lookahead.getName() == TokenTypes.id_obj) {
                 ExpressionNode leftNode = accesoVarSimple();
                 match(TokenTypes.op_equal);
+                System.out.println(lookahead.getLexeme());
                 ExpressionNode rightNode = expOr();
+                System.out.println(rightNode);
                 sentenceNode = new AssignmentNode(leftNode, rightNode);
             }
             else {
@@ -1805,7 +1812,7 @@ public class SyntacticAnalyzer {
                     operandNode = new VariableNode(token, AST.getCurrentClass(), AST.getCurrentMethod());
                 }
                 else {
-                    ChainedAccessNode chainedAccessNode = new ChainedAccessNode(token);
+                    ChainedAccessNode chainedAccessNode = new ChainedAccessNode(token, AST.getCurrentClass(), AST.getCurrentMethod());
                     chainedAccessNode.setChainedNode(chainedNode);
                     operandNode = chainedAccessNode;
                 }
@@ -1883,7 +1890,7 @@ public class SyntacticAnalyzer {
         match(TokenTypes.dot);
         Token token = lookahead;
         match(TokenTypes.id_obj);
-        return new ChainedAccessNode(token);
+        return new ChainedAccessNode(token, AST.getCurrentClass(), AST.getCurrentMethod());
     }
 
 
@@ -1951,7 +1958,7 @@ public class SyntacticAnalyzer {
                 lookahead.getName() == TokenTypes.semicolon ||
                 lookahead.getName() == TokenTypes.comma
             ) {
-                expressionNode = null;
+                expressionNode = leftNode;
             }
             else {
                 throw new SyntacticException(lookahead, "Se esperaba '||', " +

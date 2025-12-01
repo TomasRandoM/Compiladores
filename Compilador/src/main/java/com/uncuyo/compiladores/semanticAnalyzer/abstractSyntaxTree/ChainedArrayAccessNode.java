@@ -21,8 +21,8 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
      * Constructor de ChainedArrayAccess
      * @param name
      */
-    public ChainedArrayAccessNode(Token name) {
-        super(name);
+    public ChainedArrayAccessNode(Token name, String className, String methodName) {
+        super(name, className, methodName);
     }
 
     public ExpressionNode getExpression() {

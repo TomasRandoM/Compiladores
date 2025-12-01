@@ -102,7 +102,22 @@ public class MethodCallNode extends OperandNode {
     @Override
     public Type check() throws SemanticASTException {
         Type type;
-        Method method = SymbolTable.getClass(className).getMethods().get(token.getLexeme());
+        Method method;
+        if (callerMethod.equals("start")) {
+            throw new SemanticASTException(token, "El método de instancia " +
+                    token.getLexeme() + " está siendo llamado " +
+                    "desde start sin utilizar instancia.");
+        }
+        method = SymbolTable.getClass(className).getMethods().get(token.getLexeme());
+        Method callerMethod1;
+
+        if (callerMethod == null) {
+            callerMethod1 = SymbolTable.getClass(methodOwnerClassName).getConstructor();
+        }
+        else {
+            callerMethod1 = SymbolTable.getClass(methodOwnerClassName).getMethods().get(callerMethod);
+        }
+
         if (method == null) {
             throw new SemanticASTException(token, "El " +
                     "método " + token.getLexeme() +
@@ -117,12 +132,10 @@ public class MethodCallNode extends OperandNode {
         }
         checkParameters(token, parameterList, method, className);
         if (chainedNode != null) {
-            chainedNode.checkNames(method.getType());
-            type = chainedNode.check();
+            type = chainedNode.checkNames(method.getType());
         }
         else {
-            if (!isStatic && SymbolTable.getClass(methodOwnerClassName)
-                    .getMethods().get(callerMethod).isStaticMethod()) {
+            if (!isStatic && callerMethod1.isStaticMethod()) {
                 throw new SemanticASTException(token, "Se realiza una llamada a un método de " +
                         "instancia desde un contexto estático");
             }

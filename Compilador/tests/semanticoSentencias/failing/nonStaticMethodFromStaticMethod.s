@@ -4,8 +4,9 @@ class A {
 }
 
 impl A {
+    .() {}
     st fn getXS() {
-        getX();
+        (getX());
     }
 
     fn Int getX() {

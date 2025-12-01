@@ -42,8 +42,31 @@ public class VariableNode extends OperandNode {
      * @return Type
      */
     public Type check() throws SemanticASTException {
-        Class currentClass = SymbolTable.getClass(this.currentClass);
-        Method currentMethod = currentClass.getMethods().get(this.currentMethod);
+        Class currentClass = null;
+        if (this.currentClass != null) {
+            currentClass = SymbolTable.getClass(this.currentClass);
+        }
+
+        Method currentMethod;
+
+        if (this.currentMethod == null) {
+            if (this.currentClass == null) {
+                throw new SemanticASTException(token, "La clase y el método actual son nulos");
+            }
+            currentMethod = currentClass.getConstructor();
+        }
+        else {
+            if (this.currentMethod.equals("start")) {
+                currentMethod = SymbolTable.getStartMethodStored();
+            }
+            else {
+                if (this.currentClass == null) {
+                    throw new SemanticASTException(token, "La clase es nula");
+                }
+                currentMethod = currentClass.getMethods().get(this.currentMethod);
+            }
+        }
+
         Type type;
         if (currentMethod.getParameters().get(token.getLexeme()) != null) {
             type = currentMethod.getParameters().get(token.getLexeme()).getType();
@@ -55,7 +78,7 @@ public class VariableNode extends OperandNode {
                 type.setToken(this.token);
             }
             else {
-                if (currentClass.getAttributes().get(token.getLexeme()) != null) {
+                if ((currentClass != null) && (currentClass.getAttributes().get(token.getLexeme()) != null)) {
                     if (currentMethod.isStaticMethod()) {
                         throw new SemanticASTException(this.token, "El atributo " +
                                 "de instancia " + token.getLexeme() +

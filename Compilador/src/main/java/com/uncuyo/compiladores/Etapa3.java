@@ -29,7 +29,7 @@ public class Etapa3 {
         try {
             SyntacticAnalyzer syntacticAnalyzer = new SyntacticAnalyzer(args[0]);
             syntacticAnalyzer.program();
-            JsonGenerator.printSymbolTable("SymbolTable.json");
+            //JsonGenerator.printSymbolTable("SymbolTable.json");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();

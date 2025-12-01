@@ -17,11 +17,23 @@ public class ChainedAccessNode extends ChainedNode {
     protected Token name;
 
     /**
+     * Clase en la cual se encuentra el metodo que contiene el encadenamiento
+     */
+    protected String className;
+
+    /**
+     * Metodo en el cual se encuentra el encadenado
+     */
+    protected String methodName;
+
+    /**
      * Constructor de ChainedAccessNode
      * @param name Token del nombre de la variable accedida en el encadenamiento
      */
-    public ChainedAccessNode(Token name) {
+    public ChainedAccessNode(Token name, String className, String methodName) {
         this.name = name;
+        this.className = className;
+        this.methodName = methodName;
     }
 
     public Token getToken() {
@@ -58,52 +70,103 @@ public class ChainedAccessNode extends ChainedNode {
      */
     public Type checkNames(Type lastType) throws SemanticASTException {
         Type finalType;
-
-        //verifico que no sea void (no se puede en un encadenado)
-        if (lastType.getName().equals("void")){
-            throw new SemanticASTException(name, "El tipo void no está permitido en un encadenamiento");
+        if (lastType == null) {
+            finalType = getAccessChainedNodeVariableType(name);
         }
+        else {
+            //verifico que no sea void (no se puede en un encadenado)
+            if (lastType.getName().equals("void")){
+                throw new SemanticASTException(name, "El tipo void no está permitido en un encadenamiento");
+            }
 
-        //Obtengo la clase
-        Class baseClass = SymbolTable.getClass(lastType.getName());
+            //Obtengo la clase
+            Class baseClass = SymbolTable.getClass(lastType.getName());
 
-        if (baseClass == null) {
-            throw new SemanticASTException(name, "La clase " + lastType.getName() +
-                    " no ha sido declarada en este contexto.");
+            if (baseClass == null) {
+                throw new SemanticASTException(name, "La clase " + lastType.getName() +
+                        " no ha sido declarada en este contexto.");
+            }
+            //Busco el atributo en esa clase
+            Attribute attribute = baseClass.getAttributes().get(name.getLexeme());
+
+            if (attribute == null) {
+                throw new SemanticASTException(name, "El atributo " + name.getLexeme() +
+                        " no ha sido declarado en la clase " + baseClass.getName());
+            }
+
+            if (!attribute.getIsPublic()) {
+                if(!className.equals(lastType.getName())) {
+                    throw new SemanticASTException(name, "No se puede acceder a un atributo privado (" + attribute.getName() +
+                            ") desde otra clase (" + className + ").");
+                }
+            }
+
+            /**
+             if (!attribute.getIsPublic()) {
+             throw new SemanticASTException(name,
+             "El atributo '" + name.getLexeme() + "' no es público y " +
+             "no puede ser accedido desde esta clase.");
+             }
+             **/
+
+            //Obtengo el tipo del atributo
+            finalType = attribute.getType();
+
+            //verifico que el tipo exista
+            Class classType = SymbolTable.getClass(finalType.getName());
+            if (classType == null) {
+                throw new SemanticASTException(name, "El tipo " + finalType.getName() +
+                        " no existe");
+            }
+
         }
-
-        //Busco el atributo en esa clase
-        Attribute attribute = baseClass.getAttributes().get(name.getLexeme());
-
-        if (attribute == null) {
-            throw new SemanticASTException(name, "El atributo " + name.getLexeme() +
-                    " no ha sido declarado en la clase " + baseClass.getName());
-        }
-
-        /**
-        if (!attribute.getIsPublic()) {
-            throw new SemanticASTException(name,
-                    "El atributo '" + name.getLexeme() + "' no es público y " +
-                            "no puede ser accedido desde esta clase.");
-        }
-         **/
-
-        //Obtengo el tipo del atributo
-        finalType = attribute.getType();
-
-        //verifico que el tipo exista
-        Class classType = SymbolTable.getClass(finalType.getName());
-        if (classType == null) {
-            throw new SemanticASTException(name, "El tipo " + finalType.getName() +
-                    " no existe");
-        }
-
         //Verifico si hay más encadenados:
         if (this.chainedNode != null) {
             finalType = this.chainedNode.checkNames(finalType);
         }
-
         return finalType;
     }
 
+
+    public Type getAccessChainedNodeVariableType(Token token) throws SemanticASTException {
+        Method method;
+        Type type;
+        if (methodName == null) {
+            if (className == null) {
+                //Este error no debería aparecer
+                throw new SemanticASTException(token, "El método y " +
+                        "la clase actuales son nulos");
+            }
+            method = SymbolTable.getClass(className).getConstructor();
+        }
+        else {
+            if (methodName.equals("start")) {
+                method = SymbolTable.getStartMethodStored();
+            }
+            else {
+                method = SymbolTable.getClass(className).getMethods().get(methodName);
+            }
+        }
+
+        if (method.getParameters().get(token.getLexeme()) != null) {
+            type = method.getParameters().get(token.getLexeme()).getType();
+        }
+        else {
+            if (method.getVariables().get(token.getLexeme()) != null) {
+                type =  method.getVariables().get(token.getLexeme()).getType();
+            }
+            else {
+                if ((className != null) && (SymbolTable.getClass(className).getAttributes().get(token.getLexeme()) != null)) {
+                    type = SymbolTable.getClass(className).getAttributes().get(token.getLexeme()).getType();
+                }
+                else {
+                    throw new SemanticASTException(token, "La variable " +
+                            token.getLexeme() + " no se encuentra " +
+                            "debidamente inicializada en este ámbito");
+                }
+            }
+        }
+        type.setToken(token);
+        return type;
+    }
 }
