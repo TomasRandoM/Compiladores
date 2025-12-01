@@ -50,7 +50,7 @@ public class ParenthesizedExpressionNode extends ExpressionNode {
         Type type = this.expressionNode.check();
 
         if (this.chainedNode != null) {
-            type = this.chainedNode.checkNames(type.getName());
+            type = this.chainedNode.checkNames(type);
         }
 
         return type;

@@ -44,21 +44,21 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
     public Type checkNames(Type lastType) throws SemanticASTException {
         //la clase debe ser array
         if (!lastType.getName().equals("Array")) {
-            throw new SemanticASTException(this.name, "Se intentó acceder a un índice de un " +
-                    "elemento de tipo " + lastType + " el cual no es un Array.");
+            throw new SemanticASTException(name, "Se intentó acceder a un índice de un " +
+                    "elemento de tipo " + lastType.getName() + " el cual no es un Array.");
         }
 
         //el indice debe ser una expresion (no a[])
-        if (this.expression == null) {
-            throw new SemanticASTException(this.name, "Se esperaba una expresión del índice del" +
+        if (expression == null) {
+            throw new SemanticASTException(name, "Se esperaba una expresión del índice del" +
                     " Array");
         }
 
         //obtengo el tipo del indice
-        Type intType = this.expression.check();
+        Type intType = expression.check();
 
         if (!intType.getName().equals("Int")) {
-            throw new SemanticASTException(this.name, "El índice debe ser de tipo Int. Se encontró: " +
+            throw new SemanticASTException(name, "El índice debe ser de tipo Int. Se encontró: " +
                     intType.getName());
         }
 
@@ -76,8 +76,9 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
                     " no existe");
         }
 
-        if (this.chainedNode != null) {
-            arrType = this.chainedNode.checkNames(arrType.getName());
+        if (chainedNode != null) {
+            throw new SemanticASTException(name, "Un array no puede tener un encadenamiento.");
+
         }
 
         return arrType;

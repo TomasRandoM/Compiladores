@@ -1,6 +1,8 @@
 package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
+import com.uncuyo.compiladores.exceptions.SemanticASTException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Type;
 
 /**
  * Nodo que representa un if else
@@ -35,7 +37,18 @@ public class IfThenElseNode extends SentenceNode {
     /**
      * Chequea la semantica
      */
-    public void check() {
-        //Pendiente
+    public void check() throws SemanticASTException {
+        Type expressionType = expressionNode.check();
+
+        if (!expressionType.getName().equals("Bool")) {
+            throw new SemanticASTException(expressionNode.getToken(), "La condición del if debe devolver " +
+                    "un booleano (true o false). Se encontró " + expressionType.getName() + ".");
+        }
+
+        sentenceNode.check();
+
+        if (elseSentenceNode != null) {
+            elseSentenceNode.check();
+        }
     }
 }

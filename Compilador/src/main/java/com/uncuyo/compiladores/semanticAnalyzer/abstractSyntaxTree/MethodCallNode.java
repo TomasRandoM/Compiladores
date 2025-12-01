@@ -117,7 +117,7 @@ public class MethodCallNode extends OperandNode {
         }
         checkParameters(token, parameterList, method, className);
         if (chainedNode != null) {
-            chainedNode.checkNames(method.getType().getName());
+            chainedNode.checkNames(method.getType());
             type = chainedNode.check();
         }
         else {

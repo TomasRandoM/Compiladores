@@ -1,5 +1,8 @@
 package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
+import com.uncuyo.compiladores.exceptions.SemanticASTException;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Type;
+
 /**
  * Clase que representa el bucle While
  * Extiende {@link SentenceNode}
@@ -24,7 +27,14 @@ public class WhileNode extends SentenceNode {
      * Metodo para chequear la semantica
      **/
     @Override
-    public void check() {
+    public void check() throws SemanticASTException {
+        Type expressionType = expressionNode.check();
 
+        if (!expressionType.getName().equals("Bool")) {
+            throw new SemanticASTException(expressionNode.getToken(), "La condición del bucle While debe devolver " +
+                    "un booleano (true o false). Se encontró " + expressionType.getName() + ".");
+        }
+
+        sentenceNode.check();
     }
 }
