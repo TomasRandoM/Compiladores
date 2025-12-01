@@ -1507,7 +1507,8 @@ public class SyntacticAnalyzer {
     public OperandNode primario2(Token token) throws LexicalException, SyntacticException, ReaderException {
         OperandNode operandNode;
         if (lookahead.getName() == TokenTypes.parentheses1) {
-            MethodCallNode methodCallNode = new MethodCallNode(AST.getCurrentClass(), token, false);
+            MethodCallNode methodCallNode = new MethodCallNode(AST.getCurrentClass(),
+                    AST.getCurrentClass(), AST.getCurrentMethod(), token, false);
             List<ExpressionNode> parameterList = argumentosActuales();
             methodCallNode.setParameterList(parameterList);
             ChainedNode chainedNode = primario3();
@@ -2442,7 +2443,8 @@ public class SyntacticAnalyzer {
      * @author Paulina Suden y Tomás Rando
      */
     public MethodCallNode llamadaMetodo(String class1, boolean isStatic) throws LexicalException, SyntacticException, ReaderException {
-        MethodCallNode methodCallNode = new MethodCallNode(class1, lookahead, isStatic);
+        MethodCallNode methodCallNode = new MethodCallNode(class1, AST.getCurrentClass(),
+                AST.getCurrentMethod(), lookahead, isStatic);
         if (lookahead.getName() == TokenTypes.id_obj) {
             match(TokenTypes.id_obj);
         } else {
