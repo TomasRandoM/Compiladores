@@ -24,6 +24,18 @@ public class MethodCallNode extends OperandNode {
     private String className;
 
     /**
+     * Nombre de la clase que posee al metodo en el cual se hace la llamada. En el caso de un metodo no estatico
+     * coincidira con className, sin embargo, sera diferente en el caso de ser estatico
+     */
+    private String methodOwnerClassName;
+
+    /**
+     * Nombre del metodo que contiene la llamada. Sirve para verificar que no se llame a un metodo no estatico
+     * desde un contexto estatico
+     */
+    private String callerMethod;
+
+    /**
      * Boolean que indica si es estatico o no
      */
     private boolean isStatic;
@@ -48,15 +60,15 @@ public class MethodCallNode extends OperandNode {
      * @param token Token
      * @param isStatic boolean
      * @param className String con el nombre de la clase
+     * @param callerMethod String con el nombre del metodo que contiene el llamado
      */
-    public MethodCallNode(String className, Token token, boolean isStatic) {
+    public MethodCallNode(String className, String methodOwnerClassName, String callerMethod, Token token, boolean isStatic) {
         this.className = className;
         this.isStatic = isStatic;
         this.token = token;
+        this.callerMethod = callerMethod;
+        this.methodOwnerClassName = methodOwnerClassName;
     }
-
-
-
 
     public Token getToken() {
         return token;
@@ -109,6 +121,11 @@ public class MethodCallNode extends OperandNode {
             type = chainedNode.check();
         }
         else {
+            if (!isStatic && SymbolTable.getClass(methodOwnerClassName)
+                    .getMethods().get(callerMethod).isStaticMethod()) {
+                throw new SemanticASTException(token, "Se realiza una llamada a un método de " +
+                        "instancia desde un contexto estático");
+            }
             type = method.getType();
         }
         type.setToken(token);
