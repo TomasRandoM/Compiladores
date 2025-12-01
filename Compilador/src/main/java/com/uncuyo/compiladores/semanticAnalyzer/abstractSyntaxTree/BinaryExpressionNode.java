@@ -39,8 +39,8 @@ public class BinaryExpressionNode extends ExpressionNode {
     @Override
     public Type check() throws SemanticASTException {
         Type type = null;
-        Type leftNode = this.left.check();
-        Type rightNode = this.right.check();
+        Type leftNode = left.check();
+        Type rightNode = right.check();
         //Cambio los nodos si son array
         if (leftNode.getName().equals("Array")) {
             leftNode = leftNode.getArrType();

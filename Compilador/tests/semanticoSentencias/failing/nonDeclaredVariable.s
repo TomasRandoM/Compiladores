@@ -4,6 +4,9 @@ class A {
 }
 
 impl A {
+    .() {
+
+    }
     fn a() {
         y = 5;
     }

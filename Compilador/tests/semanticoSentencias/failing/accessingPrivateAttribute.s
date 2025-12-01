@@ -13,6 +13,7 @@ class B {
 }
 
 impl B {
+    .() {}
     fn b() {
         A a;
         a = new A();

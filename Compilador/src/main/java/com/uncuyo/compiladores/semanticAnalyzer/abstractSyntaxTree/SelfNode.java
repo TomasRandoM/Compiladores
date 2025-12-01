@@ -69,8 +69,19 @@ public class SelfNode extends OperandNode {
     @Override
     public Type check() throws SemanticASTException {
         Type type;
+        Method method;
+        if (methodName.equals("start")) {
+            throw new SemanticASTException(token, "Self no puede " +
+                    "ser referenciado dentro del punto de entrada start");
+        }
         Class class1 = SymbolTable.getClass(className);
-        Method method = class1.getMethods().get(methodName);
+        if (methodName == null) {
+            method = class1.getConstructor();
+        }
+        else {
+            method = class1.getMethods().get(methodName);
+        }
+
         if (method.isStaticMethod()) {
             throw new SemanticASTException(token, "self está siendo referenciado en un contexto estático");
         }
