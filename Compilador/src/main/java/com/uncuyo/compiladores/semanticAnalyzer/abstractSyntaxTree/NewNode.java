@@ -79,7 +79,7 @@ public class NewNode extends OperandNode{
             checkParameters(type, parameterList, type.getLexeme());
             if (chainedNode != null) {
                 //Resolución de nombres (para los encadenados)
-                chainedNode.checkNames(type.getLexeme());
+                chainedNode.checkNames(new Type(type, "class"));
                 //Nos trae el último tipo de la serie de encadenamientos
                 newType = chainedNode.check();
             }

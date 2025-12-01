@@ -16,7 +16,6 @@ public abstract class ChainedNode extends OperandNode {
 
     public abstract ChainedNode getChainedNode();
 
-    public abstract Type checkNames(String lastClass) throws SemanticASTException;
     public abstract Type checkNames(Type lastType) throws SemanticASTException;
 
 

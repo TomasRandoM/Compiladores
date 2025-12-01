@@ -54,32 +54,39 @@ public class ChainedAccessNode extends ChainedNode {
      * ese metodo se convierte en el siguiente lastClass y se llama a chequear el siguiente
      * encadenamiento.
      * Ejemplo: Si tengo el caso A.b().c(). Al principio se llamara a chequear b() con el lastClass A.
-     * @param lastClass String con el tipo de la clase anterior o el tipo de retorno del anterior metodo
+     * @param lastType String con el tipo de la clase anterior o el tipo de retorno del anterior metodo
      */
-    public Type checkNames(String lastClass) throws SemanticASTException {
+    public Type checkNames(Type lastType) throws SemanticASTException {
         Type finalType;
+
+        //verifico que no sea void (no se puede en un encadenado)
+        if (lastType.getName().equals("void")){
+            throw new SemanticASTException(name, "El tipo void no está permitido en un encadenamiento");
+        }
+
         //Obtengo la clase
-        Class baseClass = SymbolTable.getClass(lastClass);
+        Class baseClass = SymbolTable.getClass(lastType.getName());
 
         if (baseClass == null) {
-            throw new SemanticASTException(name, "La clase " + lastClass +
+            throw new SemanticASTException(name, "La clase " + lastType.getName() +
                     " no ha sido declarada en este contexto.");
         }
 
         //Busco el atributo en esa clase
         Attribute attribute = baseClass.getAttributes().get(name.getLexeme());
 
+        if (attribute == null) {
+            throw new SemanticASTException(name, "El atributo " + name.getLexeme() +
+                    " no ha sido declarado en la clase " + baseClass.getName());
+        }
+
+        /**
         if (!attribute.getIsPublic()) {
             throw new SemanticASTException(name,
                     "El atributo '" + name.getLexeme() + "' no es público y " +
                             "no puede ser accedido desde esta clase.");
         }
-
-
-        if (attribute == null) {
-            throw new SemanticASTException(name, "El atributo " + name.getLexeme() +
-                    " no ha sido declarado en la clase " + baseClass.getName());
-        }
+         **/
 
         //Obtengo el tipo del atributo
         finalType = attribute.getType();
@@ -93,15 +100,10 @@ public class ChainedAccessNode extends ChainedNode {
 
         //Verifico si hay más encadenados:
         if (this.chainedNode != null) {
-            finalType = this.chainedNode.checkNames(finalType.getName());
+            finalType = this.chainedNode.checkNames(finalType);
         }
 
         return finalType;
-    }
-
-    @Override
-    public Type checkNames(Type lastType) throws SemanticASTException {
-        return null;
     }
 
 }
