@@ -58,7 +58,7 @@ public class ReturnNode extends SentenceNode {
         Type returnMethodType = SymbolTable.getClass(className).getMethods().get(methodName).getType();
         if (returnMethodType.getName().equals("void")) {
             throw new SemanticASTException(token, "Un método que devuelva " +
-                    "un tipo void no puede" +
+                    "un tipo void no puede " +
                     "contener ret");
         }
         Type returnType = expressionNode.check();
