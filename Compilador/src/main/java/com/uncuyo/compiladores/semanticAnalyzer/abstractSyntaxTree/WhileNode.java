@@ -31,8 +31,10 @@ public class WhileNode extends SentenceNode {
         Type expressionType = expressionNode.check();
 
         if (!expressionType.getName().equals("Bool")) {
-            throw new SemanticASTException(expressionNode.getToken(), "La condición del bucle While debe devolver " +
-                    "un booleano (true o false). Se encontró " + expressionType.getName() + ".");
+            throw new SemanticASTException(expressionNode.getToken(), "La condición del " +
+                    "bucle While debe devolver " +
+                    "un booleano (true o false). Se encontró " +
+                    expressionType.getName() + ".");
         }
 
         sentenceNode.check();

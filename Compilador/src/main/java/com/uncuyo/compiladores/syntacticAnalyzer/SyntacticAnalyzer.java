@@ -1599,9 +1599,11 @@ public class SyntacticAnalyzer {
             sentenceNode = null;
         } else {
             if (lookahead.getName() == TokenTypes.pret) {
+                Token token = lookahead;
                 match(TokenTypes.pret);
                 ExpressionNode expressionNode = sentenciaRet();
-                sentenceNode = new ReturnNode(expressionNode);
+                sentenceNode = new ReturnNode(expressionNode,
+                        AST.getCurrentClass(), AST.getCurrentMethod(), token);
             }
             else {
                 if (lookahead.getName() == TokenTypes.pif) {
