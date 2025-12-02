@@ -63,7 +63,7 @@ public class BlockNode extends SentenceNode {
      */
     public void check() throws SemanticASTException {
      for (SentenceNode sentence : sentences) {
-         System.out.println(sentence);
+         System.out.println("SENTENCIA BLOCK NODE: " + sentence.toString());
          sentence.check();
      }
     }

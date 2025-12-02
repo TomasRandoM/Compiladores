@@ -1068,7 +1068,7 @@ public class SyntacticAnalyzer {
         OperandNode operandNode;
         if (lookahead.getName() == TokenTypes.brackets1) {
             match(TokenTypes.brackets1);
-            ArrayAccessNode arrayAccessNode = new ArrayAccessNode();
+            ArrayAccessNode arrayAccessNode = new ArrayAccessNode(token, AST.getCurrentClass(), AST.getCurrentMethod());
             ExpressionNode expressionNode = expOr();
             arrayAccessNode.setExpressionNode(expressionNode);
             match(TokenTypes.brackets2);
@@ -1139,6 +1139,7 @@ public class SyntacticAnalyzer {
             if (lookahead.getName() == TokenTypes.id_obj) {
                 Token token = lookahead;
                 match(TokenTypes.id_obj);
+                System.out.println("adios");
                 return encadenado2(token);
             }
             else {
@@ -1247,7 +1248,9 @@ public class SyntacticAnalyzer {
             ExpressionNode expressionNode = expOr();
             chainedArrayAccessNode.setExpression(expressionNode);
             match(TokenTypes.brackets2);
-            ChainedNode chainedNode2 = accesoVariableEncadenado3();
+            ChainedNode chainedNode2 = accesoVariableEncadenado3(null);
+            System.out.println("Aca");
+            System.out.println(chainedNode2);
             chainedArrayAccessNode.setChainedNode(chainedNode2);
             chainedNode = chainedArrayAccessNode;
         }
@@ -1255,7 +1258,7 @@ public class SyntacticAnalyzer {
             if (lookahead.getName() == TokenTypes.dot ||
                     primarioFollows()
             ) {
-                chainedNode = accesoVariableEncadenado3();
+                chainedNode = accesoVariableEncadenado3(token);
             }
             else {
                 throw new SyntacticException(lookahead, "Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
@@ -1274,15 +1277,27 @@ public class SyntacticAnalyzer {
      * @throws SyntacticException Excepción ocasionada por un error sintáctico
      * @author Paulina Suden y Tomás Rando
      */
-    public ChainedNode accesoVariableEncadenado3() throws LexicalException, SyntacticException, ReaderException {
+    public ChainedNode accesoVariableEncadenado3(Token token) throws LexicalException, SyntacticException, ReaderException {
         ChainedNode chainedNode;
+
         if (lookahead.getName() == TokenTypes.dot) {
             chainedNode = encadenado();
+            if (token != null) {
+                ChainedAccessNode chainedAccessNode = new ChainedAccessNode(token, AST.getCurrentClass(), AST.getCurrentMethod());
+                chainedAccessNode.setChainedNode(chainedNode);
+                chainedNode = chainedAccessNode;
+            }
+            System.out.println("holass");
         }
         else {
             if (primarioFollows()) {
                 //retorna, pues es lambda, pero el return se coloca al final
-                chainedNode = null;
+                if (token != null) {
+                    chainedNode = new ChainedAccessNode(token, AST.getCurrentClass(), AST.getCurrentMethod());
+                }
+                else {
+                    chainedNode = null;
+                }
             }
             else {
                 throw new SyntacticException(lookahead, "Se esperaba '*', '/', '%', 'div', '+', '-', '<', " +
@@ -1292,6 +1307,7 @@ public class SyntacticAnalyzer {
         }
         return chainedNode;
     }
+
 
     /**
      * ⟨Argumentos-Actuales⟩ ::= parentheses1  <Argumentos-Actuales2>
@@ -1796,7 +1812,7 @@ public class SyntacticAnalyzer {
     public OperandNode accesoVarSimple2(Token token) throws LexicalException, SyntacticException, ReaderException {
         OperandNode operandNode;
         if (lookahead.getName() == TokenTypes.brackets1) {
-            ArrayAccessNode arrayAccessNode = new ArrayAccessNode();
+            ArrayAccessNode arrayAccessNode = new ArrayAccessNode(token, AST.getCurrentClass(), AST.getCurrentMethod());
             match(TokenTypes.brackets1);
             ExpressionNode expressionNode = expOr();
             arrayAccessNode.setExpressionNode(expressionNode);

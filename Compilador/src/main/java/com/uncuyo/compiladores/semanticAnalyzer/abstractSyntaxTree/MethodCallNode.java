@@ -156,7 +156,6 @@ public class MethodCallNode extends OperandNode {
      */
     public void checkParameters(Token token, List<ExpressionNode> expressionList, Method method, String class1) throws SemanticASTException {
         Map<String, Parameter> parameters = method.getParameters();
-
         if (parameters.size() != expressionList.size()) {
             throw new SemanticASTException(token, "El número de parámetros " +
                     "del constructor no coincide con los brindados");

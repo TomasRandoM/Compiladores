@@ -47,6 +47,7 @@ public class ParenthesizedExpressionNode extends ExpressionNode {
      * @return
      */
     public Type check() throws SemanticASTException {
+        System.out.println("entro expresion Paretnizada");
         Type type = this.expressionNode.check();
 
         if (this.chainedNode != null) {

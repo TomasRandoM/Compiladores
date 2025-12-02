@@ -6,6 +6,8 @@ import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.*;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Class;
 
+import java.sql.SQLOutput;
+
 /**
  * Clase que representa el acceso encadenado.
  * Extiende {@link ChainedNode}
@@ -52,6 +54,26 @@ public class ChainedAccessNode extends ChainedNode {
         this.chainedNode = chainedNode;
     }
 
+    public Token getName() {
+        return name;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
+
     /**
      * Chequea la semántica
      * @return Type
@@ -70,8 +92,10 @@ public class ChainedAccessNode extends ChainedNode {
      */
     public Type checkNames(Type lastType) throws SemanticASTException {
         Type finalType;
+        //primer acceso
         if (lastType == null) {
             finalType = getAccessChainedNodeVariableType(name);
+            lastType = finalType;
         }
         else {
             //verifico que no sea void (no se puede en un encadenado)
@@ -95,9 +119,15 @@ public class ChainedAccessNode extends ChainedNode {
             }
 
             if (!attribute.getIsPublic()) {
-                if(!className.equals(lastType.getName())) {
-                    throw new SemanticASTException(name, "No se puede acceder a un atributo privado (" + attribute.getName() +
-                            ") desde otra clase (" + className + ").");
+                if(!baseClass.getName().equals(getClassName())) {
+                    if (getClassName() == null) {
+                        throw new SemanticASTException(name, "No se puede acceder a un " +
+                                "atributo privado (" + attribute.getName() +
+                                ") desde el método start");
+                    }
+                    throw new SemanticASTException(name, "No se puede acceder a un " +
+                            "atributo privado (" + attribute.getName() +
+                            ") desde otra clase (" + baseClass.getName() + ").");
                 }
             }
 
@@ -122,6 +152,7 @@ public class ChainedAccessNode extends ChainedNode {
         }
         //Verifico si hay más encadenados:
         if (this.chainedNode != null) {
+            System.out.println("ENCADENADO EN CHAINED ACCESS: " + chainedNode);
             finalType = this.chainedNode.checkNames(finalType);
         }
         return finalType;
@@ -167,6 +198,7 @@ public class ChainedAccessNode extends ChainedNode {
             }
         }
         type.setToken(token);
+        System.out.println("CHAINED ACCESS NODE TIPO "+ type.getName());
         return type;
     }
 }
