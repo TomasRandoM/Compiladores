@@ -2,6 +2,8 @@ package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
 import com.uncuyo.compiladores.exceptions.SemanticASTException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Method;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.SymbolTable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,9 +64,26 @@ public class BlockNode extends SentenceNode {
      * Metodo para chequear semanticamente
      */
     public void check() throws SemanticASTException {
-     for (SentenceNode sentence : sentences) {
-         System.out.println("SENTENCIA BLOCK NODE: " + sentence.toString());
-         sentence.check();
-     }
+        boolean isThereReturnNode = false;
+        for (SentenceNode sentence : sentences) {
+            if (sentence instanceof ReturnNode) {
+                isThereReturnNode = true;
+            }
+            System.out.println("SENTENCIA BLOCK NODE: " + sentence.toString());
+            sentence.check();
+        }
+        //Se verifica que el metodo posee un ret (si debe)
+        if (methodName != null &&
+                !methodName.equals("start") &&
+                !SymbolTable.getClass(className).getMethods()
+                    .get(methodName).getType().getName().equals("void") &&
+                !isThereReturnNode
+        ) {
+            Method method = SymbolTable.getClass(className).getMethods().get(methodName);
+            throw new SemanticASTException(method.getToken(), "El " +
+                    "tipo de retorno del método " +
+                    methodName + " no es " +
+                    "void y el método no posee un ret");
+        }
     }
 }
