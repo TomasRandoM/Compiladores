@@ -7,6 +7,8 @@ import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Method;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.SymbolTable;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Type;
 
+import java.sql.SQLOutput;
+
 /**
  * Clase que representa los nodos de asignación
  * Extiende {@link SentenceNode}
@@ -45,14 +47,22 @@ public class AssignmentNode extends SentenceNode {
             leftType = leftNode.check();
         }
 
-        Type rightType = rightNode.check();
-        System.out.print("hola");
+        System.out.println("RIGHT NODE ASIGNACION" + rightNode);
+        Type rightType;
+        if (rightNode instanceof ChainedAccessNode) {
+            ChainedAccessNode auxNode = (ChainedAccessNode) rightNode;
+            rightType = auxNode.checkNames(null);
+        }
+        else {
+            rightType = rightNode.check();
+        }
+        System.out.println("Tipo derecho: " + rightType);
+
         if (leftType == null) {
-            System.out.println(((ChainedAccessNode) leftNode).getToken().getLexeme());
+            System.out.println("LEFT NODE ASSIGNMENT NODE: " + ((ChainedAccessNode) leftNode).getToken().getLexeme());
         }
 
-        System.out.println(leftNode.toString());
-        System.out.println("chau");
+        System.out.println("LEFT NODE ASSIGNMENT NODE: " + leftNode.toString());
         if (!leftType.getName().equals(rightType.getName())) {
             throw new SemanticASTException(rightType.getToken(), "El tipo asignado " +
                     "es incorrecto. " +

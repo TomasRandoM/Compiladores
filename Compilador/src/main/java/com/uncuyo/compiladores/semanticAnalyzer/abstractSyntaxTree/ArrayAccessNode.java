@@ -23,8 +23,19 @@ public class ArrayAccessNode extends OperandNode{
      * Representa encadenamiento en un array
      */
     private ChainedNode chainedNode;
+    /**
+     * Representa la clase del metodo en donde esta el Array
+     */
+    private String className;
+    /**
+     * Representa el metodo donde esta el Array.
+     */
+    private String methodName;
 
-    public ArrayAccessNode() {
+    public ArrayAccessNode(Token token, String className, String methodName) {
+        this.token = token;
+        this.className = className;
+        this.methodName = methodName;
     }
 
     public Token getToken() {
@@ -56,26 +67,51 @@ public class ArrayAccessNode extends OperandNode{
      * @return
      */
     public Type check() throws SemanticASTException {
+        Class currentClass;
+        Method currentMethod;
 
-        // obtener la clase actual y el método actual
-        Class actualClass = SymbolTable.getClass(AST.getCurrentClass());
-        Method actualMethod = actualClass.getMethods().get(AST.getCurrentMethod());
+        // obtener la clase y el método actual
+        if (methodName == null) {
+            if (className == null) {
+                //Este error no debería aparecer
+                throw new SemanticASTException(token, "El método y " +
+                        "la clase actuales son nulos");
+            }
+            currentClass = SymbolTable.getClass(className);
+            currentMethod = currentClass.getConstructor();
+        }
+        else {
+            if (methodName.equals("start")) {
+                currentMethod = SymbolTable.getStartMethodStored();
+            }
+            else {
+                currentMethod = SymbolTable.getClass(className).getMethods().get(methodName);
+            }
+            currentClass = SymbolTable.getClass(className);
+        }
 
         Type arrayType;
 
         // buscar primero en parámetros
-        if (actualMethod.getParameters().containsKey(token.getLexeme())) {
-            arrayType = actualMethod.getParameters().get(token.getLexeme()).getType();
+        if (currentMethod.getParameters().containsKey(token.getLexeme())) {
+            arrayType = currentMethod.getParameters().get(token.getLexeme()).getType();
         }
         // buscar en variables locales
         else {
-            if (actualMethod.getVariables().containsKey(token.getLexeme())) {
-                arrayType = actualMethod.getVariables().get(token.getLexeme()).getType();
+            if (currentMethod.getVariables().containsKey(token.getLexeme())) {
+                arrayType = currentMethod.getVariables().get(token.getLexeme()).getType();
             }
             else {
-                if (actualClass.getAttributes().containsKey(token.getLexeme())) {
+                if (currentClass.getAttributes().containsKey(token.getLexeme())) {
 
-                    Attribute attr = actualClass.getAttributes().get(token.getLexeme());
+                    Attribute attr = currentClass.getAttributes().get(token.getLexeme());
+                    //verifico si es privado
+                    if (!attr.getIsPublic()) {
+                        if (!currentClass.getName().equals(this.className)) {
+                            throw new SemanticASTException(token, "No se puede acceder al atributo privado "
+                                    + attr.getName() + " desde la clase " + this.className);
+                        }
+                    }
                     arrayType = attr.getType();
                 }
                 else {
@@ -85,7 +121,7 @@ public class ArrayAccessNode extends OperandNode{
             }
         }
 
-        // 5. Validar que el tipo sea Array
+        // Validar que el tipo sea Array
         if (!arrayType.getName().equals("Array")) {
             throw new SemanticASTException(token,
                     "Se intentó indexar '" + token.getLexeme() +
@@ -121,6 +157,5 @@ public class ArrayAccessNode extends OperandNode{
 
         return arrType;
     }
-
 
 }

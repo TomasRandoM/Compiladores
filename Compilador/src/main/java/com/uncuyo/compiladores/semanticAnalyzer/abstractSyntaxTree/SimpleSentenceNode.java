@@ -2,6 +2,8 @@ package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
 import com.uncuyo.compiladores.exceptions.SemanticASTException;
 
+import java.sql.SQLOutput;
+
 /**
  * Nodo que representa una sentencia simple
  * Extiende {@link SentenceNode}
@@ -22,6 +24,12 @@ public class SimpleSentenceNode extends SentenceNode {
      */
     @Override
     public void check() throws SemanticASTException {
-        expressionNode.check();
+        System.out.println("SENTENCIA SIMPLE " + expressionNode);
+        if (expressionNode instanceof ChainedNode) {
+            ((ChainedNode) expressionNode).checkNames(null);
+        }
+        else {
+            expressionNode.check();
+        }
     }
 }

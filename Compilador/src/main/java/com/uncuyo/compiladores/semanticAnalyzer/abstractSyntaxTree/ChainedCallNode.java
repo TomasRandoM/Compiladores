@@ -65,6 +65,7 @@ public class ChainedCallNode extends ChainedNode {
         return null;
     }
 
+
     /**
      * Metodo para manejar la resolucion de nombres. Recibe el nombre de la clase anterior. Se
      * fija en la tabla de simbolos si esa clase posee el metodo actual. Luego, el retorno de
@@ -144,6 +145,7 @@ public class ChainedCallNode extends ChainedNode {
         }
 
         return finalType;
+
 
     }
 
