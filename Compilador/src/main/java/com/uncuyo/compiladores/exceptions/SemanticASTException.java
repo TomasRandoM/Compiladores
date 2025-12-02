@@ -13,7 +13,7 @@ public class SemanticASTException extends Exception {
      * @param message String con el error producido
      */
     public SemanticASTException(Token lookahead, String message) {
-        super("ERROR: SEMÁNTICO - DECLARACIONES" + '\n' + "| NUMERO DE LINEA (NUMERO DE COLUMNA) " +
+        super("ERROR: SEMÁNTICO - SENTENCIAS" + '\n' + "| NUMERO DE LINEA (NUMERO DE COLUMNA) " +
                 "| DESCRIPCION: |" + '\n' + "| LINEA " +
                 lookahead.getRow() + " (COLUMNA " +
                 lookahead.getColumn() + ") " + "| " +
