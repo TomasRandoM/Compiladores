@@ -430,13 +430,14 @@ public class SymbolTable {
         Class doubleClass = new Class(null, "Double");
         Class objectClass = new Class(null, "Object");
         Class IOClass = new Class(null, "IO");
-
+        Class arrayClass = new Class(null, "Array");
         classes.put("Int", intClass);
         classes.put("Bool",boolClass );
         classes.put("Str", strClass);
         classes.put("Double", doubleClass);
         classes.put("Object", objectClass);
         classes.put("IO", IOClass);
+        classes.put("Array", arrayClass);
     }
 
     public static boolean checkPredefinedClasses(String name) {
@@ -445,7 +446,8 @@ public class SymbolTable {
                 name.equals("Str") ||
                 name.equals("Double") ||
                 name.equals("Object") ||
-                name.equals("IO"));
+                name.equals("IO")) ||
+                name.equals("Array");
     }
 
     public static void resolveAllInheritance() throws SemanticException {
