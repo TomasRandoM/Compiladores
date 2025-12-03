@@ -30,9 +30,26 @@ public class UnaryExpressionNode extends ExpressionNode {
      * @return
      */
     public Type check() throws SemanticASTException {
-        Type auxType = expressionNode.check();
+        Type auxType;
         Type type;
+        boolean chained = false;
+        if (expressionNode instanceof ChainedNode) {
+            auxType = ((ChainedNode) expressionNode).checkNames(null);
+            chained = true;
+        }
+        else {
+            auxType = expressionNode.check();
+        }
+
         if (auxType.getName().equals("Array")) {
+            if (expressionNode instanceof VariableNode || chained) {
+                if (operator.getName() == TokenTypes.op_not) {
+                    throw new SemanticASTException(expressionNode.getToken(), "Se " +
+                            "esperaba un Bool. Se encontró Array");
+                }
+                throw new SemanticASTException(expressionNode.getToken(), "Se " +
+                            "esperaba un Int o Double. Se encontró Array");
+            }
             auxType = auxType.getArrType();
         }
 

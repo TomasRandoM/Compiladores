@@ -120,17 +120,6 @@ public class SemanticASTTest {
      * Incorrecto.
      */
     @Test
-    public void testBinaryExpressionIncorrect() {
-        SymbolTable.resetSymbolTable();
-        assertThrows(SemanticASTException.class, () -> {
-            new SyntacticAnalyzer("tests/semanticoSentencias/failing/binaryExpression.s").program();
-        });
-    }
-
-    /**
-     * Incorrecto.
-     */
-    @Test
     public void testConstructorClassInNewDoesNotExistIncorrect() {
         SymbolTable.resetSymbolTable();
         assertThrows(SemanticASTException.class, () -> {
@@ -699,5 +688,403 @@ public class SemanticASTTest {
             new SyntacticAnalyzer("tests/semanticoSentencias/passing/retWithNil.s").program();
         });
     }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testArrayAccessMulCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/binaryExpressions/arrayAccessMul.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testArraysComparationCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/binaryExpressions/arraysComparation.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testArraysComparation2Correct() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/binaryExpressions/arraysComparation2.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testBoolComparationCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/binaryExpressions/boolComparation.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testDivOperatorCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/binaryExpressions/divOperator.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testPDivOperatorCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/binaryExpressions/pdivOperator.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testRelationalOpCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/binaryExpressions/relationalOp.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testAndOperatorIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/binaryExpressions/andOperator.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testAndOperator2Incorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/binaryExpressions/andOperator2.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testEqComparationIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/binaryExpressions/eqComparation.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testEqComparation2Incorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/binaryExpressions/eqComparation2.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testIncorrectArrayAccessIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/binaryExpressions/incorrectArrayAccess.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testIncorrectDivTypeIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/binaryExpressions/incorrectDivType.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testIncorrectPdivOperatorIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/binaryExpressions/incorrectPdivOperator.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testIncorrectSumWithStrIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/binaryExpressions/incorrectSumWithStr.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testIncorrectTypeInSumIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/binaryExpressions/incorrectTypeInSum.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testModOperatorIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/binaryExpressions/modOperator.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testModOperator2Incorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/binaryExpressions/modOperator2.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testRelationalOperatorIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/binaryExpressions/relationalOperator.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testSumArrayAndIntIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/binaryExpressions/SumArrayAndInt.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testArrayCastIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/unaryExpressions/arrayCast.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testArrayNotOperatorIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/unaryExpressions/arrayNotOperator.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testArraySubIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/unaryExpressions/arraySub.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testBoolCastIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/unaryExpressions/boolCast.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testBoolIncrementIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/unaryExpressions/boolIncrement.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testBoolSubIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/unaryExpressions/boolSub.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testNotOperatorIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/unaryExpressions/notOperator.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testStringDecrementIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/unaryExpressions/stringDecrement.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testStringSumIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/unaryExpressions/stringSum.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testArrayIncrementCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/unaryExpressions/arrayIncrement.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testCastOperatorCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/unaryExpressions/castOperator.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testIncrementCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/unaryExpressions/increment.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testIncrementAndDecrementCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/unaryExpressions/incrementAndDecrement.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testUnaryNotOperatorCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/unaryExpressions/notOperator.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testSubAndSumCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/unaryExpressions/subAndSum.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testSubAndSum2Correct() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/unaryExpressions/subAndSum2.s").program();
+        });
+    }
+
+
 
 }

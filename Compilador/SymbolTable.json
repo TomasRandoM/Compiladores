@@ -1,0 +1,223 @@
+{
+	"classes": {
+		"Str": {
+			"name": "Str",
+			"token": null,
+			"parentClass": null,
+			"attributes": {}, 
+			"methods": {}, 
+			"constructor": null,
+			"implInitialized": false,
+			"classInitialized": false,
+			"implToken": null,
+			"classToken": null
+		},
+		"Array": {
+			"name": "Array",
+			"token": null,
+			"parentClass": null,
+			"attributes": {}, 
+			"methods": {}, 
+			"constructor": null,
+			"implInitialized": false,
+			"classInitialized": false,
+			"implToken": null,
+			"classToken": null
+		},
+		"Bool": {
+			"name": "Bool",
+			"token": null,
+			"parentClass": null,
+			"attributes": {}, 
+			"methods": {}, 
+			"constructor": null,
+			"implInitialized": false,
+			"classInitialized": false,
+			"implToken": null,
+			"classToken": null
+		},
+		"IO": {
+			"name": "IO",
+			"token": null,
+			"parentClass": null,
+			"attributes": {}, 
+			"methods": {}, 
+			"constructor": null,
+			"implInitialized": false,
+			"classInitialized": false,
+			"implToken": null,
+			"classToken": null
+		},
+		"Object": {
+			"name": "Object",
+			"token": null,
+			"parentClass": null,
+			"attributes": {}, 
+			"methods": {}, 
+			"constructor": null,
+			"implInitialized": false,
+			"classInitialized": false,
+			"implToken": null,
+			"classToken": null
+		},
+		"Double": {
+			"name": "Double",
+			"token": null,
+			"parentClass": null,
+			"attributes": {}, 
+			"methods": {}, 
+			"constructor": null,
+			"implInitialized": false,
+			"classInitialized": false,
+			"implToken": null,
+			"classToken": null
+		},
+		"Int": {
+			"name": "Int",
+			"token": null,
+			"parentClass": null,
+			"attributes": {}, 
+			"methods": {}, 
+			"constructor": null,
+			"implInitialized": false,
+			"classInitialized": false,
+			"implToken": null,
+			"classToken": null
+		}
+	},
+	"currentClass": null,
+	"startMethodStored": {
+		"name": "start",
+		"type": null,
+		"token": {
+			"name": "pstart",
+			"lexeme": "start",
+			"valor": null,
+			"column": 0,
+			"row": 0
+		},
+		"isStaticMethod": false,
+		"variables": {
+			"arr": {
+				"name": "arr",
+				"type": {
+					"name": "Array",
+					"arrType": {
+						"name": "Int",
+						"arrType": null,
+						"token": {
+							"name": "op_sub",
+							"lexeme": "-",
+							"valor": null,
+							"column": 8,
+							"row": 4
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "arr",
+						"valor": null,
+						"column": 4,
+						"row": 3
+					}
+				},
+				"token": {
+					"name": "id_obj",
+					"lexeme": "arr",
+					"valor": null,
+					"column": 14,
+					"row": 1
+				}
+			},
+			"x": {
+				"name": "x",
+				"type": {
+					"name": "Int",
+					"arrType": null,
+					"token": {
+						"name": "id_obj",
+						"lexeme": "x",
+						"valor": null,
+						"column": 4,
+						"row": 4
+					}
+				},
+				"token": {
+					"name": "id_obj",
+					"lexeme": "x",
+					"valor": null,
+					"column": 8,
+					"row": 2
+				}
+			}
+		},
+		"parameters": {} 
+	},
+	"currentMethod": {
+		"name": "start",
+		"type": null,
+		"token": {
+			"name": "pstart",
+			"lexeme": "start",
+			"valor": null,
+			"column": 0,
+			"row": 0
+		},
+		"isStaticMethod": false,
+		"variables": {
+			"arr": {
+				"name": "arr",
+				"type": {
+					"name": "Array",
+					"arrType": {
+						"name": "Int",
+						"arrType": null,
+						"token": {
+							"name": "op_sub",
+							"lexeme": "-",
+							"valor": null,
+							"column": 8,
+							"row": 4
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "arr",
+						"valor": null,
+						"column": 4,
+						"row": 3
+					}
+				},
+				"token": {
+					"name": "id_obj",
+					"lexeme": "arr",
+					"valor": null,
+					"column": 14,
+					"row": 1
+				}
+			},
+			"x": {
+				"name": "x",
+				"type": {
+					"name": "Int",
+					"arrType": null,
+					"token": {
+						"name": "id_obj",
+						"lexeme": "x",
+						"valor": null,
+						"column": 4,
+						"row": 4
+					}
+				},
+				"token": {
+					"name": "id_obj",
+					"lexeme": "x",
+					"valor": null,
+					"column": 8,
+					"row": 2
+				}
+			}
+		},
+		"parameters": {} 
+	}
+}
