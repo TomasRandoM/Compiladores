@@ -27,6 +27,7 @@ public class BlockNode extends SentenceNode {
      */
     private String className;
 
+
     public BlockNode(String className, String methodName) {
         this.className = className;
         this.methodName = methodName;

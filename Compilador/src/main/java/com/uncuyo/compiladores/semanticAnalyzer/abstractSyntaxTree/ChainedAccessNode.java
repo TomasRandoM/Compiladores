@@ -92,12 +92,19 @@ public class ChainedAccessNode extends ChainedNode {
      */
     public Type checkNames(Type lastType) throws SemanticASTException {
         Type finalType;
+
         //primer acceso
         if (lastType == null) {
             finalType = getAccessChainedNodeVariableType(name);
             lastType = finalType;
+            System.out.println("despues " + lastType.getName());
         }
         else {
+            if (lastType.getName().equals("Array")) {
+                throw new SemanticASTException(name, "No se permite " +
+                        "que una variable de tipo Array tenga encadenamiento");
+            }
+
             //verifico que no sea void (no se puede en un encadenado)
             if (lastType.getName().equals("void")){
                 throw new SemanticASTException(name, "El tipo void no está permitido en un encadenamiento");
@@ -151,6 +158,8 @@ public class ChainedAccessNode extends ChainedNode {
 
         }
         //Verifico si hay más encadenados:
+        System.out.println(getName().getLexeme());
+        System.out.println(this.chainedNode);
         if (this.chainedNode != null) {
             System.out.println("ENCADENADO EN CHAINED ACCESS: " + chainedNode);
             finalType = this.chainedNode.checkNames(finalType);
@@ -162,6 +171,8 @@ public class ChainedAccessNode extends ChainedNode {
     public Type getAccessChainedNodeVariableType(Token token) throws SemanticASTException {
         Method method;
         Type type;
+        System.out.println(methodName);
+        System.out.println(className);
         if (methodName == null) {
             if (className == null) {
                 //Este error no debería aparecer

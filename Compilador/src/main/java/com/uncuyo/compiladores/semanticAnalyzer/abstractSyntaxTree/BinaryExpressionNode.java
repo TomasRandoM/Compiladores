@@ -39,13 +39,37 @@ public class BinaryExpressionNode extends ExpressionNode {
     @Override
     public Type check() throws SemanticASTException {
         Type type = null;
-        Type leftNode = left.check();
-        Type rightNode = right.check();
+        Type leftNode;
+        boolean chained = false;
+        if (left instanceof ChainedNode) {
+            leftNode = ((ChainedNode) left).checkNames(null);
+            chained = true;
+        }
+        else {
+            leftNode = left.check();
+        }
+        Type rightNode;
+        if (right instanceof ChainedNode) {
+            rightNode = ((ChainedNode) right).checkNames(null);
+            chained = true;
+        }
+        else {
+            rightNode = right.check();
+        }
+
         //Cambio los nodos si son array
         if (leftNode.getName().equals("Array")) {
+            if (left instanceof VariableNode || chained) {
+                throw new SemanticASTException(left.getToken(), "Se " +
+                        "esperaba un Int o Double. Se encontró Array");
+            }
             leftNode = leftNode.getArrType();
         }
         if (rightNode.getName().equals("Array")) {
+            if (left instanceof VariableNode || chained) {
+                throw new SemanticASTException(right.getToken(), "Se " +
+                        "esperaba un Int o Double. Se encontró Array");
+            }
             rightNode = rightNode.getArrType();
         }
 
@@ -90,13 +114,13 @@ public class BinaryExpressionNode extends ExpressionNode {
                             type = new Type(operator, "Double");
                     }
                     else {
-                        throw new SemanticASTException(leftNode.getToken(), "Se esperaban " +
+                        throw new SemanticASTException(operator, "Se esperaban " +
                                 "tipos Int o Double. " +
                                 "Se encontró: " + leftNode.getName());
                     }
                 }
                 else {
-                    throw new SemanticASTException(rightNode.getToken(), "Se esperaba " +
+                    throw new SemanticASTException(operator, "Se esperaba " +
                             "tipo Int o Double. " +
                             "Se encontró: " + rightNode.getName());
                 }
@@ -132,13 +156,13 @@ public class BinaryExpressionNode extends ExpressionNode {
                                 type = new Type(operator, "Bool");
                             }
                             else {
-                                throw new SemanticASTException(rightNode.getToken(), "Se esperaban " +
+                                throw new SemanticASTException(operator, "Se esperaban " +
                                         "tipos Double o Int. Se encontró: "
                                         + rightNode.getName() + ".");
                            }
                         }
                         else {
-                            throw new SemanticASTException(leftNode.getToken(), "Se esperaban " +
+                            throw new SemanticASTException(operator, "Se esperaban " +
                                     "tipos Double o Int. Se encontró: " +
                                     leftNode.getName() + ".");
                         }
@@ -161,7 +185,10 @@ public class BinaryExpressionNode extends ExpressionNode {
                         else {
                             if (operator.getName() == TokenTypes.op_rel_equal ||
                                 operator.getName() == TokenTypes.op_rel_notequal) {
-                                if (leftNode.getName().equals(rightNode.getName())) {
+                                if (leftNode.getName().equals(rightNode.getName()) ||
+                                    leftNode.getName().equals("nil") ||
+                                    rightNode.getName().equals("nil")
+                                ) {
                                     type = new Type(operator, "Bool");
                                 }
                                 else {

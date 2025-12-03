@@ -50,6 +50,16 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
             lastType = finalType; // ACTUALIZAR lastType para evitar null
         }
         else {
+            /*
+            if (lastType.getName().equals("Array")) {
+                throw new SemanticASTException(name, "No se permite " +
+                        "que una variable de tipo Array tenga encadenamiento");
+            }
+             */
+            if (lastType.getName().equals("void")) {
+                throw new SemanticASTException(getToken(), "Void no " +
+                        "puede aparecer en un encadenamiento");
+            }
             Class classA = SymbolTable.getClass(lastType.getName());
 
             if (classA.getAttributes().get(getToken().getLexeme()) == null) {

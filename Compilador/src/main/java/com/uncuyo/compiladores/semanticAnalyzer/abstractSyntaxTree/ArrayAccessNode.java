@@ -70,7 +70,7 @@ public class ArrayAccessNode extends OperandNode{
         Class currentClass;
         Method currentMethod;
 
-        // obtener la clase y el método actual
+        // obtener la clase y el metodo actual
         if (methodName == null) {
             if (className == null) {
                 //Este error no debería aparecer
@@ -87,7 +87,6 @@ public class ArrayAccessNode extends OperandNode{
             else {
                 currentMethod = SymbolTable.getClass(className).getMethods().get(methodName);
             }
-            currentClass = SymbolTable.getClass(className);
         }
 
         Type arrayType;
@@ -102,16 +101,18 @@ public class ArrayAccessNode extends OperandNode{
                 arrayType = currentMethod.getVariables().get(token.getLexeme()).getType();
             }
             else {
-                if (currentClass.getAttributes().containsKey(token.getLexeme())) {
+                if ((className != null) && (SymbolTable.getClass(className).getAttributes().containsKey(token.getLexeme()))) {
 
-                    Attribute attr = currentClass.getAttributes().get(token.getLexeme());
+                    Attribute attr = SymbolTable.getClass(className).getAttributes().get(token.getLexeme());
                     //verifico si es privado
+                    /*
                     if (!attr.getIsPublic()) {
-                        if (!currentClass.getName().equals(this.className)) {
+                        if (!SymbolTable.getClass(className).getName().equals(this.className)) {
                             throw new SemanticASTException(token, "No se puede acceder al atributo privado "
                                     + attr.getName() + " desde la clase " + this.className);
                         }
                     }
+                     */
                     arrayType = attr.getType();
                 }
                 else {

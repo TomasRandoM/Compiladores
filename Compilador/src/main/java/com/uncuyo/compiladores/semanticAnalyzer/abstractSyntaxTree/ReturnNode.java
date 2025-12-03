@@ -62,7 +62,7 @@ public class ReturnNode extends SentenceNode {
                     "contener ret");
         }
         Type returnType = expressionNode.check();
-        if (!returnType.getName().equals(returnMethodType.getName())) {
+        if (!returnType.getName().equals(returnMethodType.getName()) && !returnType.getName().equals("nil")) {
             throw new SemanticASTException(returnType.getToken(), "El tipo " +
                     "de retorno no coincide, se esperaba " +
                     returnMethodType.getName() + " y se " +

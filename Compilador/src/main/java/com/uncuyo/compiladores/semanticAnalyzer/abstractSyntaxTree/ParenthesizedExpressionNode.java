@@ -48,8 +48,13 @@ public class ParenthesizedExpressionNode extends ExpressionNode {
      */
     public Type check() throws SemanticASTException {
         System.out.println("entro expresion Paretnizada");
-        Type type = this.expressionNode.check();
-
+        Type type;
+        if (expressionNode instanceof ChainedNode) {
+            type = ((ChainedNode) this.expressionNode).checkNames(null);
+        }
+        else {
+            type = this.expressionNode.check();
+        }
         if (this.chainedNode != null) {
             type = this.chainedNode.checkNames(type);
         }

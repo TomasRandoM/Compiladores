@@ -158,7 +158,8 @@ public class MethodCallNode extends OperandNode {
         Map<String, Parameter> parameters = method.getParameters();
         if (parameters.size() != expressionList.size()) {
             throw new SemanticASTException(token, "El número de parámetros " +
-                    "del constructor no coincide con los brindados");
+                    "del método " + token.getLexeme() +
+                    " no coincide con los brindados");
         }
 
         int index = 0;
@@ -169,9 +170,9 @@ public class MethodCallNode extends OperandNode {
                 index++;
             }
             else {
-                throw new SemanticASTException(entry.getValue().getToken(), "Tipo incorrecto en " +
+                throw new SemanticASTException(providedType.getToken(), "Tipo incorrecto en " +
                         "parámetros del método " + method.getName() + ". Se obtuvo: " +
-                        providedType.getName() + ".Se esperaba " +
+                        providedType.getName() + ". Se esperaba " +
                         parameterType.getName());
             }
         }

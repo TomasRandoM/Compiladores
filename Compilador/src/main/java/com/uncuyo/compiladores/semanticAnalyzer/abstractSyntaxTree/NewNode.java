@@ -78,10 +78,8 @@ public class NewNode extends OperandNode{
             //Constructor si posee porque lo chequeamos en la tabla de símbolos
             checkParameters(type, parameterList, type.getLexeme());
             if (chainedNode != null) {
-                //Resolución de nombres (para los encadenados)
-                chainedNode.checkNames(new Type(type, "class"));
-                //Nos trae el último tipo de la serie de encadenamientos
-                newType = chainedNode.check();
+                //Resolución de nombres (para los encadenados). Nos trae el último tipo de la serie de encadenamientos
+                newType = chainedNode.checkNames(new Type(type, "class"));
             }
             else {
                 newType = new Type(type, "class");

@@ -35,6 +35,12 @@ public class AST {
         }
     }
 
+    public static void resetAST() {
+        currentClass = null;
+        currentMethod = null;
+        blockNodes.clear();
+    }
+
     public static List<BlockNode> getBlockNodes() {
         return blockNodes;
     }
