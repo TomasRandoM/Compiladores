@@ -24,7 +24,6 @@ public class SimpleSentenceNode extends SentenceNode {
      */
     @Override
     public void check() throws SemanticASTException {
-        System.out.println("SENTENCIA SIMPLE " + expressionNode);
         if (expressionNode instanceof ChainedNode) {
             ((ChainedNode) expressionNode).checkNames(null);
         }

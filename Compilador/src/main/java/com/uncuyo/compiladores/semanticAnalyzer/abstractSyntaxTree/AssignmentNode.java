@@ -53,7 +53,6 @@ public class AssignmentNode extends SentenceNode {
             leftType = leftNode.check();
         }
 
-        System.out.println("RIGHT NODE ASIGNACION" + rightNode);
         Type rightType;
         if (rightNode instanceof ChainedAccessNode) {
             ChainedAccessNode auxNode = (ChainedAccessNode) rightNode;
@@ -62,21 +61,15 @@ public class AssignmentNode extends SentenceNode {
         else {
             rightType = rightNode.check();
         }
-        System.out.println("Tipo derecho: " + rightType);
 
-        if (leftType == null) {
-            System.out.println("LEFT NODE ASSIGNMENT NODE: " + ((ChainedAccessNode) leftNode).getToken().getLexeme());
-        }
-
-        System.out.println("LEFT NODE ASSIGNMENT NODE: " + leftNode.toString());
         if (!leftType.getName().equals(rightType.getName())) {
-            if ((leftType.getName().equals("Double") && !rightType.getName().equals("Int")) ||
-               (!rightType.getName().equals("nil") && !(leftType.getName().equals("Double") && rightType.getName().equals("Int")))
-            ) {
-                throw new SemanticASTException(rightNode.getToken(), "El tipo asignado " +
-                        "es incorrecto. " +
-                        "Se esperaba: " + leftType.getName() +
-                        ". Se obtuvo: " + rightType.getName() + ".");
+            if (!rightType.getName().equals("nil")) {
+                if (!(SymbolTable.getClass(rightType.getName()).isInheritedClass(leftType.getName()))) {
+                    throw new SemanticASTException(rightNode.getToken(), "El tipo asignado " +
+                            "es incorrecto. " +
+                            "Se esperaba: " + leftType.getName() +
+                            ". Se obtuvo: " + rightType.getName() + ".");
+                }
             }
         }
     }

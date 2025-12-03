@@ -27,10 +27,32 @@ public class BlockNode extends SentenceNode {
      */
     private String className;
 
+    /**
+     * Si es true se trata de un bloque de metodo, caso contrario, se trata de un
+     * bloque de sentencias
+     */
+    private boolean methodBlock;
 
-    public BlockNode(String className, String methodName) {
+    public BlockNode(String className, String methodName, boolean methodBlock) {
         this.className = className;
         this.methodName = methodName;
+        this.methodBlock = methodBlock;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
+
+    public boolean isMethodBlock() {
+        return methodBlock;
+    }
+
+    public void setMethodBlock(boolean methodBlock) {
+        this.methodBlock = methodBlock;
     }
 
     public void addSentence(SentenceNode sentenceNode) {
@@ -65,12 +87,7 @@ public class BlockNode extends SentenceNode {
      * Metodo para chequear semanticamente
      */
     public void check() throws SemanticASTException {
-        boolean isThereReturnNode = false;
         for (SentenceNode sentence : sentences) {
-            if (sentence instanceof ReturnNode) {
-                isThereReturnNode = true;
-            }
-            System.out.println("SENTENCIA BLOCK NODE: " + sentence.toString());
             sentence.check();
         }
         //Se verifica que el metodo posee un ret (si debe)
@@ -78,13 +95,18 @@ public class BlockNode extends SentenceNode {
                 !methodName.equals("start") &&
                 !SymbolTable.getClass(className).getMethods()
                     .get(methodName).getType().getName().equals("void") &&
-                !isThereReturnNode
+                !AST.isReturnPresent() &&
+                methodBlock
         ) {
             Method method = SymbolTable.getClass(className).getMethods().get(methodName);
             throw new SemanticASTException(method.getToken(), "El " +
                     "tipo de retorno del método " +
                     methodName + " no es " +
                     "void y el método no posee un ret");
+        }
+        //Reseteo el isReturnPresent del AST para el siguiente metodo
+        if (methodBlock) {
+            AST.setIsReturnPresent(false);
         }
     }
 }

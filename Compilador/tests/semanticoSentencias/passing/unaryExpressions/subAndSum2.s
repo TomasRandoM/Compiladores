@@ -1,7 +1,6 @@
-//CORRECTO: se resta 1 a d
+//CORRECTO
 
 start {
     Double d;
     d = +d;
-    d = -1;
 }

@@ -3,6 +3,7 @@ package com.uncuyo.compiladores.semanticAnalyzer.symbolTable;
 import com.uncuyo.compiladores.exceptions.SemanticException;
 import com.uncuyo.compiladores.exceptions.WriterException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
+import com.uncuyo.compiladores.lexicalAnalyzer.TokenTypes;
 import com.uncuyo.compiladores.utils.JsonGenerator;
 
 import java.util.*;
@@ -189,9 +190,10 @@ public class SymbolTable {
                 String parent = class1.getParentClass();
                 Class lastClass = class1;
 
-                if (parent != null) {
+                if (!parent.equals("Object")) {
                     if (parent.equals("Array") ||
                             parent.equals("Int") ||
+                            parent.equals("void") ||
                             parent.equals("Str") ||
                             parent.equals("Bool") ||
                             parent.equals("Double")
@@ -203,7 +205,7 @@ public class SymbolTable {
 
                 Set<String> visitedParents = new HashSet<>(); //guardamos los padres ya visitados
 
-                while (parent != null) {
+                while (!parent.equals("Object")) {
 
                     if (visitedParents.contains(parent)) {
                         throw new SemanticException((class1.getToken()), "Herencia circular detectada. " +
@@ -250,7 +252,8 @@ public class SymbolTable {
                 attributes = class1.getAttributes();
                 parent = class1.getParentClass();
                 parentClass = getClass(parent);
-                while (parent != null) {
+                while (!parent.equals("Object")) {
+                    class1.addInheritedClass(parent);
                     for (Method method : parentClass.getMethods().values()) {
                         if (methods.containsKey(method.getName())) {
 
@@ -423,14 +426,182 @@ public class SymbolTable {
     /**
      * Agrega las clases predefinidas a la SymbolTable
      */
-    public static void addPredefinedClasses() {
-        Class intClass = new Class(null, "Int");
-        Class boolClass = new Class(null, "Bool");
-        Class strClass = new Class(null, "Str");
-        Class doubleClass = new Class(null, "Double");
-        Class objectClass = new Class(null, "Object");
-        Class IOClass = new Class(null, "IO");
-        Class arrayClass = new Class(null, "Array");
+    public static void addPredefinedClasses() throws SemanticException {
+        Token token = new Token(TokenTypes.pint, "Int", null, 0, 0);
+        Class intClass = new Class(token, "Int");
+        token = new Token(TokenTypes.pbool, "Bool", null, 0, 0);
+        Class boolClass = new Class(token, "Bool");
+        token = new Token(TokenTypes.pstr, "Str", null, 0, 0);
+        Class strClass = new Class(token, "Str");
+        token = new Token(TokenTypes.pdouble, "Double", null, 0, 0);
+        Class doubleClass = new Class(token, "Double");
+        token = new Token(TokenTypes.pobject, "Object", null, 0, 0);
+        Class objectClass = new Class(token, "Object");
+        token = new Token(TokenTypes.pio, "IO", null, 0, 0);
+        Class IOClass = new Class(token, "IO");
+        token =  new Token(TokenTypes.parray, "Array", null, 0, 0);
+        Class arrayClass = new Class(token, "Array");
+
+        //Metodos de IO
+        Method method;
+        Type type;
+        Type typeParameter;
+        Token typeToken;
+        Token tokenParameter;
+        //out_str
+        token = new Token(TokenTypes.id_obj, "s", null, 0, 0);
+        typeToken =  new Token(TokenTypes.pstr, "Str", null, 0, 0);
+        typeParameter = new Type(typeToken, "Str");
+        Parameter parameter = new Parameter(token, typeParameter);
+        token = new Token(TokenTypes.id_obj, "out_str", null, 0, 0);
+        type = new Type(token, "void");
+        method = new Method(token, type, true);
+        method.addParameter(parameter);
+        IOClass.addMethods(method);
+
+        //out_int
+        token = new Token(TokenTypes.id_obj, "i", null, 0, 0);
+        typeToken = new Token(TokenTypes.pint, "Int", null, 0, 0);
+        typeParameter = new Type(typeToken, "Int");
+        parameter = new Parameter(token, typeParameter);
+
+        token = new Token(TokenTypes.id_obj, "out_int", null, 0, 0);
+        type = new Type(token, "void");
+        method = new Method(token, type, true);
+        method.addParameter(parameter);
+        IOClass.addMethods(method);
+        //out_bool
+        token = new Token(TokenTypes.id_obj, "b", null, 0, 0);
+        typeToken = new Token(TokenTypes.pbool, "Bool", null, 0, 0);
+        typeParameter = new Type(typeToken, "Bool");
+        parameter = new Parameter(token, typeParameter);
+
+        token = new Token(TokenTypes.id_obj, "out_bool", null, 0, 0);
+        type = new Type(token, "void");
+        method = new Method(token, type, true);
+        method.addParameter(parameter);
+        IOClass.addMethods(method);
+        //out_double
+        token = new Token(TokenTypes.id_obj, "c", null, 0, 0);
+        typeToken = new Token(TokenTypes.pdouble, "Double", null, 0, 0);
+        typeParameter = new Type(typeToken, "Double");
+        parameter = new Parameter(token, typeParameter);
+
+        token = new Token(TokenTypes.id_obj, "out_double", null, 0, 0);
+        type = new Type(token, "void");
+        method = new Method(token, type, true);
+        method.addParameter(parameter);
+        IOClass.addMethods(method);
+
+        Type arrayType;
+        Token arrayTypeToken;
+        //out_array_int
+        token = new Token(TokenTypes.id_obj, "a", null, 0, 0);
+        typeToken = new Token(TokenTypes.parray, "Array", null, 0, 0);
+        arrayTypeToken = new Token(TokenTypes.pint, "Int", null, 0, 0);
+        arrayType = new Type(arrayTypeToken, "Int");
+        typeParameter = new Type(typeToken, "Array");
+        typeParameter.setArrType(arrayType);
+        parameter = new Parameter(token, typeParameter);
+        token = new Token(TokenTypes.id_obj, "out_array_int", null, 0, 0);
+        type = new Type(token, "void");
+        method = new Method(token, type, true);
+        method.addParameter(parameter);
+        IOClass.addMethods(method);
+
+        //out_array_str
+        token = new Token(TokenTypes.id_obj, "a", null, 0, 0);
+        typeToken = new Token(TokenTypes.parray, "Array", null, 0, 0);
+        arrayTypeToken = new Token(TokenTypes.pstr, "Str", null, 0, 0);
+        arrayType = new Type(arrayTypeToken, "Str");
+        typeParameter = new Type(typeToken, "Array");
+        typeParameter.setArrType(arrayType);
+        parameter = new Parameter(token, typeParameter);
+        token = new Token(TokenTypes.id_obj, "out_array_str", null, 0, 0);
+        type = new Type(token, "void");
+        method = new Method(token, type, true);
+        method.addParameter(parameter);
+        IOClass.addMethods(method);
+
+        //out_array_bool
+        token = new Token(TokenTypes.id_obj, "a", null, 0, 0);
+        typeToken = new Token(TokenTypes.parray, "Array", null, 0, 0);
+        arrayTypeToken = new Token(TokenTypes.pbool, "Bool", null, 0, 0);
+        arrayType = new Type(arrayTypeToken, "Bool");
+        typeParameter = new Type(typeToken, "Array");
+        typeParameter.setArrType(arrayType);
+        parameter = new Parameter(token, typeParameter);
+        token = new Token(TokenTypes.id_obj, "out_array_bool", null, 0, 0);
+        type = new Type(token, "void");
+        method = new Method(token, type, true);
+        method.addParameter(parameter);
+        IOClass.addMethods(method);
+
+        //out_array_double
+        token = new Token(TokenTypes.id_obj, "a", null, 0, 0);
+        typeToken = new Token(TokenTypes.parray, "Array", null, 0, 0);
+        arrayTypeToken = new Token(TokenTypes.pdouble, "Double", null, 0, 0);
+        arrayType = new Type(arrayTypeToken, "Double");
+        typeParameter = new Type(typeToken, "Array");
+        typeParameter.setArrType(arrayType);
+        parameter = new Parameter(token, typeParameter);
+        token = new Token(TokenTypes.id_obj, "out_array_double", null, 0, 0);
+        type = new Type(token, "void");
+        method = new Method(token, type, true);
+        method.addParameter(parameter);
+        IOClass.addMethods(method);
+
+        //in_str
+        token = new Token(TokenTypes.id_obj, "in_str", null, 0, 0);
+        typeToken = new Token(TokenTypes.pstr, "Str", null, 0, 0);
+        type = new Type(typeToken, "Str");
+        method = new Method(token, type, true);
+        IOClass.addMethods(method);
+        //in_int
+        token = new Token(TokenTypes.id_obj, "in_int", null, 0, 0);
+        typeToken = new Token(TokenTypes.pint, "Int", null, 0, 0);
+        type = new Type(typeToken, "Int");
+        method = new Method(token, type, true);
+        IOClass.addMethods(method);
+        //in_bool
+        token = new Token(TokenTypes.id_obj, "in_bool", null, 0, 0);
+        typeToken = new Token(TokenTypes.pbool, "Bool", null, 0, 0);
+        type = new Type(typeToken, "Bool");
+        method = new Method(token, type, true);
+        IOClass.addMethods(method);
+        //in_double
+        token = new Token(TokenTypes.id_obj, "in_double", null, 0, 0);
+        typeToken = new Token(TokenTypes.pdouble, "Double", null, 0, 0);
+        type = new Type(typeToken, "Double");
+        method = new Method(token, type, true);
+        IOClass.addMethods(method);
+
+        //Metodos para Str
+        //length
+        token = new Token(TokenTypes.id_obj, "length", null, 0, 0);
+        type = new Type(token, "Int");
+        method = new Method(token, type, false);
+        strClass.addMethods(method);
+
+        //concat
+        token = new Token(TokenTypes.id_obj, "s", null, 0, 0);
+        typeToken = new Token(TokenTypes.pstr, "Str", null, 0, 0);
+        typeParameter = new Type(typeToken, "Str");
+        parameter = new Parameter(token, typeParameter);
+
+        token = new Token(TokenTypes.id_obj, "concat", null, 0, 0);
+        type = new Type(token, "Str");
+        method = new Method(token, type, false);
+        method.addParameter(parameter);
+        strClass.addMethods(method);
+
+        //Metodos para Array
+        //length
+        token = new Token(TokenTypes.id_obj, "length", null, 0, 0);
+        type = new Type(token, "Int");
+        method = new Method(token, type, false);
+        arrayClass.addMethods(method);
+
         classes.put("Int", intClass);
         classes.put("Bool",boolClass );
         classes.put("Str", strClass);
@@ -438,6 +609,7 @@ public class SymbolTable {
         classes.put("Object", objectClass);
         classes.put("IO", IOClass);
         classes.put("Array", arrayClass);
+
     }
 
     public static boolean checkPredefinedClasses(String name) {

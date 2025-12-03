@@ -20,7 +20,7 @@ public class Token {
      * @param row int con la fila donde se encontró
      * @author Paulina Suden y Tomás Rando
      */
-    Token(TokenTypes name, String lexeme, Number valor, int row, int column) {
+    public Token(TokenTypes name, String lexeme, Number valor, int row, int column) {
         this.name = name;
         this.lexeme = lexeme;
         this.valor = valor;

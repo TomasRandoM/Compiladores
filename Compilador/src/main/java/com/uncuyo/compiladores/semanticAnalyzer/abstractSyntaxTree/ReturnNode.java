@@ -63,10 +63,14 @@ public class ReturnNode extends SentenceNode {
         }
         Type returnType = expressionNode.check();
         if (!returnType.getName().equals(returnMethodType.getName()) && !returnType.getName().equals("nil")) {
-            throw new SemanticASTException(returnType.getToken(), "El tipo " +
-                    "de retorno no coincide, se esperaba " +
-                    returnMethodType.getName() + " y se " +
-                    "encontró " + returnType.getName());
+            if (!(SymbolTable.getClass(returnType.getName()).isInheritedClass(returnMethodType.getName()))) {
+                throw new SemanticASTException(returnType.getToken(), "El tipo " +
+                        "de retorno no coincide, se esperaba " +
+                        returnMethodType.getName() + " y se " +
+                        "encontró " + returnType.getName());
+            }
         }
+        //Si el return está correcto se indica en el AST que el metodo actual tiene un return correcto
+        AST.setIsReturnPresent(true);
     }
 }
