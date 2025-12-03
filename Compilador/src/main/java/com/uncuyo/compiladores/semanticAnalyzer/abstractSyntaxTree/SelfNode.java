@@ -92,8 +92,8 @@ public class SelfNode extends OperandNode {
         else {
             Type typeAux = new Type(token, "class");
             typeAux.setName(className);
-            chainedNode.checkNames(typeAux);
-            type = chainedNode.check();
+            type = chainedNode.checkNames(typeAux);
+
         }
         type.setToken(token);
         return type;

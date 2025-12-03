@@ -44,6 +44,12 @@ public class AssignmentNode extends SentenceNode {
             leftType = auxNode.checkNames(null);
         }
         else {
+            if (leftNode instanceof SelfNode) {
+                if (((SelfNode) leftNode).getChainedNode() == null) {
+                    throw new SemanticASTException(leftNode.getToken(), "Self " +
+                            "no puede ser asignado");
+                }
+            }
             leftType = leftNode.check();
         }
 
@@ -64,12 +70,13 @@ public class AssignmentNode extends SentenceNode {
 
         System.out.println("LEFT NODE ASSIGNMENT NODE: " + leftNode.toString());
         if (!leftType.getName().equals(rightType.getName())) {
-            throw new SemanticASTException(rightType.getToken(), "El tipo asignado " +
-                    "es incorrecto. " +
-                    "Se esperaba: " + leftType.getName() +
-                    ". Se obtuvo: " + rightType.getName() + ".");
+            if (!rightType.getName().equals("nil")) {
+                throw new SemanticASTException(rightNode.getToken(), "El tipo asignado " +
+                        "es incorrecto. " +
+                        "Se esperaba: " + leftType.getName() +
+                        ". Se obtuvo: " + rightType.getName() + ".");
+            }
         }
-
     }
 
 }

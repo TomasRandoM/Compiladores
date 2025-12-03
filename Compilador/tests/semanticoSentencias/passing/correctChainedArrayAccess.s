@@ -1,6 +1,7 @@
 //Es correcto porque se accede a un array publico
 class A {
     pub Array Int arr;
+    Int b;
 }
 
 impl A {
@@ -12,6 +13,8 @@ impl A {
 
 start {
     A a;
+    Int b;
     a = new A();
     a.arr = new Int[5];
+    b = (a.arr[5]);
 }

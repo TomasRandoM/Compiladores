@@ -76,8 +76,13 @@ public class ChainedCallNode extends ChainedNode {
      */
     public Type checkNames(Type lastType) throws SemanticASTException {
         Type finalType;
-
+        System.out.println("holassa");
         //verifico que no sea void (no se puede en un encadenado)
+        if (lastType.getName().equals("Array")) {
+            throw new SemanticASTException(name, "No se permite " +
+                    "que una variable de tipo Array tenga encadenamiento");
+        }
+
         if (lastType.getName().equals("void")){
             throw new SemanticASTException(name, "El tipo void no está permitido en un encadenamiento");
         }
@@ -109,9 +114,11 @@ public class ChainedCallNode extends ChainedNode {
             Type actualType = parameterList.get(i).check();
 
             if (!correctType.getName().equals(actualType.getName())) {
-                throw new SemanticASTException(actualType.getToken(), "El tipo " + actualType.getName() +
-                        " declarado en el parámetro " + parameterList.get(i).getClass().getName() + " es incorrecto. " +
-                        "Se esperaba " + correctType.getName());
+                throw new SemanticASTException(actualType.getToken(), "El parámetro " +
+                        parameterList.get(i).getToken().getLexeme() +
+                        " es de tipo incorrecto. Se obtuvo " +
+                        actualType.getName() +
+                        " y se esperaba " + correctType.getName());
             }
             else {
                 if (correctType.getName().equals("Array")) {
@@ -126,16 +133,19 @@ public class ChainedCallNode extends ChainedNode {
         }
 
         //el tipo es el tipo de retorno del método actual
+        System.out.println("metodo: " + method.getType());
         finalType = method.getType();
 
+        /*
         if (finalType.getName().equals("void")) {
             throw new SemanticASTException(name, "Un método con retorno void no puede ser encadenado. ");
         }
+        */
 
         //verifico que la clase exista
         Class classType = SymbolTable.getClass(finalType.getName());
 
-        if (classType == null) {
+        if (classType == null && !finalType.getName().equals("void")) {
             throw new SemanticASTException(name, "El tipo " + finalType.getName() +
                     " no existe");
         }
@@ -145,8 +155,5 @@ public class ChainedCallNode extends ChainedNode {
         }
 
         return finalType;
-
-
     }
-
 }
