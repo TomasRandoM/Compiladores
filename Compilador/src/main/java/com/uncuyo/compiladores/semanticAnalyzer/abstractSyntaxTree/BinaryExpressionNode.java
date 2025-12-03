@@ -60,18 +60,24 @@ public class BinaryExpressionNode extends ExpressionNode {
         //Cambio los nodos si son array
         if (leftNode.getName().equals("Array")) {
             if (left instanceof VariableNode || chained) {
-                throw new SemanticASTException(left.getToken(), "Se " +
-                        "esperaba un Int o Double. Se encontró Array");
+                if (!(rightNode.getName().equals("Array") && (right instanceof VariableNode || chained))) {
+                    throw new SemanticASTException(left.getToken(), "Se " +
+                            "esperaba un Int o Double. Se encontró Array");
+                }
+                rightNode = rightNode.getArrType();
             }
             leftNode = leftNode.getArrType();
         }
-        if (rightNode.getName().equals("Array")) {
-            if (left instanceof VariableNode || chained) {
-                throw new SemanticASTException(right.getToken(), "Se " +
-                        "esperaba un Int o Double. Se encontró Array");
+        else {
+            if (rightNode.getName().equals("Array")) {
+                if (left instanceof VariableNode || chained) {
+                    throw new SemanticASTException(right.getToken(), "Se " +
+                            "esperaba un Int o Double. Se encontró Array");
+                }
+                rightNode = rightNode.getArrType();
             }
-            rightNode = rightNode.getArrType();
         }
+
 
         // Caso +, -, * y %
 

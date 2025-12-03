@@ -70,7 +70,9 @@ public class AssignmentNode extends SentenceNode {
 
         System.out.println("LEFT NODE ASSIGNMENT NODE: " + leftNode.toString());
         if (!leftType.getName().equals(rightType.getName())) {
-            if (!rightType.getName().equals("nil")) {
+            if ((leftType.getName().equals("Double") && !rightType.getName().equals("Int")) ||
+               (!rightType.getName().equals("nil") && !(leftType.getName().equals("Double") && rightType.getName().equals("Int")))
+            ) {
                 throw new SemanticASTException(rightNode.getToken(), "El tipo asignado " +
                         "es incorrecto. " +
                         "Se esperaba: " + leftType.getName() +
