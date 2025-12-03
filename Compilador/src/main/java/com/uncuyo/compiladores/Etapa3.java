@@ -6,6 +6,7 @@ import com.uncuyo.compiladores.exceptions.SyntacticException;
 import com.uncuyo.compiladores.exceptions.WriterException;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.SymbolTable;
 import com.uncuyo.compiladores.syntacticAnalyzer.SyntacticAnalyzer;
+import com.uncuyo.compiladores.utils.JsonASTGenerator;
 import com.uncuyo.compiladores.utils.JsonGenerator;
 
 /**
@@ -30,6 +31,7 @@ public class Etapa3 {
             SyntacticAnalyzer syntacticAnalyzer = new SyntacticAnalyzer(args[0]);
             syntacticAnalyzer.program();
             JsonGenerator.printSymbolTable("SymbolTable.json");
+            JsonASTGenerator.printAST("JsonAST.json");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace();

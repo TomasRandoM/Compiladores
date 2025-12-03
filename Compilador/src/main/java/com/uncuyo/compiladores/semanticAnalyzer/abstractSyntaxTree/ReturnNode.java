@@ -73,4 +73,36 @@ public class ReturnNode extends SentenceNode {
         //Si el return está correcto se indica en el AST que el metodo actual tiene un return correcto
         AST.setIsReturnPresent(true);
     }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
+
+    public Token getToken() {
+        return token;
+    }
+
+    public void setToken(Token token) {
+        this.token = token;
+    }
+
+    public ExpressionNode getExpressionNode() {
+        return expressionNode;
+    }
+
+    public void setExpressionNode(ExpressionNode expressionNode) {
+        this.expressionNode = expressionNode;
+    }
 }

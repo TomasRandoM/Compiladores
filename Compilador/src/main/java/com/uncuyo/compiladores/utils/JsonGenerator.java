@@ -86,6 +86,24 @@ public class JsonGenerator {
                 builder.append("\"parentClass\": \"").append(class2.getParentClass()).append("\",\n");
             }
             addTab(builder, level);
+            builder.append("\"inheritedClasses\": [");
+            if (class2.getInheritedClasses().isEmpty()) {
+                builder.append("], \n");
+            }
+            else {
+                int count = 0;
+                for (String e : class2.getInheritedClasses()) {
+                    count++;
+                    if (count == class2.getInheritedClasses().size()) {
+                        builder.append("\"").append(e).append("\"");
+                        builder.append("],\n");
+                    }
+                    else {
+                        builder.append("\"").append(e).append("\", ");
+                    }
+                }
+            }
+            addTab(builder, level);
             builder.append("\"attributes\": {");
             if (class2.getAttributes().isEmpty()) {
                 builder.append("}, \n");

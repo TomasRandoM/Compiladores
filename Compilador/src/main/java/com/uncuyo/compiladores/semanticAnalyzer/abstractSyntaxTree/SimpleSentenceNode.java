@@ -31,4 +31,12 @@ public class SimpleSentenceNode extends SentenceNode {
             expressionNode.check();
         }
     }
+
+    public ExpressionNode getExpressionNode() {
+        return expressionNode;
+    }
+
+    public void setExpressionNode(ExpressionNode expressionNode) {
+        this.expressionNode = expressionNode;
+    }
 }

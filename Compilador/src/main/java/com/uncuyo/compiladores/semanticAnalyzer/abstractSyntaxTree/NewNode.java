@@ -133,11 +133,11 @@ public class NewNode extends OperandNode{
                 index++;
             }
             else {
-                if (SymbolTable.getClass(providedType.getName()).isInheritedClass(parameterType.getName())) {
+                if ((!providedType.getName().equals("void")) && SymbolTable.getClass(providedType.getName()).isInheritedClass(parameterType.getName())) {
                     index++;
                 }
                 else {
-                    throw new SemanticASTException(entry.getValue().getToken(), "Tipo incorrecto en " +
+                    throw new SemanticASTException(providedType.getToken(), "Tipo incorrecto en " +
                             "parámetros del constructor de la " +
                             "clase " + class1 + ". Se obtuvo: " +
                             providedType.getName() + ".Se esperaba " +

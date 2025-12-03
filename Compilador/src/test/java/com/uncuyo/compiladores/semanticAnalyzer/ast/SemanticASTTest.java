@@ -1085,6 +1085,104 @@ public class SemanticASTTest {
         });
     }
 
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testIncorrectPolymorphism() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/incorrectPolymorphism.s").program();
+        });
+    }
 
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testPolymorphismInReturn() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/polymorphismInReturn.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testPolymorphismParameters1() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/polymorphismParameters1.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testPolymorphismParameters2() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/polymorphismParameters2.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testPolymorphismParameters3() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/polymorphismParameters3.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testArrayCallMethodTestCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/arrayCallMethodTest.s").program();
+        });
+    }
+
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testCorrectPolymorphismCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/correctPolymorphism.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testPolymorphismCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/polymorphism.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testPolymorphismInParametersCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/polymorphismInParameters.s").program();
+        });
+    }
 
 }

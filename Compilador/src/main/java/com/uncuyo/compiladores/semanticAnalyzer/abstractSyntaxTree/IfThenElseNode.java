@@ -51,4 +51,28 @@ public class IfThenElseNode extends SentenceNode {
             elseSentenceNode.check();
         }
     }
+
+    public ExpressionNode getExpressionNode() {
+        return expressionNode;
+    }
+
+    public void setExpressionNode(ExpressionNode expressionNode) {
+        this.expressionNode = expressionNode;
+    }
+
+    public SentenceNode getSentenceNode() {
+        return sentenceNode;
+    }
+
+    public void setSentenceNode(SentenceNode sentenceNode) {
+        this.sentenceNode = sentenceNode;
+    }
+
+    public SentenceNode getElseSentenceNode() {
+        return elseSentenceNode;
+    }
+
+    public void setElseSentenceNode(SentenceNode elseSentenceNode) {
+        this.elseSentenceNode = elseSentenceNode;
+    }
 }
