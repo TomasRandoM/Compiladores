@@ -27,6 +27,11 @@ public class AST {
     private static List<BlockNode> blockNodes = new ArrayList<>();
 
     /**
+     * Sirve para chequear en el chequeo de sentencias si el metodo actualmente analizado tiene un return
+     */
+    private static boolean isReturnPresent = false;
+
+    /**
      * Comienza el chequeo de sentencias. Llama a chequear todas las sentencias de la lista
      */
     public static void check() throws SemanticASTException {
@@ -41,6 +46,13 @@ public class AST {
         blockNodes.clear();
     }
 
+    public static boolean isReturnPresent() {
+        return isReturnPresent;
+    }
+
+    public static void setIsReturnPresent(boolean isReturnPresent) {
+        AST.isReturnPresent = isReturnPresent;
+    }
     public static List<BlockNode> getBlockNodes() {
         return blockNodes;
     }

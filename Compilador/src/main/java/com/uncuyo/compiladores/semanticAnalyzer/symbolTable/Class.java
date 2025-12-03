@@ -9,7 +9,8 @@ public class Class {
 
     private String name;
     private Token token;
-    private String parentClass;
+    private String parentClass = "Object";
+    private List<String> inheritedClasses = new ArrayList<>(List.of("Object"));
     private Map<String, Attribute> attributes = new LinkedHashMap<>();
     private Map<String, Method> methods = new LinkedHashMap<>();
     private Constructor constructor;
@@ -36,7 +37,7 @@ public class Class {
         String parent = this.getParentClass();
 
         // primero voy al padre
-        if (parent != null) {
+        if (!parent.equals("Object")) {
             Class parentClass = SymbolTable.getClass(parent);
 
             if (parentClass == null) {
@@ -72,14 +73,18 @@ public class Class {
 
     }
 
-
+    public void addInheritedClass(String inheritedClass) {
+        this.inheritedClasses.add(inheritedClass);
+    }
     public Token getImplToken() {
         return implToken;
     }
     public void setImplToken(Token implToken) {
         this.implToken = implToken;
     }
-
+    public boolean isInheritedClass(String className) {
+        return this.inheritedClasses.contains(className);
+    }
     public Token getClassToken() {
         return classToken;
     }

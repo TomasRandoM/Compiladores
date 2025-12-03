@@ -109,16 +109,40 @@ public class NewNode extends OperandNode{
         int index = 0;
         for (Map.Entry<String, Parameter> entry : parameters.entrySet()) {
             Type parameterType = entry.getValue().getType();
-            Type providedType = expressionList.get(index).check();
+            ExpressionNode expressionNode = expressionList.get(index);
+            Type providedType;
+            if (expressionNode instanceof ChainedNode) {
+                providedType = ((ChainedNode) expressionNode).checkNames(null);
+            }
+            else {
+                providedType = expressionNode.check();
+            }
+
             if (parameterType.getName().equals(providedType.getName())) {
+                if (parameterType.getName().equals("Array")) {
+                    if (!parameterType.getArrType().getName().equals(providedType.getArrType().getName())) {
+                        throw new SemanticASTException(providedType.getToken(), "Tipo " +
+                                "de Array incorrecto en " +
+                                "parámetros del constructor de la clase " +
+                                class1 + ". Se obtuvo: " +
+                                providedType.getArrType().getName() +
+                                ". Se esperaba " +
+                                parameterType.getArrType().getName());
+                    }
+                }
                 index++;
             }
             else {
-                throw new SemanticASTException(entry.getValue().getToken(), "Tipo incorrecto en " +
-                        "parámetros del constructor de la " +
-                        "clase " + class1 + ". Se obtuvo: " +
-                        providedType.getName() + ".Se esperaba " +
-                        parameterType.getName());
+                if (SymbolTable.getClass(providedType.getName()).isInheritedClass(parameterType.getName())) {
+                    index++;
+                }
+                else {
+                    throw new SemanticASTException(entry.getValue().getToken(), "Tipo incorrecto en " +
+                            "parámetros del constructor de la " +
+                            "clase " + class1 + ". Se obtuvo: " +
+                            providedType.getName() + ".Se esperaba " +
+                            parameterType.getName());
+                }
             }
         }
     }

@@ -7,6 +7,7 @@ import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Parameter;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.SymbolTable;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Type;
 
+import java.beans.Expression;
 import java.util.List;
 import java.util.Map;
 
@@ -103,7 +104,7 @@ public class MethodCallNode extends OperandNode {
     public Type check() throws SemanticASTException {
         Type type;
         Method method;
-        if (callerMethod.equals("start")) {
+        if (callerMethod.equals("start") && !isStatic) {
             throw new SemanticASTException(token, "El método de instancia " +
                     token.getLexeme() + " está siendo llamado " +
                     "desde start sin utilizar instancia.");
@@ -115,7 +116,7 @@ public class MethodCallNode extends OperandNode {
             callerMethod1 = SymbolTable.getClass(methodOwnerClassName).getConstructor();
         }
         else {
-            callerMethod1 = SymbolTable.getClass(methodOwnerClassName).getMethods().get(callerMethod);
+            callerMethod1 = SymbolTable.getClass(className).getMethods().get(callerMethod);
         }
 
         if (method == null) {
@@ -159,21 +160,47 @@ public class MethodCallNode extends OperandNode {
         if (parameters.size() != expressionList.size()) {
             throw new SemanticASTException(token, "El número de parámetros " +
                     "del método " + token.getLexeme() +
-                    " no coincide con los brindados");
+                    " no coincide con los brindados. Se esperaban " +
+                    parameters.size() + " y se obtuvieron " +
+                    expressionList.size());
         }
 
         int index = 0;
         for (Map.Entry<String, Parameter> entry : parameters.entrySet()) {
             Type parameterType = entry.getValue().getType();
-            Type providedType = expressionList.get(index).check();
+            ExpressionNode expressionNode = expressionList.get(index);
+            Type providedType;
+            if (expressionNode instanceof ChainedNode) {
+                providedType = ((ChainedNode) expressionNode).checkNames(null);
+            }
+            else {
+                providedType = expressionNode.check();
+            }
+
             if (parameterType.getName().equals(providedType.getName())) {
+                if (parameterType.getName().equals("Array")) {
+                    if (!parameterType.getArrType().getName().equals(providedType.getArrType().getName())) {
+                        throw new SemanticASTException(providedType.getToken(), "Tipo " +
+                                "de Array incorrecto en " +
+                                "parámetros del método " +
+                                method.getName() + ". Se obtuvo: " +
+                                providedType.getArrType().getName() +
+                                ". Se esperaba " +
+                                parameterType.getArrType().getName());
+                    }
+                }
                 index++;
             }
             else {
-                throw new SemanticASTException(providedType.getToken(), "Tipo incorrecto en " +
-                        "parámetros del método " + method.getName() + ". Se obtuvo: " +
-                        providedType.getName() + ". Se esperaba " +
-                        parameterType.getName());
+                if (SymbolTable.getClass(providedType.getName()).isInheritedClass(parameterType.getName())) {
+                    index++;
+                }
+                else {
+                    throw new SemanticASTException(providedType.getToken(), "Tipo incorrecto en " +
+                            "parámetros del método " + method.getName() + ". Se obtuvo: " +
+                            providedType.getName() + ". Se esperaba " +
+                            parameterType.getName());
+                }
             }
         }
     }

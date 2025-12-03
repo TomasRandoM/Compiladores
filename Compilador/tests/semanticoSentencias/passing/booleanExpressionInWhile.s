@@ -8,7 +8,7 @@ impl A {
     .() {
 
     }
-    fn Int a() {
+    fn Int a(Int s) {
         y = 5;
         while (5 == 5) {
             y = 6;

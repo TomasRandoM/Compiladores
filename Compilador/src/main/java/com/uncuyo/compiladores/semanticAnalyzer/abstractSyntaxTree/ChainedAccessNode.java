@@ -97,7 +97,6 @@ public class ChainedAccessNode extends ChainedNode {
         if (lastType == null) {
             finalType = getAccessChainedNodeVariableType(name);
             lastType = finalType;
-            System.out.println("despues " + lastType.getName());
         }
         else {
             if (lastType.getName().equals("Array")) {
@@ -158,10 +157,7 @@ public class ChainedAccessNode extends ChainedNode {
 
         }
         //Verifico si hay más encadenados:
-        System.out.println(getName().getLexeme());
-        System.out.println(this.chainedNode);
         if (this.chainedNode != null) {
-            System.out.println("ENCADENADO EN CHAINED ACCESS: " + chainedNode);
             finalType = this.chainedNode.checkNames(finalType);
         }
         return finalType;
@@ -171,8 +167,6 @@ public class ChainedAccessNode extends ChainedNode {
     public Type getAccessChainedNodeVariableType(Token token) throws SemanticASTException {
         Method method;
         Type type;
-        System.out.println(methodName);
-        System.out.println(className);
         if (methodName == null) {
             if (className == null) {
                 //Este error no debería aparecer
@@ -209,7 +203,6 @@ public class ChainedAccessNode extends ChainedNode {
             }
         }
         type.setToken(token);
-        System.out.println("CHAINED ACCESS NODE TIPO "+ type.getName());
         return type;
     }
 }

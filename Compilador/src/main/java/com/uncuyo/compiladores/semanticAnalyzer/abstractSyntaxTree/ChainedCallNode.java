@@ -76,13 +76,13 @@ public class ChainedCallNode extends ChainedNode {
      */
     public Type checkNames(Type lastType) throws SemanticASTException {
         Type finalType;
-        System.out.println("holassa");
         //verifico que no sea void (no se puede en un encadenado)
+        /*
         if (lastType.getName().equals("Array")) {
             throw new SemanticASTException(name, "No se permite " +
                     "que una variable de tipo Array tenga encadenamiento");
         }
-
+        */
         if (lastType.getName().equals("void")){
             throw new SemanticASTException(name, "El tipo void no está permitido en un encadenamiento");
         }
@@ -111,14 +111,23 @@ public class ChainedCallNode extends ChainedNode {
         int i = 0;
         for (Parameter correctParam: method.getParameters().values()) {
             Type correctType = correctParam.getType();
-            Type actualType = parameterList.get(i).check();
+            ExpressionNode expressionNode = parameterList.get(i);
+            Type actualType;
+            if (expressionNode instanceof ChainedNode) {
+                actualType = ((ChainedNode) expressionNode).checkNames(null);
+            }
+            else {
+                actualType = expressionNode.check();
+            }
 
             if (!correctType.getName().equals(actualType.getName())) {
-                throw new SemanticASTException(actualType.getToken(), "El parámetro " +
-                        parameterList.get(i).getToken().getLexeme() +
-                        " es de tipo incorrecto. Se obtuvo " +
-                        actualType.getName() +
-                        " y se esperaba " + correctType.getName());
+                if (!(SymbolTable.getClass(actualType.getName()).isInheritedClass(correctType.getName()))) {
+                    throw new SemanticASTException(actualType.getToken(), "El parámetro " +
+                            parameterList.get(i).getToken().getLexeme() +
+                            " es de tipo incorrecto. Se obtuvo " +
+                            actualType.getName() +
+                            " y se esperaba " + correctType.getName());
+                    }
             }
             else {
                 if (correctType.getName().equals("Array")) {
@@ -133,7 +142,7 @@ public class ChainedCallNode extends ChainedNode {
         }
 
         //el tipo es el tipo de retorno del método actual
-        System.out.println("metodo: " + method.getType());
+
         finalType = method.getType();
 
         /*

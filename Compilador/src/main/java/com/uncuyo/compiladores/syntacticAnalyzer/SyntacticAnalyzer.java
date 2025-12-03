@@ -735,7 +735,7 @@ public class SyntacticAnalyzer {
         if (lookahead.getName() == TokenTypes.braces1) {
             match(TokenTypes.braces1);
             masDeclVarLocales();
-            BlockNode blockNode = new BlockNode(AST.getCurrentClass(), AST.getCurrentMethod());
+            BlockNode blockNode = new BlockNode(AST.getCurrentClass(), AST.getCurrentMethod(), true);
             AST.addBlockNode(blockNode);
             sentencias(blockNode);
         }
@@ -1139,7 +1139,6 @@ public class SyntacticAnalyzer {
             if (lookahead.getName() == TokenTypes.id_obj) {
                 Token token = lookahead;
                 match(TokenTypes.id_obj);
-                System.out.println("adios");
                 return encadenado2(token);
             }
             else {
@@ -1249,8 +1248,6 @@ public class SyntacticAnalyzer {
             chainedArrayAccessNode.setExpression(expressionNode);
             match(TokenTypes.brackets2);
             ChainedNode chainedNode2 = accesoVariableEncadenado3(null);
-            System.out.println("Aca");
-            System.out.println(chainedNode2);
             chainedArrayAccessNode.setChainedNode(chainedNode2);
             chainedNode = chainedArrayAccessNode;
         }
@@ -1287,7 +1284,6 @@ public class SyntacticAnalyzer {
                 chainedAccessNode.setChainedNode(chainedNode);
                 chainedNode = chainedAccessNode;
             }
-            System.out.println("holass");
         }
         else {
             if (primarioFollows()) {
@@ -1667,7 +1663,7 @@ public class SyntacticAnalyzer {
     public BlockNode bloque() throws LexicalException, SyntacticException, ReaderException {
         if (lookahead.getName() == TokenTypes.braces1) {
             match(TokenTypes.braces1);
-            BlockNode blockNode = new BlockNode(AST.getCurrentClass(), AST.getCurrentMethod());
+            BlockNode blockNode = new BlockNode(AST.getCurrentClass(), AST.getCurrentMethod(), false);
             sentencias(blockNode);
             return blockNode;
         }
@@ -1688,7 +1684,6 @@ public class SyntacticAnalyzer {
     public AssignmentNode asignacion() throws LexicalException, SyntacticException, ReaderException {
         AssignmentNode sentenceNode;
         if (lookahead.getName() == TokenTypes.pself) {
-            System.out.println(lookahead.getLexeme());
             ExpressionNode leftNode = accesoSelfSimple();
             match(TokenTypes.op_equal);
             ExpressionNode rightNode = expOr();
@@ -1698,9 +1693,7 @@ public class SyntacticAnalyzer {
             if (lookahead.getName() == TokenTypes.id_obj) {
                 ExpressionNode leftNode = accesoVarSimple();
                 match(TokenTypes.op_equal);
-                System.out.println(lookahead.getLexeme());
                 ExpressionNode rightNode = expOr();
-                System.out.println(rightNode);
                 sentenceNode = new AssignmentNode(leftNode, rightNode);
             }
             else {
