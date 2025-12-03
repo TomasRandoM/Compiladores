@@ -85,6 +85,23 @@ public class Class {
     public boolean isInheritedClass(String className) {
         return this.inheritedClasses.contains(className);
     }
+
+    public List<String> getInheritedClasses() {
+        return inheritedClasses;
+    }
+
+    public void setInheritedClasses(List<String> inheritedClasses) {
+        this.inheritedClasses = inheritedClasses;
+    }
+
+    public void setAttributes(Map<String, Attribute> attributes) {
+        this.attributes = attributes;
+    }
+
+    public void setMethods(Map<String, Method> methods) {
+        this.methods = methods;
+    }
+
     public Token getClassToken() {
         return classToken;
     }

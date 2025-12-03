@@ -95,6 +95,46 @@ public class MethodCallNode extends OperandNode {
         this.chainedNode = chainNode;
     }
 
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public String getMethodOwnerClassName() {
+        return methodOwnerClassName;
+    }
+
+    public void setMethodOwnerClassName(String methodOwnerClassName) {
+        this.methodOwnerClassName = methodOwnerClassName;
+    }
+
+    public String getCallerMethod() {
+        return callerMethod;
+    }
+
+    public void setCallerMethod(String callerMethod) {
+        this.callerMethod = callerMethod;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
+    }
+
+    public void setStatic(boolean aStatic) {
+        isStatic = aStatic;
+    }
+
+    public ChainedNode getChainedNode() {
+        return chainedNode;
+    }
+
+    public void setChainedNode(ChainedNode chainedNode) {
+        this.chainedNode = chainedNode;
+    }
+
     /**
      * Metodo para chequear los tipos. Verifica si es estatico, si esta declarado correctamente, si tiene
      * encadenado llama a hacer el chequeo y verifica los parametros
@@ -192,12 +232,12 @@ public class MethodCallNode extends OperandNode {
                 index++;
             }
             else {
-                if (SymbolTable.getClass(providedType.getName()).isInheritedClass(parameterType.getName())) {
+                if (!(providedType.getName().equals("void")) && SymbolTable.getClass(providedType.getName()).isInheritedClass(parameterType.getName())) {
                     index++;
                 }
                 else {
                     throw new SemanticASTException(providedType.getToken(), "Tipo incorrecto en " +
-                            "parámetros del método " + method.getName() + ". Se obtuvo: " +
+                            "parámetros de llamada a método " + method.getName() + ". Se obtuvo: " +
                             providedType.getName() + ". Se esperaba " +
                             parameterType.getName());
                 }

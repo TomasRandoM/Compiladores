@@ -39,4 +39,20 @@ public class WhileNode extends SentenceNode {
 
         sentenceNode.check();
     }
+
+    public ExpressionNode getExpressionNode() {
+        return expressionNode;
+    }
+
+    public void setExpressionNode(ExpressionNode expressionNode) {
+        this.expressionNode = expressionNode;
+    }
+
+    public SentenceNode getSentenceNode() {
+        return sentenceNode;
+    }
+
+    public void setSentenceNode(SentenceNode sentenceNode) {
+        this.sentenceNode = sentenceNode;
+    }
 }
