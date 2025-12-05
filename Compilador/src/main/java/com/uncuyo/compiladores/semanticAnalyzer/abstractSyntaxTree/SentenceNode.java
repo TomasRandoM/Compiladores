@@ -11,4 +11,5 @@ public abstract class SentenceNode {
      * Metodo check que todos los nodos hijos deben implementar
      */
     public abstract void check() throws SemanticASTException;
+    public abstract void codeGen(StringBuilder string);
 }

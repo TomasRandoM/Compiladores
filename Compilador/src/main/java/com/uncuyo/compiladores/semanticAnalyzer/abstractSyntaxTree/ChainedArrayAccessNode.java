@@ -109,7 +109,7 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
             throw new SemanticASTException(name,
                     "Un array no puede tener un encadenamiento después del índice.");
         }
-
+        this.nodeType = finalType;
         return finalType;
     }
 

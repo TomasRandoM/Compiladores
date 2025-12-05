@@ -44,7 +44,7 @@ public class ReturnNode extends SentenceNode {
     }
 
     /**
-     * Metodo para checkear la semantica
+     * Metodo para chequear el return y que su tipo coincida con el metodo correspondiente
      */
     public void check() throws SemanticASTException {
         if (methodName == null) {
@@ -72,6 +72,11 @@ public class ReturnNode extends SentenceNode {
         }
         //Si el return está correcto se indica en el AST que el metodo actual tiene un return correcto
         AST.setIsReturnPresent(true);
+    }
+
+    @Override
+    public void codeGen(StringBuilder string) {
+
     }
 
     public String getClassName() {

@@ -94,12 +94,18 @@ public class VariableNode extends OperandNode {
                 }
             }
         }
+        this.nodeType = type;
         return type;
     }
 
     @Override
     public Token getToken() {
         return token;
+    }
+
+    @Override
+    public void codeGen(StringBuilder string) {
+
     }
 
     public void setToken(Token token) {
@@ -121,4 +127,6 @@ public class VariableNode extends OperandNode {
     public void setCurrentMethod(String currentMethod) {
         this.currentMethod = currentMethod;
     }
+
+
 }

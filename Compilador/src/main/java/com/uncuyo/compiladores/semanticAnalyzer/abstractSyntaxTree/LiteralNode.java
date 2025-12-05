@@ -85,6 +85,7 @@ public class LiteralNode extends OperandNode {
                 }
             }
         }
+        this.nodeType = type;
         return type;
     }
 
@@ -103,5 +104,38 @@ public class LiteralNode extends OperandNode {
 
     public void setOption(String option) {
         this.option = option;
+    }
+
+    public void codeGen(StringBuilder string) {
+        String name;
+        switch (option) {
+            case "nil":
+                string.append("li $a0, 0\n");
+                break;
+            case "const_int":
+                string.append("li $a0, ").append(token.getLexeme()).append("\n");
+                break;
+            case "true":
+                string.append("li $a0, 1" + "\n");
+                break;
+            case "false":
+                string.append("li $a0, 0" + "\n");
+                break;
+            case "const_double":
+                name = "double" + token.getLexeme() +
+                        "_" + token.getRow() + "_" + token.getColumn();
+                string.append(".data \n").append(name).append(": .double ").
+                        append(token.getLexeme()).append("\n");
+                string.append(".text \n l.d $f0, ").append(name).append("\n");
+                break;
+            case "const_string":
+                name = "string_"+ token.getRow() + "_" + token.getColumn();
+                string.append(".data\n");
+                string.append(name).append(": .asciiz ").
+                        append(token.getLexeme()).append("\n");
+                string.append((".text\n"));
+                string.append("la $a0, ").append(name).append("\n");
+                break;
+        }
     }
 }

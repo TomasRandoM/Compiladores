@@ -75,6 +75,11 @@ public class MethodCallNode extends OperandNode {
         return token;
     }
 
+    @Override
+    public void codeGen(StringBuilder string) {
+
+    }
+
     public void setToken(Token token) {
         this.token = token;
     }
@@ -183,6 +188,7 @@ public class MethodCallNode extends OperandNode {
             type = method.getType();
         }
         type.setToken(token);
+        this.nodeType = type;
         return type;
     }
 

@@ -10,6 +10,7 @@ import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Type;
  */
 public abstract class ExpressionNode {
 
+    public Type nodeType;
     /**
      * Metodo que chequea los tipos
      * @return Type
@@ -21,4 +22,6 @@ public abstract class ExpressionNode {
      * @return Type
      */
     public abstract Token getToken() throws SemanticASTException;
+
+    public abstract void codeGen(StringBuilder string);
 }
