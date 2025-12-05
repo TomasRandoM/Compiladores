@@ -42,6 +42,11 @@ public class ChainedAccessNode extends ChainedNode {
         return name;
     }
 
+    @Override
+    public void codeGen(StringBuilder string) {
+
+    }
+
     public void setName(Token name) {
         this.name = name;
     }
@@ -160,6 +165,7 @@ public class ChainedAccessNode extends ChainedNode {
         if (this.chainedNode != null) {
             finalType = this.chainedNode.checkNames(finalType);
         }
+        this.nodeType = finalType;
         return finalType;
     }
 

@@ -11,7 +11,7 @@ import java.sql.SQLOutput;
 public class SimpleSentenceNode extends SentenceNode {
 
     /**
-     * Nodo que representa la expresión que contiene
+     * Nodo que representa la expresion que contiene
      */
     private ExpressionNode expressionNode;
 
@@ -20,7 +20,7 @@ public class SimpleSentenceNode extends SentenceNode {
     }
 
     /**
-     * Metodo para checkear semanticamente
+     * Metodo para chequear la semantica
      */
     @Override
     public void check() throws SemanticASTException {

@@ -1,0 +1,1196 @@
+{
+	"classes": {
+		"Str": {
+			"name": "Str",
+			"token": {
+				"name": "pstr",
+				"lexeme": "Str",
+				"valor": null,
+				"column": 0,
+				"row": 0
+			},
+			"parentClass": "Object",
+			"attributes": {}, 
+			"methods": {
+				"length": {
+					"name": "length",
+					"type": {
+						"name": "Int",
+						"arrType": null,
+						"token": {
+							"name": "id_obj",
+							"lexeme": "length",
+							"valor": null,
+							"column": 0,
+							"row": 0
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "length",
+						"valor": null,
+						"column": 0,
+						"row": 0
+					},
+					"isStaticMethod": false,
+					"variables": {}, 
+					"parameters": {} 
+				},
+				"concat": {
+					"name": "concat",
+					"type": {
+						"name": "Str",
+						"arrType": null,
+						"token": {
+							"name": "id_obj",
+							"lexeme": "concat",
+							"valor": null,
+							"column": 0,
+							"row": 0
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "concat",
+						"valor": null,
+						"column": 0,
+						"row": 0
+					},
+					"isStaticMethod": false,
+					"variables": {}, 
+					"parameters": {
+						"s": {
+							"name": "s",
+							"type": {
+								"name": "Str",
+								"arrType": null,
+								"token": {
+									"name": "pstr",
+									"lexeme": "Str",
+									"valor": null,
+									"column": 0,
+									"row": 0
+								}
+							},
+							"token": {
+								"name": "id_obj",
+								"lexeme": "s",
+								"valor": null,
+								"column": 0,
+								"row": 0
+							}
+						}
+					}
+				}
+			},
+			"constructor": null,
+			"implInitialized": false,
+			"classInitialized": false,
+			"implToken": null,
+			"classToken": null
+		},
+		"Array": {
+			"name": "Array",
+			"token": {
+				"name": "parray",
+				"lexeme": "Array",
+				"valor": null,
+				"column": 0,
+				"row": 0
+			},
+			"parentClass": "Object",
+			"attributes": {}, 
+			"methods": {
+				"length": {
+					"name": "length",
+					"type": {
+						"name": "Int",
+						"arrType": null,
+						"token": {
+							"name": "id_obj",
+							"lexeme": "length",
+							"valor": null,
+							"column": 0,
+							"row": 0
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "length",
+						"valor": null,
+						"column": 0,
+						"row": 0
+					},
+					"isStaticMethod": false,
+					"variables": {}, 
+					"parameters": {} 
+				}
+			},
+			"constructor": null,
+			"implInitialized": false,
+			"classInitialized": false,
+			"implToken": null,
+			"classToken": null
+		},
+		"A": {
+			"name": "A",
+			"token": {
+				"name": "id_class",
+				"lexeme": "A",
+				"valor": null,
+				"column": 6,
+				"row": 1
+			},
+			"parentClass": "Object",
+			"attributes": {
+				"x": {
+					"name": "x",
+					"type": {
+						"name": "Int",
+						"arrType": null,
+						"token": {
+							"name": "id_obj",
+							"lexeme": "x",
+							"valor": null,
+							"column": 12,
+							"row": 9
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "x",
+						"valor": null,
+						"column": 8,
+						"row": 2
+					},
+					"isPublic": false
+				} 
+			},
+			"methods": {
+				"getX": {
+					"name": "getX",
+					"type": {
+						"name": "Int",
+						"arrType": null,
+						"token": {
+							"name": "pint",
+							"lexeme": "Int",
+							"valor": null,
+							"column": 7,
+							"row": 8
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "getX",
+						"valor": null,
+						"column": 11,
+						"row": 8
+					},
+					"isStaticMethod": false,
+					"variables": {}, 
+					"parameters": {} 
+				}
+			},
+			"constructor": {
+				"name": ".",
+				"type": {
+					"name": "A",
+					"arrType": null,
+					"token": {
+						"name": "id_class",
+						"lexeme": "A",
+						"valor": null,
+						"column": 6,
+						"row": 1
+					}
+				},
+				"token": {
+					"name": "dot",
+					"lexeme": ".",
+					"valor": null,
+					"column": 4,
+					"row": 5
+				},
+				"isStaticMethod": false,
+				"variables": {}, 
+				"parameters": {} 
+			},
+			"implInitialized": true,
+			"classInitialized": true,
+			"implToken": {
+				"name": "id_class",
+				"lexeme": "A",
+				"valor": null,
+				"column": 5,
+				"row": 4
+			},
+			"classToken": {
+				"name": "id_class",
+				"lexeme": "A",
+				"valor": null,
+				"column": 6,
+				"row": 1
+			}
+		},
+		"B": {
+			"name": "B",
+			"token": {
+				"name": "id_class",
+				"lexeme": "B",
+				"valor": null,
+				"column": 6,
+				"row": 12
+			},
+			"parentClass": "A",
+			"attributes": {
+				"y": {
+					"name": "y",
+					"type": {
+						"name": "Double",
+						"arrType": null,
+						"token": {
+							"name": "pdouble",
+							"lexeme": "Double",
+							"valor": null,
+							"column": 4,
+							"row": 13
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "y",
+						"valor": null,
+						"column": 11,
+						"row": 13
+					},
+					"isPublic": false
+				} 
+			},
+			"methods": {
+				"getX": {
+					"name": "getX",
+					"type": {
+						"name": "Int",
+						"arrType": null,
+						"token": {
+							"name": "pint",
+							"lexeme": "Int",
+							"valor": null,
+							"column": 7,
+							"row": 21
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "getX",
+						"valor": null,
+						"column": 11,
+						"row": 21
+					},
+					"isStaticMethod": false,
+					"variables": {}, 
+					"parameters": {} 
+				},
+				"getY": {
+					"name": "getY",
+					"type": {
+						"name": "void",
+						"arrType": null,
+						"token": {
+							"name": "id_obj",
+							"lexeme": "getY",
+							"valor": null,
+							"column": 7,
+							"row": 18
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "getY",
+						"valor": null,
+						"column": 7,
+						"row": 18
+					},
+					"isStaticMethod": false,
+					"variables": {}, 
+					"parameters": {} 
+				}
+			},
+			"constructor": {
+				"name": ".",
+				"type": {
+					"name": "B",
+					"arrType": null,
+					"token": {
+						"name": "id_class",
+						"lexeme": "B",
+						"valor": null,
+						"column": 6,
+						"row": 12
+					}
+				},
+				"token": {
+					"name": "dot",
+					"lexeme": ".",
+					"valor": null,
+					"column": 4,
+					"row": 17
+				},
+				"isStaticMethod": false,
+				"variables": {}, 
+				"parameters": {} 
+			},
+			"implInitialized": true,
+			"classInitialized": true,
+			"implToken": {
+				"name": "id_class",
+				"lexeme": "B",
+				"valor": null,
+				"column": 5,
+				"row": 16
+			},
+			"classToken": {
+				"name": "id_class",
+				"lexeme": "B",
+				"valor": null,
+				"column": 6,
+				"row": 12
+			}
+		},
+		"Bool": {
+			"name": "Bool",
+			"token": {
+				"name": "pbool",
+				"lexeme": "Bool",
+				"valor": null,
+				"column": 0,
+				"row": 0
+			},
+			"parentClass": "Object",
+			"attributes": {}, 
+			"methods": {}, 
+			"constructor": null,
+			"implInitialized": false,
+			"classInitialized": false,
+			"implToken": null,
+			"classToken": null
+		},
+		"IO": {
+			"name": "IO",
+			"token": {
+				"name": "pio",
+				"lexeme": "IO",
+				"valor": null,
+				"column": 0,
+				"row": 0
+			},
+			"parentClass": "Object",
+			"attributes": {}, 
+			"methods": {
+				"out_str": {
+					"name": "out_str",
+					"type": {
+						"name": "void",
+						"arrType": null,
+						"token": {
+							"name": "id_obj",
+							"lexeme": "out_str",
+							"valor": null,
+							"column": 0,
+							"row": 0
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "out_str",
+						"valor": null,
+						"column": 0,
+						"row": 0
+					},
+					"isStaticMethod": true,
+					"variables": {}, 
+					"parameters": {
+						"s": {
+							"name": "s",
+							"type": {
+								"name": "Str",
+								"arrType": null,
+								"token": {
+									"name": "pstr",
+									"lexeme": "Str",
+									"valor": null,
+									"column": 0,
+									"row": 0
+								}
+							},
+							"token": {
+								"name": "id_obj",
+								"lexeme": "s",
+								"valor": null,
+								"column": 0,
+								"row": 0
+							}
+						}
+					}
+				},
+				"out_int": {
+					"name": "out_int",
+					"type": {
+						"name": "void",
+						"arrType": null,
+						"token": {
+							"name": "id_obj",
+							"lexeme": "out_int",
+							"valor": null,
+							"column": 0,
+							"row": 0
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "out_int",
+						"valor": null,
+						"column": 0,
+						"row": 0
+					},
+					"isStaticMethod": true,
+					"variables": {}, 
+					"parameters": {
+						"i": {
+							"name": "i",
+							"type": {
+								"name": "Int",
+								"arrType": null,
+								"token": {
+									"name": "pint",
+									"lexeme": "Int",
+									"valor": null,
+									"column": 0,
+									"row": 0
+								}
+							},
+							"token": {
+								"name": "id_obj",
+								"lexeme": "i",
+								"valor": null,
+								"column": 0,
+								"row": 0
+							}
+						}
+					}
+				},
+				"out_bool": {
+					"name": "out_bool",
+					"type": {
+						"name": "void",
+						"arrType": null,
+						"token": {
+							"name": "id_obj",
+							"lexeme": "out_bool",
+							"valor": null,
+							"column": 0,
+							"row": 0
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "out_bool",
+						"valor": null,
+						"column": 0,
+						"row": 0
+					},
+					"isStaticMethod": true,
+					"variables": {}, 
+					"parameters": {
+						"b": {
+							"name": "b",
+							"type": {
+								"name": "Bool",
+								"arrType": null,
+								"token": {
+									"name": "pbool",
+									"lexeme": "Bool",
+									"valor": null,
+									"column": 0,
+									"row": 0
+								}
+							},
+							"token": {
+								"name": "id_obj",
+								"lexeme": "b",
+								"valor": null,
+								"column": 0,
+								"row": 0
+							}
+						}
+					}
+				},
+				"out_double": {
+					"name": "out_double",
+					"type": {
+						"name": "void",
+						"arrType": null,
+						"token": {
+							"name": "id_obj",
+							"lexeme": "out_double",
+							"valor": null,
+							"column": 0,
+							"row": 0
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "out_double",
+						"valor": null,
+						"column": 0,
+						"row": 0
+					},
+					"isStaticMethod": true,
+					"variables": {}, 
+					"parameters": {
+						"c": {
+							"name": "c",
+							"type": {
+								"name": "Double",
+								"arrType": null,
+								"token": {
+									"name": "pdouble",
+									"lexeme": "Double",
+									"valor": null,
+									"column": 0,
+									"row": 0
+								}
+							},
+							"token": {
+								"name": "id_obj",
+								"lexeme": "c",
+								"valor": null,
+								"column": 0,
+								"row": 0
+							}
+						}
+					}
+				},
+				"out_array_int": {
+					"name": "out_array_int",
+					"type": {
+						"name": "void",
+						"arrType": null,
+						"token": {
+							"name": "id_obj",
+							"lexeme": "out_array_int",
+							"valor": null,
+							"column": 0,
+							"row": 0
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "out_array_int",
+						"valor": null,
+						"column": 0,
+						"row": 0
+					},
+					"isStaticMethod": true,
+					"variables": {}, 
+					"parameters": {
+						"a": {
+							"name": "a",
+							"type": {
+								"name": "Array",
+								"arrType": {
+									"name": "Int",
+									"arrType": null,
+									"token": {
+										"name": "pint",
+										"lexeme": "Int",
+										"valor": null,
+										"column": 0,
+										"row": 0
+									}
+								},
+								"token": {
+									"name": "parray",
+									"lexeme": "Array",
+									"valor": null,
+									"column": 0,
+									"row": 0
+								}
+							},
+							"token": {
+								"name": "id_obj",
+								"lexeme": "a",
+								"valor": null,
+								"column": 0,
+								"row": 0
+							}
+						}
+					}
+				},
+				"out_array_str": {
+					"name": "out_array_str",
+					"type": {
+						"name": "void",
+						"arrType": null,
+						"token": {
+							"name": "id_obj",
+							"lexeme": "out_array_str",
+							"valor": null,
+							"column": 0,
+							"row": 0
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "out_array_str",
+						"valor": null,
+						"column": 0,
+						"row": 0
+					},
+					"isStaticMethod": true,
+					"variables": {}, 
+					"parameters": {
+						"a": {
+							"name": "a",
+							"type": {
+								"name": "Array",
+								"arrType": {
+									"name": "Str",
+									"arrType": null,
+									"token": {
+										"name": "pstr",
+										"lexeme": "Str",
+										"valor": null,
+										"column": 0,
+										"row": 0
+									}
+								},
+								"token": {
+									"name": "parray",
+									"lexeme": "Array",
+									"valor": null,
+									"column": 0,
+									"row": 0
+								}
+							},
+							"token": {
+								"name": "id_obj",
+								"lexeme": "a",
+								"valor": null,
+								"column": 0,
+								"row": 0
+							}
+						}
+					}
+				},
+				"out_array_bool": {
+					"name": "out_array_bool",
+					"type": {
+						"name": "void",
+						"arrType": null,
+						"token": {
+							"name": "id_obj",
+							"lexeme": "out_array_bool",
+							"valor": null,
+							"column": 0,
+							"row": 0
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "out_array_bool",
+						"valor": null,
+						"column": 0,
+						"row": 0
+					},
+					"isStaticMethod": true,
+					"variables": {}, 
+					"parameters": {
+						"a": {
+							"name": "a",
+							"type": {
+								"name": "Array",
+								"arrType": {
+									"name": "Bool",
+									"arrType": null,
+									"token": {
+										"name": "pbool",
+										"lexeme": "Bool",
+										"valor": null,
+										"column": 0,
+										"row": 0
+									}
+								},
+								"token": {
+									"name": "parray",
+									"lexeme": "Array",
+									"valor": null,
+									"column": 0,
+									"row": 0
+								}
+							},
+							"token": {
+								"name": "id_obj",
+								"lexeme": "a",
+								"valor": null,
+								"column": 0,
+								"row": 0
+							}
+						}
+					}
+				},
+				"out_array_double": {
+					"name": "out_array_double",
+					"type": {
+						"name": "void",
+						"arrType": null,
+						"token": {
+							"name": "id_obj",
+							"lexeme": "out_array_double",
+							"valor": null,
+							"column": 0,
+							"row": 0
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "out_array_double",
+						"valor": null,
+						"column": 0,
+						"row": 0
+					},
+					"isStaticMethod": true,
+					"variables": {}, 
+					"parameters": {
+						"a": {
+							"name": "a",
+							"type": {
+								"name": "Array",
+								"arrType": {
+									"name": "Double",
+									"arrType": null,
+									"token": {
+										"name": "pdouble",
+										"lexeme": "Double",
+										"valor": null,
+										"column": 0,
+										"row": 0
+									}
+								},
+								"token": {
+									"name": "parray",
+									"lexeme": "Array",
+									"valor": null,
+									"column": 0,
+									"row": 0
+								}
+							},
+							"token": {
+								"name": "id_obj",
+								"lexeme": "a",
+								"valor": null,
+								"column": 0,
+								"row": 0
+							}
+						}
+					}
+				},
+				"in_str": {
+					"name": "in_str",
+					"type": {
+						"name": "Str",
+						"arrType": null,
+						"token": {
+							"name": "pstr",
+							"lexeme": "Str",
+							"valor": null,
+							"column": 0,
+							"row": 0
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "in_str",
+						"valor": null,
+						"column": 0,
+						"row": 0
+					},
+					"isStaticMethod": true,
+					"variables": {}, 
+					"parameters": {} 
+				},
+				"in_int": {
+					"name": "in_int",
+					"type": {
+						"name": "Int",
+						"arrType": null,
+						"token": {
+							"name": "pint",
+							"lexeme": "Int",
+							"valor": null,
+							"column": 0,
+							"row": 0
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "in_int",
+						"valor": null,
+						"column": 0,
+						"row": 0
+					},
+					"isStaticMethod": true,
+					"variables": {}, 
+					"parameters": {} 
+				},
+				"in_bool": {
+					"name": "in_bool",
+					"type": {
+						"name": "Bool",
+						"arrType": null,
+						"token": {
+							"name": "pbool",
+							"lexeme": "Bool",
+							"valor": null,
+							"column": 0,
+							"row": 0
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "in_bool",
+						"valor": null,
+						"column": 0,
+						"row": 0
+					},
+					"isStaticMethod": true,
+					"variables": {}, 
+					"parameters": {} 
+				},
+				"in_double": {
+					"name": "in_double",
+					"type": {
+						"name": "Double",
+						"arrType": null,
+						"token": {
+							"name": "pdouble",
+							"lexeme": "Double",
+							"valor": null,
+							"column": 0,
+							"row": 0
+						}
+					},
+					"token": {
+						"name": "id_obj",
+						"lexeme": "in_double",
+						"valor": null,
+						"column": 0,
+						"row": 0
+					},
+					"isStaticMethod": true,
+					"variables": {}, 
+					"parameters": {} 
+				}
+			},
+			"constructor": null,
+			"implInitialized": false,
+			"classInitialized": false,
+			"implToken": null,
+			"classToken": null
+		},
+		"Object": {
+			"name": "Object",
+			"token": {
+				"name": "pobject",
+				"lexeme": "Object",
+				"valor": null,
+				"column": 0,
+				"row": 0
+			},
+			"parentClass": "Object",
+			"attributes": {}, 
+			"methods": {}, 
+			"constructor": null,
+			"implInitialized": false,
+			"classInitialized": false,
+			"implToken": null,
+			"classToken": null
+		},
+		"Double": {
+			"name": "Double",
+			"token": {
+				"name": "pdouble",
+				"lexeme": "Double",
+				"valor": null,
+				"column": 0,
+				"row": 0
+			},
+			"parentClass": "Object",
+			"attributes": {}, 
+			"methods": {}, 
+			"constructor": null,
+			"implInitialized": false,
+			"classInitialized": false,
+			"implToken": null,
+			"classToken": null
+		},
+		"Int": {
+			"name": "Int",
+			"token": {
+				"name": "pint",
+				"lexeme": "Int",
+				"valor": null,
+				"column": 0,
+				"row": 0
+			},
+			"parentClass": "Object",
+			"attributes": {}, 
+			"methods": {}, 
+			"constructor": null,
+			"implInitialized": false,
+			"classInitialized": false,
+			"implToken": null,
+			"classToken": null
+		}
+	},
+	"currentClass": {
+		"name": "B",
+		"token": {
+			"name": "id_class",
+			"lexeme": "B",
+			"valor": null,
+			"column": 6,
+			"row": 12
+		},
+		"parentClass": "A",
+		"attributes": {
+			"y": {
+				"name": "y",
+				"type": {
+					"name": "Double",
+					"arrType": null,
+					"token": {
+						"name": "pdouble",
+						"lexeme": "Double",
+						"valor": null,
+						"column": 4,
+						"row": 13
+					}
+				},
+				"token": {
+					"name": "id_obj",
+					"lexeme": "y",
+					"valor": null,
+					"column": 11,
+					"row": 13
+				},
+				"isPublic": false
+			} 
+		},
+		"methods": {
+			"getX": {
+				"name": "getX",
+				"type": {
+					"name": "Int",
+					"arrType": null,
+					"token": {
+						"name": "pint",
+						"lexeme": "Int",
+						"valor": null,
+						"column": 7,
+						"row": 21
+					}
+				},
+				"token": {
+					"name": "id_obj",
+					"lexeme": "getX",
+					"valor": null,
+					"column": 11,
+					"row": 21
+				},
+				"isStaticMethod": false,
+				"variables": {}, 
+				"parameters": {} 
+			},
+			"getY": {
+				"name": "getY",
+				"type": {
+					"name": "void",
+					"arrType": null,
+					"token": {
+						"name": "id_obj",
+						"lexeme": "getY",
+						"valor": null,
+						"column": 7,
+						"row": 18
+					}
+				},
+				"token": {
+					"name": "id_obj",
+					"lexeme": "getY",
+					"valor": null,
+					"column": 7,
+					"row": 18
+				},
+				"isStaticMethod": false,
+				"variables": {}, 
+				"parameters": {} 
+			}
+		},
+		"constructor": {
+			"name": ".",
+			"type": {
+				"name": "B",
+				"arrType": null,
+				"token": {
+					"name": "id_class",
+					"lexeme": "B",
+					"valor": null,
+					"column": 6,
+					"row": 12
+				}
+			},
+			"token": {
+				"name": "dot",
+				"lexeme": ".",
+				"valor": null,
+				"column": 4,
+				"row": 17
+			},
+			"isStaticMethod": false,
+			"variables": {}, 
+			"parameters": {} 
+		},
+		"implInitialized": true,
+		"classInitialized": true,
+		"implToken": {
+			"name": "id_class",
+			"lexeme": "B",
+			"valor": null,
+			"column": 5,
+			"row": 16
+		},
+		"classToken": {
+			"name": "id_class",
+			"lexeme": "B",
+			"valor": null,
+			"column": 6,
+			"row": 12
+		}
+	},
+	"startMethodStored": {
+		"name": "start",
+		"type": null,
+		"token": {
+			"name": "pstart",
+			"lexeme": "start",
+			"valor": null,
+			"column": 0,
+			"row": 24
+		},
+		"isStaticMethod": false,
+		"variables": {
+			"a": {
+				"name": "a",
+				"type": {
+					"name": "A",
+					"arrType": null,
+					"token": {
+						"name": "id_obj",
+						"lexeme": "a",
+						"valor": null,
+						"column": 5,
+						"row": 29
+					}
+				},
+				"token": {
+					"name": "id_obj",
+					"lexeme": "a",
+					"valor": null,
+					"column": 6,
+					"row": 25
+				}
+			},
+			"b": {
+				"name": "b",
+				"type": {
+					"name": "B",
+					"arrType": null,
+					"token": {
+						"name": "id_obj",
+						"lexeme": "b",
+						"valor": null,
+						"column": 5,
+						"row": 30
+					}
+				},
+				"token": {
+					"name": "id_obj",
+					"lexeme": "b",
+					"valor": null,
+					"column": 6,
+					"row": 26
+				}
+			}
+		},
+		"parameters": {} 
+	},
+	"currentMethod": {
+		"name": "start",
+		"type": null,
+		"token": {
+			"name": "pstart",
+			"lexeme": "start",
+			"valor": null,
+			"column": 0,
+			"row": 24
+		},
+		"isStaticMethod": false,
+		"variables": {
+			"a": {
+				"name": "a",
+				"type": {
+					"name": "A",
+					"arrType": null,
+					"token": {
+						"name": "id_obj",
+						"lexeme": "a",
+						"valor": null,
+						"column": 5,
+						"row": 29
+					}
+				},
+				"token": {
+					"name": "id_obj",
+					"lexeme": "a",
+					"valor": null,
+					"column": 6,
+					"row": 25
+				}
+			},
+			"b": {
+				"name": "b",
+				"type": {
+					"name": "B",
+					"arrType": null,
+					"token": {
+						"name": "id_obj",
+						"lexeme": "b",
+						"valor": null,
+						"column": 5,
+						"row": 30
+					}
+				},
+				"token": {
+					"name": "id_obj",
+					"lexeme": "b",
+					"valor": null,
+					"column": 6,
+					"row": 26
+				}
+			}
+		},
+		"parameters": {} 
+	}
+}

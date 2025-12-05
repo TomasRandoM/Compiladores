@@ -95,6 +95,7 @@ public class NewNode extends OperandNode{
                 newType.setArrType(new Type(type, type.getLexeme()));
             }
         }
+        this.nodeType = newType;
         return newType;
     }
 
@@ -154,6 +155,11 @@ public class NewNode extends OperandNode{
 
     public Token getToken() {
         return type;
+    }
+
+    @Override
+    public void codeGen(StringBuilder string) {
+
     }
 
     public String getOption() {

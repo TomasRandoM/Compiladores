@@ -1,5 +1,6 @@
 package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
+import com.uncuyo.compiladores.exceptions.CodeGenerationException;
 import com.uncuyo.compiladores.exceptions.SemanticASTException;
 import com.uncuyo.compiladores.exceptions.SemanticException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
@@ -33,7 +34,7 @@ public class BinaryExpressionNode extends ExpressionNode {
     }
 
     /**
-     * Metodo para chequear la semantica
+     * Metodo para chequear que ambos lados de la expresion binaria coincidan en el tipo
      * @return Type
      */
     @Override
@@ -225,11 +226,171 @@ public class BinaryExpressionNode extends ExpressionNode {
 
 
         type.setToken(operator);
+        this.nodeType = type;
         return type;
     }
 
     public Token getToken() {
         return operator;
+    }
+
+    @Override
+    public void codeGen(StringBuilder string) {
+        boolean leftIsDouble = false;
+        boolean rightIsDouble = false;
+        left.codeGen(string);
+        if (left.nodeType.getName().equals("Double")) {
+            string.append("s.d $f0, 0($sp) \n");
+            string.append("addiu $sp $sp -8 \n");
+            leftIsDouble = true;
+        }
+        else {
+            string.append("sw $a0, 0($sp) \n");
+            string.append("addiu $sp $sp -4 \n");
+        }
+        right.codeGen(string);
+        if (right.nodeType.getName().equals("Double")) {
+            rightIsDouble = true;
+            if (!leftIsDouble) {
+                string.append("lw $a0, 4($sp) \n");
+                string.append("addiu $sp $sp 4\n");
+                string.append("mtc1 $a0, $f2\n");
+                string.append("cvt.d.w $f2, $f2\n");
+                //Ahora tenemos el left en f2 y el right en f0
+            }
+            else {
+                string.append("l.d $f2, 8($sp) \n");
+                string.append("addiu $sp $sp 8\n");
+                //left en f2 y right en f0
+            }
+        }
+        else {
+            if (leftIsDouble) {
+                string.append("l.d $f2, 8($sp) \n");
+                string.append("addiu $sp $sp 8\n");
+                string.append("mtc1 $a0, $f0\n");
+                string.append("cvt.d.w $f0, $f0\n");
+                //left en f2 y right en f0
+            }
+            else {
+                string.append("lw $t0, 4($sp) \n");
+                string.append("addiu $sp $sp 4\n");
+                //right en a0 y left en t0
+            }
+        }
+
+        //si son int --> left $t0, right $a0
+        //si uno o los dos son double: left $f2, right $f0
+
+        if (leftIsDouble || rightIsDouble) {
+            switch (operator.getName()) {
+                case op_sum:
+                    string.append("add.d $f0, $f0, $f2\n");
+                    break;
+                case op_sub:
+                    string.append("sub.d $f0, $f2, $f0\n");
+                    break;
+                case op_div:
+                    string.append("div.d $f0, $f2, $f0\n");
+                    break;
+                case op_mult:
+                    string.append("mul.d $f0, $f2, $f0\n");
+                    break;
+                case op_mod:
+                    //No hay operador implementado directamente por lo que se realiza este proceso:
+                    // a - int(a/b) * b
+                    //Divido left / right y lo guardo en f4
+                    string.append("div.d $f4, $f2, $f0\n");
+                    //Se convierte a entero (truncandolo) y se guarda en f6
+                    string.append("cvt.w.d $f6, $f4\n");
+                    //Se convierte a double nuevamente
+                    string.append("cvt.d.w $f6, $f6\n");
+                    //Multiplica el double anterior por right
+                    string.append("mul.d $f6, $f6, $f0\n");
+                    //Resta el left menos todo lo demas
+                    string.append("$f0, $f2, $f6 \n");
+                    break;
+
+                // relacionales
+                case op_rel_less:
+                    // LEFT < RIGHT
+                    string.append("jal lessDouble \n");
+                    break;
+                case op_rel_equal:
+                    string.append("jal equalDouble \n");
+                    break;
+                case op_rel_notequal:
+                    string.append("jal notEqualDouble \n");
+                case op_rel_greaterequal:
+                    string.append("jal greaterEqualDouble\n");
+                    break;
+                case op_rel_lessequal:
+                    string.append("jal lessEqualDouble\n");
+                    break;
+                case op_rel_greater:
+                    string.append("jal greaterDouble \n");
+                    break;
+                default:
+                    System.out.println("Error de operador en la generación de código");
+                    break;
+            }
+        }
+        else {
+            switch (operator.getName()) {
+                case op_sum:
+                    string.append("add $a0, $t0, $a0\n");
+                    break;
+                case op_sub:
+                    string.append("sub $a0, $t0, $a0\n");
+                    break;
+                case op_div:
+                    string.append("mtc1 $t0, $f2\n");
+                    string.append("mtc1 $a0, $f0\n");
+                    string.append("cvt.d.w $f0, $f0\n");
+                    string.append("cvt.d.w $f2, $f2\n");
+                    string.append("div.d $f0, $f2, $f0\n");
+                    break;
+                case op_mult:
+                    string.append("mul $a0, $t0, $a0\n");
+                    break;
+                case op_mod:
+                    //Guardamos el resto en a0
+                    string.append("div $t0, $a0\n");
+                    string.append("mfhi $a0\n");
+                    break;
+                case pdiv:
+                    string.append("div $a0, $t0, $a0\n");
+                    break;
+                // relacionales
+                case op_rel_less:
+                    // LEFT < RIGHT
+                    string.append("slt $a0, $t0, $a0\n");
+                    break;
+                case op_rel_equal:
+                    string.append("seq $a0, $t0, $a0\n");
+                    break;
+                case op_rel_notequal:
+                    string.append("sne $a0, $t0, $a0\n");
+                case op_rel_greaterequal:
+                    string.append("sge $a0, $t0, $a0\n");
+                    break;
+                case op_rel_lessequal:
+                    string.append("sle $a0, $t0, $a0\n");
+                    break;
+                case op_rel_greater:
+                    string.append("slt $a0, $a0, $t0\n");
+                    break;
+                case op_and:
+                    string.append("and $a0, $t0, $a0\n");
+                    break;
+                case op_or:
+                    string.append("or $a0, $t0, $a0\n");
+                    break;
+                default:
+                    System.out.println("Error de operador en la generación de código");
+                    break;
+            }
+        }
     }
 
     public Token getOperator() {

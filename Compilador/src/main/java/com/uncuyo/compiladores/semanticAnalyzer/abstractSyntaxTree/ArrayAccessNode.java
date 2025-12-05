@@ -42,6 +42,11 @@ public class ArrayAccessNode extends OperandNode{
         return token;
     }
 
+    @Override
+    public void codeGen(StringBuilder string) {
+
+    }
+
     public void setToken(Token token) {
         this.token = token;
     }
@@ -63,7 +68,7 @@ public class ArrayAccessNode extends OperandNode{
     }
 
     /**
-     * Metodo que chequea el tipo
+     * Metodo que chequea el tipo del Array y de su indice
      * @return
      */
     public Type check() throws SemanticASTException {
@@ -156,6 +161,7 @@ public class ArrayAccessNode extends OperandNode{
 
         }
 
+        this.nodeType = arrType;
         return arrType;
     }
 

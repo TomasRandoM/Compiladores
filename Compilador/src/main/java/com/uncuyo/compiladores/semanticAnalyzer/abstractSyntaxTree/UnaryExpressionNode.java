@@ -26,7 +26,8 @@ public class UnaryExpressionNode extends ExpressionNode {
     }
 
     /**
-     * Metodo para chequear los tipos
+     * Metodo para chequear el tipo de la expresion unaria
+     *
      * @return
      */
     public Type check() throws SemanticASTException {
@@ -36,8 +37,7 @@ public class UnaryExpressionNode extends ExpressionNode {
         if (expressionNode instanceof ChainedNode) {
             auxType = ((ChainedNode) expressionNode).checkNames(null);
             chained = true;
-        }
-        else {
+        } else {
             auxType = expressionNode.check();
         }
 
@@ -48,46 +48,42 @@ public class UnaryExpressionNode extends ExpressionNode {
                             "esperaba un Bool. Se encontró Array");
                 }
                 throw new SemanticASTException(expressionNode.getToken(), "Se " +
-                            "esperaba un Int o Double. Se encontró Array");
+                        "esperaba un Int o Double. Se encontró Array");
             }
             auxType = auxType.getArrType();
         }
 
         if (operator.getName() == TokenTypes.op_increment ||
-            operator.getName() == TokenTypes.op_decrement ||
-            operator.getName() == TokenTypes.op_sub ||
-            operator.getName() == TokenTypes.op_sum ||
-            operator.getName() == TokenTypes.pint
+                operator.getName() == TokenTypes.op_decrement ||
+                operator.getName() == TokenTypes.op_sub ||
+                operator.getName() == TokenTypes.op_sum ||
+                operator.getName() == TokenTypes.pint
         ) {
             if (auxType.getName().equals("Int") || auxType.getName().equals("Double")) {
                 if (operator.getName() == TokenTypes.pint) {
                     type = new Type(operator, "Int");
-                }
-                else {
+                } else {
                     type = auxType;
                 }
-            }
-            else {
+            } else {
                 throw new SemanticASTException(auxType.getToken(), "Se esperaba tipo " +
                         "Int o Double. Se encontró: " +
                         auxType.getName());
             }
-        }
-        else {
+        } else {
             if (operator.getName() == TokenTypes.op_not) {
                 if (auxType.getName().equals("Bool")) {
                     type = auxType;
-                }
-                else {
+                } else {
                     throw new SemanticASTException(auxType.getToken(), "Se esperaba tipo Bool. " +
                             "Se encontró: " + auxType.getName());
                 }
-            }
-            else {
+            } else {
                 throw new SemanticASTException(operator, "Operador incorrecto");
             }
         }
         type.setToken(operator);
+        this.nodeType = type;
         return type;
     }
 
@@ -110,4 +106,55 @@ public class UnaryExpressionNode extends ExpressionNode {
     public Token getToken() {
         return operator;
     }
+
+    @Override
+    public void codeGen(StringBuilder string) {
+        expressionNode.codeGen(string);
+        switch (operator.getName()) {
+            case op_decrement:
+                if (expressionNode.nodeType.getName().equals("Double")) {
+                    string.append("l.d $f2, addOne \n");
+                    string.append("sub.d $f0, $f0, $f2 \n");
+                }
+                else {
+                    string.append("addi $a0, $a0, -1 \n");
+                }
+                break;
+            case op_increment:
+                if (expressionNode.nodeType.getName().equals("Int")) {
+                    string.append("addi $a0, $a0, 1 \n");
+                }
+                else {
+                    string.append("l.d $f2, addOne \n");
+                    string.append("add.d $f0, $f0, $f2 \n");
+                }
+                break;
+
+            case op_sum:
+                break;
+            case op_sub:
+                if (expressionNode.nodeType.getName().equals("Int")) {
+                    string.append("sub $a0, $zero, $a0 \n");
+                }
+                else {
+                    //zeroDouble: .double 0.0
+                    string.append("l.d $f2, zeroDouble \n");
+                    string.append("sub.d $f0, $f2, $f0 \n");
+                }
+                    break;
+            case pint:
+                if (!expressionNode.nodeType.getName().equals("Int")) {
+                    //Transformo el double de f0 a entero y lo dejo en f2
+                    string.append("cvt.w.d $f2, $f0 \n");
+                    //Muevo el entero de f2 a a0
+                    string.append("mfc1 $a0, $f2 \n");
+                }
+                break;
+            case op_not:
+                string.append("nor $a0, $a0, $zero");
+                break;
+        }
+
+    }
+
 }

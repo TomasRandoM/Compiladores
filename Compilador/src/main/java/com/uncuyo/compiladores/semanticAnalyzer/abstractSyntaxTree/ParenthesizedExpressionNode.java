@@ -43,7 +43,7 @@ public class ParenthesizedExpressionNode extends ExpressionNode {
     }
 
     /**
-     * Metodo para chequear el tipo
+     * Metodo para chequear el tipo de la expresion
      * @return
      */
     public Type check() throws SemanticASTException {
@@ -58,7 +58,11 @@ public class ParenthesizedExpressionNode extends ExpressionNode {
             type = this.chainedNode.checkNames(type);
         }
 
+        this.nodeType = type;
         return type;
     }
 
+    public void codeGen(StringBuilder string) {
+        //Pendiente
+    }
 }

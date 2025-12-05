@@ -109,4 +109,9 @@ public class BlockNode extends SentenceNode {
             AST.setIsReturnPresent(false);
         }
     }
+
+    @Override
+    public void codeGen(StringBuilder string) {
+
+    }
 }

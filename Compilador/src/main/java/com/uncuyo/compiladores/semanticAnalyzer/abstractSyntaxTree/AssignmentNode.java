@@ -75,6 +75,11 @@ public class AssignmentNode extends SentenceNode {
         }
     }
 
+    @Override
+    public void codeGen(StringBuilder string) {
+
+    }
+
     public ExpressionNode getLeftNode() {
         return leftNode;
     }

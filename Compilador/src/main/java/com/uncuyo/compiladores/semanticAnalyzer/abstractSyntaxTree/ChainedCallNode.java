@@ -28,6 +28,11 @@ public class ChainedCallNode extends ChainedNode {
         return name;
     }
 
+    @Override
+    public void codeGen(StringBuilder string) {
+
+    }
+
     public void setName(Token name) {
         this.name = name;
     }
@@ -162,7 +167,7 @@ public class ChainedCallNode extends ChainedNode {
         if (chainedNode != null) {
             finalType = chainedNode.checkNames(finalType);
         }
-
+        this.nodeType = finalType;
         return finalType;
     }
 }

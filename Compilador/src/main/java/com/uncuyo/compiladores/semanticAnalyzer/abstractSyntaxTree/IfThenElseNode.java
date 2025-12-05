@@ -35,7 +35,7 @@ public class IfThenElseNode extends SentenceNode {
     }
 
     /**
-     * Chequea la semantica
+     * Chequea que el tipo de la expresion sea Bool, y la sentencia del if y del else si hay.
      */
     public void check() throws SemanticASTException {
         Type expressionType = expressionNode.check();
@@ -50,6 +50,11 @@ public class IfThenElseNode extends SentenceNode {
         if (elseSentenceNode != null) {
             elseSentenceNode.check();
         }
+    }
+
+    @Override
+    public void codeGen(StringBuilder string) {
+
     }
 
     public ExpressionNode getExpressionNode() {
