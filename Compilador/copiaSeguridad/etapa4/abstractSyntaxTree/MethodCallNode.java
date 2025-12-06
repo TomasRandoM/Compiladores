@@ -75,33 +75,6 @@ public class MethodCallNode extends OperandNode {
         return token;
     }
 
-    @Override
-    public void codeGen(StringBuilder string) {
-        int memory = 4;
-        string.append("#Llamada a método \n");
-        string.append("#Guardamos el framepointer actual en la pila \n");
-        string.append("sw $fp, 0($sp) \n");
-        string.append("addiu $sp $sp -4 \n");
-        string.append("#Cargamos los parámetros a la pila \n");
-        for (ExpressionNode expressionNode : parameterList.reversed()) {
-            expressionNode.codeGen(string);
-            if (expressionNode.nodeType.getName().equals("Double")) {
-                string.append("s.d $f0, 0($sp) \n");
-                string.append("addiu $sp $sp -8 \n");
-                memory += 8;
-            }
-            else {
-                string.append("sw $a0, 0($sp) \n");
-                string.append("addiu $sp $sp -4 \n");
-                memory += 4;
-            }
-        }
-        string.append("jal ").append(token.getLexeme()).append(className).append("\n");
-        string.append("addi $sp $sp ").append(memory).append("\n");
-        string.append("lw $fp, 0($sp) \n");
-        //FALTA ENCADENADO
-    }
-
     public void setToken(Token token) {
         this.token = token;
     }
@@ -210,7 +183,6 @@ public class MethodCallNode extends OperandNode {
             type = method.getType();
         }
         type.setToken(token);
-        this.nodeType = type;
         return type;
     }
 

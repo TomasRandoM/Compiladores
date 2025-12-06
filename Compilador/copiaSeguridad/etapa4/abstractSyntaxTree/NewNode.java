@@ -95,7 +95,6 @@ public class NewNode extends OperandNode{
                 newType.setArrType(new Type(type, type.getLexeme()));
             }
         }
-        this.nodeType = newType;
         return newType;
     }
 
@@ -155,37 +154,6 @@ public class NewNode extends OperandNode{
 
     public Token getToken() {
         return type;
-    }
-
-    @Override
-    public void codeGen(StringBuilder string) {
-        int memory = 4;
-        if (!option.equals("array")) {
-            string.append("#Llamada a constructor \n");
-            string.append("#Guardamos el framepointer actual en la pila \n");
-            string.append("sw $fp, 0($sp) \n");
-            string.append("addiu $sp $sp -4 \n");
-            string.append("#Cargamos los parámetros a la pila \n");
-            for (ExpressionNode expressionNode : parameterList.reversed()) {
-                expressionNode.codeGen(string);
-                if (expressionNode.nodeType.getName().equals("Double")) {
-                    memory += 8;
-                    string.append("s.d $f0, 0($sp) \n");
-                    string.append("addiu $sp $sp -8 \n");
-                }
-                else {
-                    memory += 4;
-                    string.append("sw $a0, 0($sp) \n");
-                    string.append("addiu $sp $sp -4 \n");
-                }
-            }
-            string.append("jal constructor").append(type.getLexeme()).append("\n");
-            string.append("addi $sp $sp ").append(memory).append("\n");
-            string.append("lw $fp, 0($sp) \n");
-            //FALTA ENCADENADO
-        }
-        //FALTA ARRAY
-
     }
 
     public String getOption() {
