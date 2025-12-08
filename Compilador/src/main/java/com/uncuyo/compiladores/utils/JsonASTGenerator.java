@@ -39,7 +39,7 @@ public class JsonASTGenerator {
                 }
             }
         }
-
+        addTab(builder, level - 1);
         builder.append("}");
 
         try {
@@ -87,7 +87,7 @@ public class JsonASTGenerator {
                 }
             }
 
-            addTab(builder, level - 1);
+            addTab(builder, level);
             builder.append("}");
         }
     }
@@ -120,7 +120,7 @@ public class JsonASTGenerator {
         builder.append("\"expressionNode\": ");
         expressionNode(node.getExpressionNode(), builder, level + 1);
         builder.append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -136,7 +136,7 @@ public class JsonASTGenerator {
         builder.append("\"rightNode\": ");
         expressionNode(node.getRightNode(), builder, level + 1);
         builder.append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -156,7 +156,7 @@ public class JsonASTGenerator {
         builder.append("\"elseSentenceNode\": ");
         sentenceNode(node.getElseSentenceNode(), builder, level + 1);
         builder.append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -172,7 +172,7 @@ public class JsonASTGenerator {
         builder.append("\"sentenceNode\": ");
         sentenceNode(node.getSentenceNode(), builder, level + 1);
         builder.append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -184,7 +184,7 @@ public class JsonASTGenerator {
         builder.append("\"expressionNode\": ");
         expressionNode(node.getExpressionNode(), builder, level + 1);
         builder.append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -236,7 +236,7 @@ public class JsonASTGenerator {
         builder.append("\"right\": ");
         expressionNode(node.getRight(), builder, level + 1);
         builder.append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -252,7 +252,7 @@ public class JsonASTGenerator {
         builder.append("\"expressionNode\": ");
         expressionNode(node.getExpressionNode(), builder, level + 1);
         builder.append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -268,7 +268,7 @@ public class JsonASTGenerator {
         builder.append("\"chainedNode\": ");
         chainedNode(node.getChainedNode(), builder, level + 1);
         builder.append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -282,7 +282,7 @@ public class JsonASTGenerator {
         builder.append("\"token\": ");
         token(node.getToken(), builder, level + 1);
         builder.append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -298,7 +298,7 @@ public class JsonASTGenerator {
         builder.append("\"currentClass\": ").append(node.getCurrentClass() != null ? "\"" + node.getCurrentClass() + "\"" : "null").append(",\n");
         addTab(builder, level);
         builder.append("\"currentMethod\": ").append(node.getCurrentMethod() != null ? "\"" + node.getCurrentMethod() + "\"" : "null").append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -316,7 +316,7 @@ public class JsonASTGenerator {
         builder.append("\"chainedNode\": ");
         chainedNode(node.getChainedNode(), builder, level + 1);
         builder.append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -358,7 +358,7 @@ public class JsonASTGenerator {
         builder.append("\"chainedNode\": ");
         chainedNode(node.getChainedNode(), builder, level + 1);
         builder.append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -402,7 +402,7 @@ public class JsonASTGenerator {
         builder.append("\"chainedNode\": ");
         chainedNode(node.getChainNode(), builder, level + 1);
         builder.append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -422,7 +422,7 @@ public class JsonASTGenerator {
         builder.append("\"chainedNode\": ");
         chainedNode(node.getChainedNode(), builder, level + 1);
         builder.append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -436,7 +436,7 @@ public class JsonASTGenerator {
         } else if (node instanceof ChainedArrayAccessNode) {
             chainedArrayAccessNode((ChainedArrayAccessNode) node, builder, level);
         } else {
-            builder.append("{\"type\": \"UnknownChained\"}");
+            builder.append("{\"type\": \"Unknown\"}");
         }
     }
 
@@ -456,7 +456,7 @@ public class JsonASTGenerator {
         builder.append("\"chainedNode\": ");
         chainedNode(node.getChainedNode(), builder, level + 1);
         builder.append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -496,7 +496,7 @@ public class JsonASTGenerator {
         builder.append("\"chainedNode\": ");
         chainedNode(node.getChainedNode(), builder, level + 1);
         builder.append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -520,7 +520,7 @@ public class JsonASTGenerator {
         builder.append("\"chainedNode\": ");
         chainedNode(node.getChainedNode(), builder, level + 1);
         builder.append("\n");
-        addTab(builder, level - 1);
+        addTab(builder, level);
         builder.append("}");
     }
 
@@ -545,7 +545,7 @@ public class JsonASTGenerator {
             builder.append("\"column\": ").append(token.getColumn()).append(",\n");
             addTab(builder, level);
             builder.append("\"row\": ").append(token.getRow()).append("\n");
-            addTab(builder, level - 1);
+            addTab(builder, level);
             builder.append("}");
         }
     }

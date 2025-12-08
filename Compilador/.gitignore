@@ -10,8 +10,8 @@ target/
 .idea/libraries/
 .idea/discord.xml
 .idea/material_theme_project_new.xml
-.JsonAST.json
-.SymbolTable.json
+JsonAST.json
+SymbolTable.json
 *.iws
 *.iml
 *.ipr

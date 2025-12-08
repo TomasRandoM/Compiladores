@@ -4,11 +4,9 @@ import com.uncuyo.compiladores.exceptions.SemanticASTException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Method;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.SymbolTable;
-import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Nodo que representa un bloque
@@ -110,70 +108,5 @@ public class BlockNode extends SentenceNode {
         if (methodBlock) {
             AST.setIsReturnPresent(false);
         }
-    }
-
-    @Override
-    public void codeGen(StringBuilder string) {
-        int memory = 0;
-        if (methodBlock) {
-            if (methodName != null) {
-                if (!methodName.equals("start")) {
-                    string.append("#Se forma el nuevo framepointer \n");
-                    string.append("move $fp, $sp \n");
-                    string.append("#Se guarda el return address en la pila \n");
-                    string.append("sw $ra, 0($sp) \n");
-                    string.append("addiu $sp $sp -4 \n");
-                    Map<String, Variable> variables =SymbolTable.getClass(className).getMethods().get(methodName).getVariables();
-                }
-                else {
-                    //Inicio del main
-                    string.append(".text \n");
-                    string.append("main: \n");
-                    string.append("#Bloque start \n");
-                    string.append("#Se forma el nuevo y primer framepointer \n");
-                    string.append("move $fp, $sp \n");
-                    string.append("#Movemos la pila para coherencia, pues no va a haber return address en el start \n");
-                    string.append("addiu $sp $sp -4 \n");
-
-                    //SENTENCIAS (PENDIENTE)
-
-                    //Fin del programa
-                    string.append("li $v0, 10 \n");
-                    string.append("syscall \n");
-                }
-            }
-            else {
-                string.append("#Se forma el nuevo framepointer \n");
-                string.append("move $fp, $sp \n");
-                string.append("#Se guarda el return address en la pila \n");
-                string.append("sw $ra, 0($sp) \n");
-                string.append("addiu $sp $sp -4 \n");
-                string.append("#Constructor \n");
-                string.append("#Se reserva memoria en la pila para las variables \n");
-                string.append("addiu $sp $sp ").append(-memory).append(" \n");
-            }
-
-        }
-
-    }
-
-    public int calcultateMemoryV(Map<String, Variable> variables, StringBuilder string) {
-        int memory = 0;
-        string.append("#Se guarda el framepointer \n");
-        string.append("sw $fp 0($sp) \n");
-        string.append("addiu $sp $sp -4 \n");
-        for (Variable variable : variables.values()) {
-            if (variable.getType().getName().equals("Double")) {
-                string.append("");
-                memory += 8;
-            }
-            else {
-                memory += 4;
-            }
-        }
-        string.append("lw $fp 4($sp) \n");
-        string.append("addiu $sp $sp 4 \n");
-
-        return memory;
     }
 }

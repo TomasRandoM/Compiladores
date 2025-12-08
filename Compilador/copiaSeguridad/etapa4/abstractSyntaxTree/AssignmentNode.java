@@ -64,6 +64,7 @@ public class AssignmentNode extends SentenceNode {
 
         if (!leftType.getName().equals(rightType.getName())) {
             if (!rightType.getName().equals("nil")) {
+                System.out.println(rightType.getName());
                 if ((rightType.getName().equals("void")) || !(SymbolTable.getClass(rightType.getName()).isInheritedClass(leftType.getName()))) {
                     throw new SemanticASTException(rightNode.getToken(), "El tipo asignado " +
                             "es incorrecto. " +
@@ -72,11 +73,6 @@ public class AssignmentNode extends SentenceNode {
                 }
             }
         }
-    }
-
-    @Override
-    public void codeGen(StringBuilder string) {
-
     }
 
     public ExpressionNode getLeftNode() {

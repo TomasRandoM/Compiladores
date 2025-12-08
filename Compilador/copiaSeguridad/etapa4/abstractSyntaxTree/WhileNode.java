@@ -24,7 +24,7 @@ public class WhileNode extends SentenceNode {
     }
 
     /**
-     * Metodo que chequear que la expresion del while y la sentencia dentro
+     * Metodo para chequear la semantica
      **/
     @Override
     public void check() throws SemanticASTException {
@@ -38,11 +38,6 @@ public class WhileNode extends SentenceNode {
         }
 
         sentenceNode.check();
-    }
-
-    @Override
-    public void codeGen(StringBuilder string) {
-
     }
 
     public ExpressionNode getExpressionNode() {
