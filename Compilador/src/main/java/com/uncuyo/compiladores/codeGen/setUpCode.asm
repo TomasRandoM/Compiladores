@@ -91,10 +91,11 @@ start {
         #A a
         $Reservamos memoria en la pila para la variable local y la inicializamos en 0 (nil) porque es una clase
         li $a0, 0
+        sw $a0, -4($sp)
         addiu $sp $sp -4
         #Int r
         li $a0, 0
-        sw $a0, 0($sp)
+        sw $a0, -4($sp)
         addiu $sp $sp -4
 
         #guardamos el fp

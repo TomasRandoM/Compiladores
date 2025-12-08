@@ -159,12 +159,15 @@ public class NewNode extends OperandNode{
 
     @Override
     public void codeGen(StringBuilder string) {
-        int memory = 4;
+        int memory = 8;
+        string.append("#Llamada a constructor \n");
+        string.append("#Guardamos el framepointer actual en la pila \n");
+        string.append("sw $fp, 0($sp) \n");
+        string.append("addiu $sp $sp -4 \n");
+        string.append("#Reservamos lugar para el self en la pila \n");
+        string.append("addiu $sp $sp -4 \n");
+
         if (!option.equals("array")) {
-            string.append("#Llamada a constructor \n");
-            string.append("#Guardamos el framepointer actual en la pila \n");
-            string.append("sw $fp, 0($sp) \n");
-            string.append("addiu $sp $sp -4 \n");
             string.append("#Cargamos los parámetros a la pila \n");
             for (ExpressionNode expressionNode : parameterList.reversed()) {
                 expressionNode.codeGen(string);
@@ -179,13 +182,36 @@ public class NewNode extends OperandNode{
                     string.append("addiu $sp $sp -4 \n");
                 }
             }
+            //etiqueta del constructor es constructorClase
             string.append("jal constructor").append(type.getLexeme()).append("\n");
             string.append("addi $sp $sp ").append(memory).append("\n");
+            string.append("#Movemos el resultado de v0 a a0 \n");
+            string.append("move $a0 $v0 \n");
+            string.append("#Restauramos el framepointer \n");
             string.append("lw $fp, 0($sp) \n");
             //FALTA ENCADENADO
         }
-        //FALTA ARRAY
-
+        else {
+            if (type.getLexeme().equals("Double")) {
+                string.append("li $a0, 8 \n");
+                string.append("sw $a0, 0($sp) \n");
+                string.append("addiu $sp $sp -4 \n");
+            }
+            else {
+                string.append("li $a0, 4 \n");
+                string.append("sw $a0, 0($sp) \n");
+                string.append("addiu $sp $sp -4 \n");
+            }
+            expressionNode.codeGen(string);
+            string.append("sw $a0, 0($sp) \n");
+            string.append("addiu $sp $sp -4 \n");
+            string.append("jal constructorArray \n");
+            string.append("addiu $sp $sp 16 \n");
+            string.append("#Movemos el resultado de v0 a a0 \n");
+            string.append("move $a0 $v0 \n");
+            string.append("#Restauramos el framepointer \n");
+            string.append("lw $fp, 0($sp) \n");
+        }
     }
 
     public String getOption() {

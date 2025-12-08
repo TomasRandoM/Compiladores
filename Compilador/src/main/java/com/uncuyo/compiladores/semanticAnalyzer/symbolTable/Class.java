@@ -200,4 +200,30 @@ public class Class {
             throw new SemanticException(constructor.getToken(), "Una clase no puede tener más de un constructor");
         }
     }
+
+    /**
+     * Calcula el offset del atributo en la clase. Lo recorre obligatoriamente
+     * porque el double ocupa el doble de espacio. Devuelve un offset positivo teniendo
+     * en cuenta la estructura del CIR (Class instant record)
+     * @param attribute String con el identificador del atributo
+     * @return int offset
+     */
+    public int getAttributeOffset(String attribute) {
+        int memory = 4;
+        for (Map.Entry<String, Attribute> entry : attributes.entrySet()) {
+            if (entry.getKey().equals(attribute)) {
+                return memory;
+            }
+            else {
+                if (entry.getValue().getType().getName().equals("Double")) {
+                    memory += 8;
+                }
+                else {
+                    memory += 4;
+                }
+            }
+        }
+        //No se debería llegar a este return, si se llega falló el semántico
+        return memory;
+    }
 }

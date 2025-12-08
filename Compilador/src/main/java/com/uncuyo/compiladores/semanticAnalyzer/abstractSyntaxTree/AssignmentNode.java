@@ -74,8 +74,39 @@ public class AssignmentNode extends SentenceNode {
         }
     }
 
+    /**
+     * Generacion de codigo para la asignacion. Llama a codeGen de right, luego left y realiza la asignacion
+     * en el espacio de memoria asignado
+     * @param string StringBuilder
+     */
     @Override
     public void codeGen(StringBuilder string) {
+        string.append("#Asignación \n");
+        rightNode.codeGen(string);
+        if (rightNode.nodeType.getName().equals("Double")) {
+            string.append("s.d $f0, 0($sp) \n");
+            string.append("addiu $sp $sp -8 \n");
+        }
+        else {
+            string.append("sw $a0, 0($sp) \n");
+            string.append("addiu $sp $sp -4 \n");
+        }
+        //esta en el $a0 la direccion de la variable
+        leftNode.codeGen(string);
+
+        if (rightNode.nodeType.getName().equals("Double")) {
+            string.append("addiu $sp $sp 8 \n");
+            string.append("l.d $f0, 0($sp) \n");
+            string.append("#Se guarda el double del lado derecho en la direccion de a0 \n");
+            string.append("s.d $f0, 0($a0) \n");
+        }
+        else {
+            string.append("addiu $sp $sp 4 \n");
+            string.append("lw $t0, 0($sp) \n");
+            string.append("#Se guarda lo del lado derecho en la direccion de a0 \n");
+            string.append("sw $t0, 0($a0) \n");
+        }
+
 
     }
 

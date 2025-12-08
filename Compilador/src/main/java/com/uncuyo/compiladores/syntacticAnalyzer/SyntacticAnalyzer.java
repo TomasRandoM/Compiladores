@@ -1603,22 +1603,24 @@ public class SyntacticAnalyzer {
             }
             else {
                 if (lookahead.getName() == TokenTypes.pif) {
+                    Token token = lookahead;
                     match(TokenTypes.pif);
                     match(TokenTypes.parentheses1);
                     ExpressionNode expressionNode = expOr();
                     match(TokenTypes.parentheses2);
                     SentenceNode sentenceNode1 = sentencia();
                     SentenceNode elseSentenceNode = sentenciaIf();
-                    sentenceNode = new IfThenElseNode(expressionNode, sentenceNode1, elseSentenceNode);
+                    sentenceNode = new IfThenElseNode(expressionNode, sentenceNode1, elseSentenceNode, AST.getCurrentClass(), AST.getCurrentMethod(), token);
                 }
                 else {
                     if (lookahead.getName() == TokenTypes.pwhile) {
+                        Token pwhile = lookahead;
                         match(TokenTypes.pwhile);
                         match(TokenTypes.parentheses1);
                         ExpressionNode expressionNode = expOr();
                         match(TokenTypes.parentheses2);
                         SentenceNode sentenceNode2 = sentencia();
-                        sentenceNode = new WhileNode(expressionNode, sentenceNode2);
+                        sentenceNode = new WhileNode(expressionNode, sentenceNode2,AST.getCurrentClass(), AST.getCurrentMethod(), pwhile);
                     }
                     else {
                         if (lookahead.getName() == TokenTypes.braces1) {

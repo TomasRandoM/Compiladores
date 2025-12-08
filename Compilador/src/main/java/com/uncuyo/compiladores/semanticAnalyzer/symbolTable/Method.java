@@ -147,4 +147,76 @@ public class Method {
         variables.put(variable.getName(), variable);
     }
 
+    /**
+     * Calcula el offset del parametro en el metodo. Lo recorre obligatoriamente
+     * porque el double ocupa el doble de espacio. Devuelve un offset positivo teniendo
+     * en cuenta la estructura del registro de activacion
+     * @param parameter String con el identificador del parametro
+     * @return int offset
+     */
+    public int getParameterOffset(String parameter) {
+        int memory = 4;
+        for (Map.Entry<String, Parameter> entry : parameters.entrySet()) {
+            if (entry.getKey().equals(parameter)) {
+                return memory;
+            }
+            else {
+                if (entry.getValue().getType().getName().equals("Double")) {
+                    memory += 8;
+                }
+                else {
+                    memory += 4;
+                }
+            }
+        }
+        //No se debería llegar a este return, si se llega falló el semántico
+        return memory;
+    }
+
+    /**
+     * Calcula el offset de la variable en el metodo. En este caso, estan por debajo del fp por lo
+     * que el offset sera negativo.
+     * @param variable String con el identificador de la variable
+     * @return int offset
+     */
+    public int getVariableOffset(String variable) {
+        int memory = -4;
+        for (Map.Entry<String, Variable> entry : variables.entrySet()) {
+            if (entry.getKey().equals(variable)) {
+                return memory;
+            }
+            else {
+                if (entry.getValue().getType().getName().equals("Double")) {
+                    memory -= 8;
+                }
+                else {
+                    memory -= 4;
+                }
+            }
+        }
+        //No se debería llegar a este return, si se llega falló el semántico
+        return memory;
+    }
+
+    /**
+     * Calcula la memoria que ocupan los parametros en la pila.
+     * @return int con la memoria que ocupan todos los parametros. Apunta a la direccion
+     * donde estaria el self. Es decir, la siguiente direccion despues de los parametros
+     */
+    public int getParameterMemory() {
+        int memory = 4;
+        for (Map.Entry<String, Variable> entry : variables.entrySet()) {
+            if (entry.getValue().getType().getName().equals("Double")) {
+                memory -= 8;
+            }
+            else {
+                memory -= 4;
+            }
+        }
+        //No se debería llegar a este return, si se llega falló el semántico
+        return memory;
+    }
+
+
+
 }

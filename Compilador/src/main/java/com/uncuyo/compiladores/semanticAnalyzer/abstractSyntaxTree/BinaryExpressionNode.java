@@ -234,12 +234,19 @@ public class BinaryExpressionNode extends ExpressionNode {
         return operator;
     }
 
+    /**
+     * Genera el codigo MIPS para las expresiones binarias.
+     * Genera el codigo del lado izquierdo, luego el lado derecho. Posteriormente, hace la operacion
+     * correspondiente y guarda el resultado en a0 o f0 dependiendo de si es double o no
+     * @param string StringBuilder
+     */
     @Override
     public void codeGen(StringBuilder string) {
         boolean leftIsDouble = false;
         boolean rightIsDouble = false;
         left.codeGen(string);
         if (left.nodeType.getName().equals("Double")) {
+            string.append("#Left es double\n");
             string.append("s.d $f0, 0($sp) \n");
             string.append("addiu $sp $sp -8 \n");
             leftIsDouble = true;
@@ -252,6 +259,8 @@ public class BinaryExpressionNode extends ExpressionNode {
         if (right.nodeType.getName().equals("Double")) {
             rightIsDouble = true;
             if (!leftIsDouble) {
+                string.append("#Convertimos el valor de la izquierda en double y \n");
+                string.append("#queda guardado en f2 \n");
                 string.append("lw $a0, 4($sp) \n");
                 string.append("addiu $sp $sp 4\n");
                 string.append("mtc1 $a0, $f2\n");
@@ -259,6 +268,9 @@ public class BinaryExpressionNode extends ExpressionNode {
                 //Ahora tenemos el left en f2 y el right en f0
             }
             else {
+                string.append("#Ambos son double asi que no se hace conversion \n");
+                string.append("#Se saca de la pila el primer valor y se guarda en f2 \n");
+                string.append("El left queda en f2 y el right en f0 \n");
                 string.append("l.d $f2, 8($sp) \n");
                 string.append("addiu $sp $sp 8\n");
                 //left en f2 y right en f0
@@ -266,13 +278,17 @@ public class BinaryExpressionNode extends ExpressionNode {
         }
         else {
             if (leftIsDouble) {
+                string.append("#Convertimos right a double \n");
                 string.append("l.d $f2, 8($sp) \n");
                 string.append("addiu $sp $sp 8\n");
                 string.append("mtc1 $a0, $f0\n");
+                string.append("#queda guardado en f0 \n");
                 string.append("cvt.d.w $f0, $f0\n");
                 //left en f2 y right en f0
             }
             else {
+                string.append("#Ni left ni right son double\n");
+                string.append("#El lado izquierdo queda en el t0 y el lado derecho en el a0 \n");
                 string.append("lw $t0, 4($sp) \n");
                 string.append("addiu $sp $sp 4\n");
                 //right en a0 y left en t0
@@ -283,6 +299,7 @@ public class BinaryExpressionNode extends ExpressionNode {
         //si uno o los dos son double: left $f2, right $f0
 
         if (leftIsDouble || rightIsDouble) {
+            string.append("#Ambos lados son de tipo double (tras la posible conversion) \n");
             switch (operator.getName()) {
                 case op_sum:
                     string.append("add.d $f0, $f0, $f2\n");
@@ -300,14 +317,20 @@ public class BinaryExpressionNode extends ExpressionNode {
                     //No hay operador implementado directamente por lo que se realiza este proceso:
                     // a - int(a/b) * b
                     //Divido left / right y lo guardo en f4
+                    string.append("#Se aplica la formula a - int(a/b) * b para el modulo \n");
+                    string.append("#a/b \n");
                     string.append("div.d $f4, $f2, $f0\n");
                     //Se convierte a entero (truncandolo) y se guarda en f6
+                    string.append("#int(a/b) se guarda en f6 \n");
                     string.append("cvt.w.d $f6, $f4\n");
                     //Se convierte a double nuevamente
+                    string.append("#int(a/b) se convierte en double nuevamente y se guarda en f6 \n");
                     string.append("cvt.d.w $f6, $f6\n");
                     //Multiplica el double anterior por right
+                    string.append("#int(a/b) * b se guarda en f6 \n");
                     string.append("mul.d $f6, $f6, $f0\n");
                     //Resta el left menos todo lo demas
+                    string.append("#a - int(a/b) * b se guarda en f0 \n");
                     string.append("$f0, $f2, $f6 \n");
                     break;
 
@@ -336,6 +359,7 @@ public class BinaryExpressionNode extends ExpressionNode {
             }
         }
         else {
+            string.append("#Ningun tipo es double\n");
             switch (operator.getName()) {
                 case op_sum:
                     string.append("add $a0, $t0, $a0\n");
@@ -344,6 +368,7 @@ public class BinaryExpressionNode extends ExpressionNode {
                     string.append("sub $a0, $t0, $a0\n");
                     break;
                 case op_div:
+                    string.append("#Se convierten los tipos a double para la operacion de division \n");
                     string.append("mtc1 $t0, $f2\n");
                     string.append("mtc1 $a0, $f0\n");
                     string.append("cvt.d.w $f0, $f0\n");

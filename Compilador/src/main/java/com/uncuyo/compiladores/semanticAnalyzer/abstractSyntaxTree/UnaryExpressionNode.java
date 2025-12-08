@@ -107,8 +107,13 @@ public class UnaryExpressionNode extends ExpressionNode {
         return operator;
     }
 
+    /**
+     * Generacion de codigo para expresion unaria
+     * @param string StringBuilder
+     */
     @Override
     public void codeGen(StringBuilder string) {
+        string.append("#Expresion unaria \n");
         expressionNode.codeGen(string);
         switch (operator.getName()) {
             case op_decrement:
@@ -144,6 +149,7 @@ public class UnaryExpressionNode extends ExpressionNode {
                     break;
             case pint:
                 if (!expressionNode.nodeType.getName().equals("Int")) {
+                    string.append("#Se castea a Int el Double y se deja en f0 \n");
                     //Transformo el double de f0 a entero y lo dejo en f2
                     string.append("cvt.w.d $f2, $f0 \n");
                     //Muevo el entero de f2 a a0

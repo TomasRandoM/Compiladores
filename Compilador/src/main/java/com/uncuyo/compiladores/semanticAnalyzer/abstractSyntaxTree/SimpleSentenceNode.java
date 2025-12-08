@@ -32,9 +32,15 @@ public class SimpleSentenceNode extends SentenceNode {
         }
     }
 
+    /**
+     * Genera el codigo MIPS para las sentencias simples.
+     * Llama al codeGen de sentencias
+     * @param string StringBuilder
+     */
     @Override
     public void codeGen(StringBuilder string) {
-
+        string.append("#CodeGen Sentencia Simple");
+        expressionNode.codeGen(string);
     }
 
     public ExpressionNode getExpressionNode() {

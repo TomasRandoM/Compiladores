@@ -103,8 +103,54 @@ public class VariableNode extends OperandNode {
         return token;
     }
 
+    /**
+     * Genera el codigo para acceder a la direccion de una variable en la pila o a un atributo en un CIR
+     * @param string StringBuilder
+     */
     @Override
     public void codeGen(StringBuilder string) {
+        Class currentClass = null;
+        if (this.currentClass != null) {
+            currentClass = SymbolTable.getClass(this.currentClass);
+        }
+        Method currentMethod;
+        if (this.currentMethod == null) {
+            currentMethod = currentClass.getConstructor();
+        } else {
+            if (this.currentMethod.equals("start")) {
+                currentMethod = SymbolTable.getStartMethodStored();
+            } else {
+                currentMethod = currentClass.getMethods().get(this.currentMethod);
+            }
+        }
+        //Calculamos el offset, dependiendo de si está en el parámetro, variable o atributo.
+        int offset = 0;
+        boolean isAttribute = false;
+        if (currentMethod.getParameters().get(token.getLexeme()) != null) {
+            offset = currentMethod.getParameterOffset(token.getLexeme());
+        } else {
+            if (currentMethod.getVariables().get(token.getLexeme()) != null) {
+                offset = currentMethod.getVariableOffset(token.getLexeme());
+            } else {
+                if ((currentClass != null) && (currentClass.getAttributes().get(token.getLexeme()) != null)) {
+                    offset = currentClass.getAttributeOffset(token.getLexeme());
+                    isAttribute = true;
+                }
+            }
+        }
+        string.append("#Carga de variable \n");
+        if (isAttribute) {
+            int parameterSize = currentMethod.getParameterMemory();
+            string.append("#Cargamos la direccion del atributo en a0 utilizando la \n");
+            string.append("#cantidad de parametros para acceder a self, y de ahi al atrubuto\n");
+            string.append("lw $a0, ").append(parameterSize).append("($fp)\n");
+            string.append("la $a0, ").append(offset).append("($a0) \n");
+        }
+        else {
+            string.append("#Cargamos la direccion de la variable en a0 utilizando el \n");
+            string.append("offset con el fp \n");
+            string.append("la $a0, ").append(offset).append("($fp) \n");
+        }
 
     }
 
