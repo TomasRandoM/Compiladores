@@ -32,6 +32,11 @@ public class SimpleSentenceNode extends SentenceNode {
         }
     }
 
+    @Override
+    public void codeGen(StringBuilder string) {
+
+    }
+
     public ExpressionNode getExpressionNode() {
         return expressionNode;
     }

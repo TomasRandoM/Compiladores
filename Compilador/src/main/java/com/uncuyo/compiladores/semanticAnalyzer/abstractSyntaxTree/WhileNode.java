@@ -40,6 +40,11 @@ public class WhileNode extends SentenceNode {
         sentenceNode.check();
     }
 
+    @Override
+    public void codeGen(StringBuilder string) {
+
+    }
+
     public ExpressionNode getExpressionNode() {
         return expressionNode;
     }

@@ -1185,4 +1185,37 @@ public class SemanticASTTest {
         });
     }
 
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testPolymorphismMethodCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/polymorphismMethod.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testRetInMethodCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/retInMethod.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testPolymorphismMethodIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/polymorphismMethod.s").program();
+        });
+    }
+
 }

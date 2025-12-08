@@ -114,7 +114,7 @@ public class BlockNode extends SentenceNode {
 
     @Override
     public void codeGen(StringBuilder string) {
-        int memory;
+        int memory = 0;
         if (methodBlock) {
             if (methodName != null) {
                 if (!methodName.equals("start")) {
@@ -124,6 +124,22 @@ public class BlockNode extends SentenceNode {
                     string.append("sw $ra, 0($sp) \n");
                     string.append("addiu $sp $sp -4 \n");
                     Map<String, Variable> variables =SymbolTable.getClass(className).getMethods().get(methodName).getVariables();
+                }
+                else {
+                    //Inicio del main
+                    string.append(".text \n");
+                    string.append("main: \n");
+                    string.append("#Bloque start \n");
+                    string.append("#Se forma el nuevo y primer framepointer \n");
+                    string.append("move $fp, $sp \n");
+                    string.append("#Movemos la pila para coherencia, pues no va a haber return address en el start \n");
+                    string.append("addiu $sp $sp -4 \n");
+
+                    //SENTENCIAS (PENDIENTE)
+
+                    //Fin del programa
+                    string.append("li $v0, 10 \n");
+                    string.append("syscall \n");
                 }
             }
             else {
