@@ -21,6 +21,18 @@ public class IfThenElseNode extends SentenceNode {
      * Representa la sentencia del else, puede ser null
      */
     private SentenceNode elseSentenceNode;
+    /**
+     * Nombre de la clase
+     */
+    private String className;
+    /**
+     * Nombre del metodo
+     */
+    private String methodName;
+    /**
+     * Token de la palabra reservada if
+     */
+    private Token token;
 
     /**
      * Constructor de IfThenElseNode
@@ -28,10 +40,13 @@ public class IfThenElseNode extends SentenceNode {
      * @param sentenceNode SentenceNode
      * @param elseSentenceNode SentenceNode
      */
-    public IfThenElseNode(ExpressionNode expressionNode, SentenceNode sentenceNode, SentenceNode elseSentenceNode) {
+    public IfThenElseNode(ExpressionNode expressionNode, SentenceNode sentenceNode, SentenceNode elseSentenceNode, String className, String methodName, Token token) {
         this.expressionNode = expressionNode;
         this.sentenceNode = sentenceNode;
         this.elseSentenceNode = elseSentenceNode;
+        this.className = className;
+        this.methodName = methodName;
+        this.token = token;
     }
 
     /**
@@ -52,8 +67,29 @@ public class IfThenElseNode extends SentenceNode {
         }
     }
 
+    /**
+     * Generacion de codigo de if
+     * @param string StringBuilder
+     */
     @Override
     public void codeGen(StringBuilder string) {
+        string.append("#If \n");
+        String name = "if_" + methodName + className + token.getRow() + token.getColumn();
+        String elseName = "elseif_" + methodName + className + token.getRow() + token.getColumn();
+        String endName = "endif_" + methodName + className + token.getRow() + token.getColumn();
+        string.append(name).append(": \n");
+        expressionNode.codeGen(string);
+        string.append("#Verifica si la condicion es falsa. Si es falsa salta a la etiqueta else \n");
+        string.append("beq $a0, $zero, ").append(elseName).append("\n");
+        sentenceNode.codeGen(string);
+        string.append("#Al terminar salta a la etiqueta end del if \n");
+        string.append("j ").append(endName).append(" \n");
+        string.append("#Etiqueta del else. Si no hay else, esta vacia \n");
+        string.append(elseName).append(": \n");
+        if (elseSentenceNode != null) {
+            elseSentenceNode.codeGen(string);
+        }
+        string.append(endName).append(": \n");
 
     }
 

@@ -106,8 +106,13 @@ public class LiteralNode extends OperandNode {
         this.option = option;
     }
 
+    /**
+     * Genera el codigo MIPS de los literales
+     * @param string StringBuilder
+     */
     public void codeGen(StringBuilder string) {
         String name;
+        string.append("#Literales\n");
         switch (option) {
             case "nil":
                 string.append("li $a0, 0\n");

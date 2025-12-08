@@ -112,18 +112,35 @@ public class BlockNode extends SentenceNode {
         }
     }
 
+    /**
+     * Realiza la generacion de codigo para los bloques del codigo.
+     * Basicamente guarda el framepointer nuevo, el return address y llama a los codeGen de sentencias.
+     * En el caso del start tambien finaliza el programa
+     * @param string StringBuilder
+     */
     @Override
     public void codeGen(StringBuilder string) {
         int memory = 0;
         if (methodBlock) {
             if (methodName != null) {
                 if (!methodName.equals("start")) {
+                    string.append(methodName).append(className).append(": \n");
                     string.append("#Se forma el nuevo framepointer \n");
                     string.append("move $fp, $sp \n");
                     string.append("#Se guarda el return address en la pila \n");
                     string.append("sw $ra, 0($sp) \n");
                     string.append("addiu $sp $sp -4 \n");
-                    Map<String, Variable> variables =SymbolTable.getClass(className).getMethods().get(methodName).getVariables();
+                    Map<String, Variable> variables = SymbolTable.getClass(className).getMethods().get(methodName).getVariables();
+                    //Declaraciones
+                    calcultateMemoryV(variables, string);
+                    string.append("#Sentencias del bloque \n");
+                    for (SentenceNode sentenceNode : sentences) {
+                        sentenceNode.codeGen(string);
+                    }
+
+                    //Fin del programa
+                    string.append("li $v0, 10 \n");
+                    string.append("syscall \n");
                 }
                 else {
                     //Inicio del main
@@ -134,46 +151,67 @@ public class BlockNode extends SentenceNode {
                     string.append("move $fp, $sp \n");
                     string.append("#Movemos la pila para coherencia, pues no va a haber return address en el start \n");
                     string.append("addiu $sp $sp -4 \n");
+                    //Declaraciones
+                    calcultateMemoryV(SymbolTable.getStartMethodStored().getVariables(), string);
+                    string.append("#Sentencias del bloque \n");
+                    for (SentenceNode sentenceNode : sentences) {
+                        sentenceNode.codeGen(string);
+                    }
 
-                    //SENTENCIAS (PENDIENTE)
-
-                    //Fin del programa
-                    string.append("li $v0, 10 \n");
-                    string.append("syscall \n");
                 }
             }
             else {
+                string.append("constructor").append(className).append(": \n");
                 string.append("#Se forma el nuevo framepointer \n");
                 string.append("move $fp, $sp \n");
                 string.append("#Se guarda el return address en la pila \n");
                 string.append("sw $ra, 0($sp) \n");
                 string.append("addiu $sp $sp -4 \n");
                 string.append("#Constructor \n");
-                string.append("#Se reserva memoria en la pila para las variables \n");
-                string.append("addiu $sp $sp ").append(-memory).append(" \n");
+                Map<String, Variable> variables = SymbolTable.getClass(className).getConstructor().getVariables();
+                //Declaraciones
+                calcultateMemoryV(variables, string);
+                string.append("#Sentencias del bloque \n");
+                for (SentenceNode sentenceNode : sentences) {
+                    sentenceNode.codeGen(string);
+                }
             }
 
         }
-
+        else {
+            //Bloque de sentencias DENTRO de un bloque de método
+            string.append("#Sentencias del bloque de un metodo \n");
+            for (SentenceNode sentenceNode : sentences) {
+                sentenceNode.codeGen(string);
+            }
+        }
     }
 
     public int calcultateMemoryV(Map<String, Variable> variables, StringBuilder string) {
         int memory = 0;
-        string.append("#Se guarda el framepointer \n");
-        string.append("sw $fp 0($sp) \n");
-        string.append("addiu $sp $sp -4 \n");
+        string.append("#Declaración de variables \n");
+        string.append("#Reservamos memoria para las variables en la pila y lo inicializamos\n");
         for (Variable variable : variables.values()) {
             if (variable.getType().getName().equals("Double")) {
-                string.append("");
+                string.append("l.d $f0, zeroDouble\n");
+                string.append("s.d, $f0, 0($sp)\n");
+                string.append("addiu $sp $sp -8\n");
                 memory += 8;
             }
             else {
+                if (variable.getType().getName().equals("Str")) {
+                    string.append("la $a0, stringInitialization \n");
+                    string.append("sw $a0, 0($sp) \n");
+                    string.append("addiu $sp $sp -4 \n");
+                }
+                else {
+                    string.append("li $a0, 0 \n");
+                    string.append("sw $a0, 0($sp) \n");
+                    string.append("addiu $sp $sp -4 \n");
+                }
                 memory += 4;
             }
         }
-        string.append("lw $fp 4($sp) \n");
-        string.append("addiu $sp $sp 4 \n");
-
         return memory;
     }
 }
