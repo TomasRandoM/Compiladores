@@ -30,9 +30,20 @@ public class SelfNode extends OperandNode {
         return token;
     }
 
+    /**
+     *
+     * @param string
+     */
     @Override
     public void codeGen(StringBuilder string) {
+        string.append("#Self \n");
+        int selfOffset = SymbolTable.getClass(className).
+                getMethods().get(methodName).getParameterMemory();
+        string.append("lw $a0, ").append(selfOffset).append("($fp) \n");
 
+        if (chainedNode != null) {
+            chainedNode.codeGen(string);
+        }
     }
 
     public void setToken(Token token) {
@@ -103,5 +114,17 @@ public class SelfNode extends OperandNode {
         type.setToken(token);
         this.nodeType = type;
         return type;
+    }
+
+
+    public ChainedNode getLastChainedNode() {
+        ChainedNode chainedNode1;
+        if (chainedNode != null) {
+            chainedNode1 = chainedNode.getLastChainedNode();
+        }
+        else {
+            chainedNode1 = null;
+        }
+        return chainedNode1;
     }
 }

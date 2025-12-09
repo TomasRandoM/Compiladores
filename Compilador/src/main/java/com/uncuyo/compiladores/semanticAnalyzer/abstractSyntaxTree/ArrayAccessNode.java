@@ -42,9 +42,131 @@ public class ArrayAccessNode extends OperandNode{
         return token;
     }
 
+    /**
+     * Generacion de codigo para el acceso a array encadenado. Cabe destacar que este no es el nodo utilizado
+     * en una asignacion
+     * @param string StringBuilder
+     */
     @Override
     public void codeGen(StringBuilder string) {
+        Class currentClass = null;
+        if (className != null) {
+            currentClass = SymbolTable.getClass(className);
+        }
+        Method currentMethod;
+        if (this.methodName == null) {
+            currentMethod = currentClass.getConstructor();
+        } else {
+            if (this.methodName.equals("start")) {
+                currentMethod = SymbolTable.getStartMethodStored();
+            } else {
+                currentMethod = currentClass.getMethods().get(this.methodName);
+            }
+        }
+        //Calculamos el offset, dependiendo de si está en el parámetro, variable o atributo.
+        Type arrayType = null;
+        int offset = 0;
+        boolean isAttribute = false;
+        if (currentMethod.getParameters().get(token.getLexeme()) != null) {
+            offset = currentMethod.getParameterOffset(token.getLexeme());
+            arrayType = currentMethod.getParameters().get(token.getLexeme()).getType().getArrType();
+        } else {
+            if (currentMethod.getVariables().get(token.getLexeme()) != null) {
+                offset = currentMethod.getVariableOffset(token.getLexeme());
+                arrayType = currentMethod.getVariables().get(token.getLexeme()).getType().getArrType();
+            } else {
+                if ((currentClass != null) && (currentClass.getAttributes().get(token.getLexeme()) != null)) {
+                    offset = currentClass.getAttributeOffset(token.getLexeme());
+                    arrayType = currentClass.getAttributes().get(token.getLexeme()).getType().getArrType();
+                    isAttribute = true;
+                }
+            }
+        }
+        string.append("#Carga de variable \n");
+        if (isAttribute) {
+            int parameterSize = currentMethod.getParameterMemory();
+            string.append("#Cargamos el atributo en a0 utilizando la \n");
+            string.append("#cantidad de parametros para acceder a self, y de ahi al atrubuto\n");
+            string.append("lw $a0, ").append(parameterSize).append("($fp)\n");
+            string.append("addiu $a0, $a0 ").append(offset).append("\n");
+        }
+        else {
+            string.append("#Cargamos la variable en a0 utilizando el \n");
+            string.append("offset con el fp \n");
+            string.append("lw $a0, ").append(offset).append("($fp) \n");
+        }
 
+        string.append("#Guardamos a0 en la pila, que es la direccion del array\n");
+        string.append("sw $a0, 0($sp) \n");
+        string.append("addiu $sp $sp -4 \n");
+        expressionNode.codeGen(string);
+        checkChained(string, expressionNode);
+        if (expressionNode instanceof ArrayAccessNode) {
+            string.append("#Se obtiene el valor del array desde la direccion \n");
+            if (expressionNode.nodeType.getName().equals("Double")) {
+                string.append("l.d $f0, 0($a0) \n");
+            }
+            else {
+                string.append("lw $a0, 0($a0) \n");
+            }
+        }
+        string.append("#Restauramos la direccion en t0 que habiamos dejado en la pila \n");
+        string.append("addiu $sp $sp 4 \n");
+        string.append("lw $t0, 0($sp) \n");
+        string.append("#Calculamos el offset usando la posicion (en a0) y\n");
+        string.append("#el espacio que ocupan los elementos del array\n");
+        if (arrayType.getName().equals("Double")) {
+            string.append("li $t1, 8 \n");
+        }
+        else {
+            string.append("li $t1, 4\n");
+        }
+        string.append("mul $a0, $a0, $t1 \n");
+        string.append("#sumamos 8 debido a que el array posee vtable y la longitud del mismo \n");
+        string.append("addiu $a0 $a0 8 \n");
+        string.append("#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento \n");
+        string.append("addiu $t0 $t0 $a0 \n");
+        string.append("move $a0, $t0 \n");
+    }
+
+    /**
+     * Este metodo se fija si el ultimo encadenado es un ChainedAccessNode
+     * para asi cargar su valor (desde la direccion que retorna).
+     * @param string StringBuilder
+     * @param expressionNode ExpressionNode
+     */
+    public void checkChained(StringBuilder string, ExpressionNode expressionNode) {
+        ChainedNode chainedNode1 = expressionNode.getLastChainedNode();
+        if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
+            if (!isClassOrArray(expressionNode.nodeType.getName())) {
+                if (expressionNode.nodeType.getName().equals("Double")) {
+                    string.append("l.d $f0 0($a0)");
+                }
+                else {
+                    string.append("lw $a0 0($a0)");
+                }
+            }
+        }
+    }
+
+    public boolean isClassOrArray(String type) {
+        if (type.equals("Int") ||
+                type.equals("void") ||
+                type.equals("Bool") ||
+                type.equals("Str") ||
+                type.equals("Char") ||
+                type.equals("Double") ||
+                type.equals("nil")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    @Override
+    public ChainedNode getLastChainedNode() {
+        return chainedNode.getLastChainedNode();
     }
 
     public void setToken(Token token) {

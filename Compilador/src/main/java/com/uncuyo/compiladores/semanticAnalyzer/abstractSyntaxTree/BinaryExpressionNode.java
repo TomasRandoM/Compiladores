@@ -418,6 +418,11 @@ public class BinaryExpressionNode extends ExpressionNode {
         }
     }
 
+    @Override
+    public ChainedNode getLastChainedNode() {
+        return null;
+    }
+
     public Token getOperator() {
         return operator;
     }

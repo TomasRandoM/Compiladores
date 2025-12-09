@@ -44,7 +44,66 @@ public class ChainedAccessNode extends ChainedNode {
 
     @Override
     public void codeGen(StringBuilder string) {
+        string.append("#ChainedAccessNode \n");
+        if (getParentType() == null) {
 
+            Class currentClass = null;
+            if (this.className != null) {
+                currentClass = SymbolTable.getClass(this.className);
+            }
+            Method currentMethod;
+            if (this.methodName == null) {
+                currentMethod = currentClass.getConstructor();
+            } else {
+                if (this.methodName.equals("start")) {
+                    currentMethod = SymbolTable.getStartMethodStored();
+                } else {
+                    currentMethod = currentClass.getMethods().get(this.methodName);
+                }
+            }
+            //Calculamos el offset, dependiendo de si está en el parámetro, variable o atributo.
+            int offset = 0;
+            boolean isAttribute = false;
+            if (currentMethod.getParameters().get(name.getLexeme()) != null) {
+                offset = currentMethod.getParameterOffset(name.getLexeme());
+            } else {
+                if (currentMethod.getVariables().get(name.getLexeme()) != null) {
+                    offset = currentMethod.getVariableOffset(name.getLexeme());
+                } else {
+                    if ((currentClass != null) && (currentClass.getAttributes().get(name.getLexeme()) != null)) {
+                        offset = currentClass.getAttributeOffset(name.getLexeme());
+                        isAttribute = true;
+                    }
+                }
+            }
+            string.append("#Carga de variable \n");
+            if (isAttribute) {
+                int parameterSize = currentMethod.getParameterMemory();
+                string.append("#Cargamos la direccion del atributo en a0 utilizando la \n");
+                string.append("#cantidad de parametros para acceder a self, y de ahi al atributo\n");
+                string.append("lw $a0, ").append(parameterSize).append("($fp)\n");
+                //string.append("la $a0, ").append(offset).append("($a0) \n");
+                string.append("addiu $a0 $a0 ").append(offset).append("\n");
+            }
+            else {
+                string.append("#Cargamos la direccion de la variable o parametro en a0 utilizando el \n");
+                string.append("offset con el fp \n");
+                string.append("addiu $a0 $fp ").append(offset).append("\n");
+                //string.append("la $a0, ").append(offset).append("($fp) \n");
+            }
+        }
+        else {
+            //Tenemos en a0 el self del padre. Entonces, necesitariamos buscar en su CIR el atributo
+            //accedido actualmente
+            Class currentClass = SymbolTable.getClass(getParentType().getName());
+            int offset = currentClass.getAttributeOffset(name.getLexeme());
+            Type attributeType = currentClass.getAttributes().get(name.getLexeme()).getType();
+            string.append("#Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior\n");
+            string.append("lw $a0, ").append(offset).append("($a0) \n");
+        }
+        if (chainedNode != null) {
+            chainedNode.codeGen(string);
+        }
     }
 
     public void setName(Token name) {
@@ -96,6 +155,7 @@ public class ChainedAccessNode extends ChainedNode {
      * @param lastType String con el tipo de la clase anterior o el tipo de retorno del anterior metodo
      */
     public Type checkNames(Type lastType) throws SemanticASTException {
+        parentType = lastType;
         Type finalType;
 
         //primer acceso

@@ -65,4 +65,14 @@ public class ParenthesizedExpressionNode extends ExpressionNode {
     public void codeGen(StringBuilder string) {
         //Pendiente
     }
+
+    public ChainedNode getLastChainedNode() {
+        if (chainedNode != null) {
+            return chainedNode.getLastChainedNode();
+        }
+        else {
+            return expressionNode.getLastChainedNode();
+        }
+    }
+
 }

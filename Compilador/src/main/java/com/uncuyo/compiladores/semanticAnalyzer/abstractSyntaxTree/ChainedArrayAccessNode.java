@@ -42,6 +42,7 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
      */
     @Override
     public Type checkNames(Type lastType) throws SemanticASTException {
+        parentType = lastType;
 
         Type finalType;
         // si es el primer nodo
@@ -153,6 +154,94 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
         }
         type.setToken(token);
         return type;
+    }
+
+    /**
+     * Generacion de codigo para el acceso a array encadenado. Cabe destacar que este no es el nodo utilizado
+     * en una asignacion
+     * @param string StringBuilder
+     */
+    @Override
+    public void codeGen(StringBuilder string) {
+        Class class1 = SymbolTable.getClass(parentType.getName());
+        Attribute att = class1.getAttributes().get(name.getLexeme());
+        int attributeOffset = class1.getAttributeOffset(name.getLexeme());
+        string.append("#Guardamos a0 en la pila, que es el padre\n");
+        string.append("sw $a0, 0($sp) \n");
+        string.append("addiu $sp $sp -4 \n");
+        expression.codeGen(string);
+        //Queda en a0 el resultado de la expresión
+        checkChained(string, expression);
+        if (expression instanceof ArrayAccessNode) {
+            string.append("#Se obtiene el valor del array desde la direccion \n");
+            if (expression.nodeType.getName().equals("Double")) {
+                //Aca no deberia entrar
+                string.append("l.d $f0, 0($a0) \n");
+            }
+            else {
+                string.append("lw $a0, 0($a0) \n");
+            }
+        }
+        string.append("#Restauramos el self que habiamos dejado en la pila \n");
+        string.append("addiu $sp $sp 4 \n");
+        string.append("lw $t0, 0($sp) \n");
+        string.append("lw $t0, ").append(attributeOffset).append("($t0) \n");
+        string.append("#Calculamos el offset usando la posicion (en a0) y\n");
+        string.append("#el espacio que ocupan los elementos del array\n");
+        if (att.getType().getArrType().getName().equals("Double")) {
+            string.append("li $t1, 8 \n");
+        }
+        else {
+            string.append("li $t1, 4\n");
+        }
+        string.append("mul $a0, $a0, $t1 \n");
+        string.append("#sumamos 8 debido a que el array posee vtable y la longitud del mismo \n");
+        string.append("addiu $a0 $a0 8 \n");
+        string.append("#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento \n");
+        string.append("addiu $t0 $t0 $a0 \n");
+        if (att.getType().getArrType().getName().equals("Double")) {
+            string.append("#cargamos el elemento en f0 \n");
+            string.append("lw $f0 0($t0) \n");
+        }
+        else {
+            string.append("#cargamos el elemento en a0 \n");
+            string.append("lw $a0 0($t0) \n");
+        }
+    }
+
+    /**
+     * Este metodo se fija si el ultimo encadenado es un ChainedAccessNode
+     * para asi cargar su valor (desde la direccion que retorna).
+     * @param string StringBuilder
+     * @param expressionNode ExpressionNode
+     */
+    public void checkChained(StringBuilder string, ExpressionNode expressionNode) {
+        ChainedNode chainedNode1 = expressionNode.getLastChainedNode();
+        //contempla el caso de chainedNode1 == null.
+        if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
+            if (!isClassOrArray(expressionNode.nodeType.getName())) {
+                if (expressionNode.nodeType.getName().equals("Double")) {
+                    string.append("l.d $f0 0($a0)");
+                }
+                else {
+                    string.append("lw $a0 0($a0)");
+                }
+            }
+        }
+    }
+
+    public boolean isClassOrArray(String type) {
+        if (type.equals("Int") ||
+                type.equals("void") ||
+                type.equals("Bool") ||
+                type.equals("Str") ||
+                type.equals("Char") ||
+                type.equals("Double") ||
+                type.equals("nil")) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }

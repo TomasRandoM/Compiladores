@@ -2,6 +2,7 @@ package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
 import com.uncuyo.compiladores.exceptions.SemanticASTException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Class;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Method;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Parameter;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.SymbolTable;
@@ -75,31 +76,145 @@ public class MethodCallNode extends OperandNode {
         return token;
     }
 
+    /**
+     * Generacion de codigo para la llamada a un metodo (estatico y dinamico)
+     * @param string StringBuilder
+     */
     @Override
     public void codeGen(StringBuilder string) {
-        int memory = 4;
         string.append("#Llamada a método \n");
         string.append("#Guardamos el framepointer actual en la pila \n");
         string.append("sw $fp, 0($sp) \n");
         string.append("addiu $sp $sp -4 \n");
+        int memory = 8;
+        Class class1 = SymbolTable.getClass(className);
+        int methodOffset;
+        if (!isStatic) {
+            int selfOffset = class1.getMethods().get(token.getLexeme()).getParameterMemory();
+            methodOffset = class1.getMethodOffset(token.getLexeme());
+            string.append("#Cargamos en a0 el self \n");
+            string.append("lw $a0 ").append(selfOffset).append("($fp) \n");
+            string.append("sw $a0 0($sp) \n");
+            string.append("addiu $sp $sp -4 \n");
+            memory = codeGenParameters(string, memory);
+            string.append("#Copiamos el self en a0 \n");
+            string.append("lw $a0, ").append(memory - 4).append("($sp) \n");
+            string.append("#Cargamos la direccion de la vtable de self en a0 \n");
+            string.append("lw $a0, 0($a0) \n");
+        }
+        else {
+            String vtableName  = "vtable" + className;
+            methodOffset = SymbolTable.getClass(className).getMethodOffset(token.getLexeme());
+            string.append("#Se deja espacio para el self \n");
+            string.append("#En este caso no existe, pero para coherencia \n");
+            string.append("addiu $sp $sp -4");
+            memory = codeGenParameters(string, memory);
+            string.append("la $a0, ").append(vtableName).append("\n");
+        }
+
+        string.append("#Buscamos la direccion del metodo (usando el offset) \n");
+        string.append("addiu $a0, $a0, ").append(methodOffset).append("\n");
+        string.append("#Cargamos la direccion del metodo en el a0\n");
+        string.append("lw $a0, 0($a0)\n");
+        string.append("jalr $a0 \n");
+        //string.append("jal ").append(token.getLexeme()).append(className).append("\n");
+        string.append("addi $sp $sp ").append(memory).append("\n");
+        string.append("lw $fp, 0($sp) \n");
+
+        if (chainedNode != null) {
+            chainedNode.codeGen(string);
+        }
+
+    }
+
+    /**
+     * Carga los parametros del metodo actual en la pila
+     * @param string StringBuilder
+     * @param memory int con el espacio en la pila utilizado hasta el momento
+     * @return int con la memoria utilizada en la pila
+     */
+    public int codeGenParameters(StringBuilder string, int memory) {
         string.append("#Cargamos los parámetros a la pila \n");
         for (ExpressionNode expressionNode : parameterList.reversed()) {
             expressionNode.codeGen(string);
+            checkChained(string, expressionNode);
+            if (expressionNode instanceof ArrayAccessNode) {
+                string.append("#Se obtiene el valor del array desde la direccion \n");
+                if (expressionNode.nodeType.getName().equals("Double")) {
+                    string.append("l.d $f0, 0($a0) \n");
+                }
+                else {
+                    string.append("lw $a0, 0($a0) \n");
+                }
+            }
+
             if (expressionNode.nodeType.getName().equals("Double")) {
                 string.append("s.d $f0, 0($sp) \n");
                 string.append("addiu $sp $sp -8 \n");
                 memory += 8;
-            }
-            else {
+            } else {
                 string.append("sw $a0, 0($sp) \n");
                 string.append("addiu $sp $sp -4 \n");
                 memory += 4;
             }
         }
-        string.append("jal ").append(token.getLexeme()).append(className).append("\n");
-        string.append("addi $sp $sp ").append(memory).append("\n");
-        string.append("lw $fp, 0($sp) \n");
-        //FALTA ENCADENADO
+        return memory;
+    }
+
+
+    /**
+     * Este metodo se fija si el ultimo encadenado es un ChainedAccessNode
+     * para asi cargar su valor (desde la direccion que retorna).
+     * @param string StringBuilder
+     * @param expressionNode ExpressionNode
+     */
+    public void checkChained(StringBuilder string, ExpressionNode expressionNode) {
+        ChainedNode chainedNode1 = expressionNode.getLastChainedNode();
+
+        if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
+            if (!isClassOrArray(expressionNode.nodeType.getName())) {
+                if (expressionNode.nodeType.getName().equals("Double")) {
+                    string.append("l.d $f0 0($a0)");
+                }
+                else {
+                    string.append("lw $a0 0($a0)");
+                }
+            }
+        }
+    }
+
+    /**
+     * Devuelve false si es un tipo primitivo y true en caso contrario
+     * @param type
+     * @return boolean
+     */
+    public boolean isClassOrArray(String type) {
+        if (type.equals("Int") ||
+                type.equals("void") ||
+                type.equals("Bool") ||
+                type.equals("Str") ||
+                type.equals("Char") ||
+                type.equals("Double") ||
+                type.equals("nil")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Obtenemos el ultimo ChainedNode de un encadenado
+     * @return ChainedNode
+     */
+    public ChainedNode getLastChainedNode() {
+        ChainedNode chainedNode1;
+        if (chainedNode != null) {
+            chainedNode1 = chainedNode.getLastChainedNode();
+        }
+        else {
+            chainedNode1 = null;
+        }
+        return chainedNode1;
     }
 
     public void setToken(Token token) {
