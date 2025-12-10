@@ -1,7 +1,10 @@
 package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
 import com.uncuyo.compiladores.exceptions.SemanticASTException;
+import com.uncuyo.compiladores.exceptions.WriterException;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,12 +29,12 @@ public class AST {
      */
     private static List<BlockNode> blockNodes = new ArrayList<>();
 
+    private static List<String> vtablesMade = new ArrayList<>();
     /**
      * Sirve para chequear en el chequeo de sentencias si el metodo actualmente analizado tiene un return
      */
     private static boolean isReturnPresent = false;
 
-    private static boolean isFirstChained = true;
     /**
      * Comienza el chequeo de sentencias. Llama a chequear todas las sentencias de la lista
      */
@@ -41,6 +44,21 @@ public class AST {
         }
     }
 
+    public static void codeGen(String pathName) throws SemanticASTException, WriterException {
+        StringBuilder string = new StringBuilder();
+        string.append(".globl main \n");
+        for (BlockNode blockNode : blockNodes) {
+            blockNode.codeGen(string);
+        }
+        try (FileWriter writer = new FileWriter(pathName)) {
+            writer.write(string.toString());
+        } catch (IOException e) {
+            throw new WriterException("ERROR AL ESCRIBIR EL ARCHIVO ASM: " + e.getMessage());
+        }
+    }
+
+
+
     public static void resetAST() {
         currentClass = null;
         currentMethod = null;
@@ -49,6 +67,14 @@ public class AST {
 
     public static boolean isReturnPresent() {
         return isReturnPresent;
+    }
+
+    public static List<String> getVtablesMade() {
+        return vtablesMade;
+    }
+
+    public static void setVtablesMade(List<String> vtablesMade) {
+        AST.vtablesMade = vtablesMade;
     }
 
     public static void setIsReturnPresent(boolean isReturnPresent) {
@@ -86,11 +112,4 @@ public class AST {
         return isReturnPresent;
     }
 
-    public static boolean isFirstChained() {
-        return isFirstChained;
-    }
-
-    public static void setIsFirstChained(boolean isFirstChained) {
-        AST.isFirstChained = isFirstChained;
-    }
 }

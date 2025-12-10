@@ -83,6 +83,16 @@ public class AssignmentNode extends SentenceNode {
     public void codeGen(StringBuilder string) {
         string.append("#Asignación \n");
         rightNode.codeGen(string);
+        checkChained(string, rightNode);
+        if (rightNode instanceof ArrayAccessNode) {
+            string.append("#Se obtiene el valor del array desde la direccion \n");
+            if (rightNode.nodeType.getName().equals("Double")) {
+                string.append("l.d $f0, 0($a0) \n");
+            }
+            else {
+                string.append("lw $a0, 0($a0) \n");
+            }
+        }
         if (rightNode.nodeType.getName().equals("Double")) {
             string.append("s.d $f0, 0($sp) \n");
             string.append("addiu $sp $sp -8 \n");
@@ -107,7 +117,35 @@ public class AssignmentNode extends SentenceNode {
             string.append("sw $t0, 0($a0) \n");
         }
 
+    }
 
+    public void checkChained(StringBuilder string, ExpressionNode expressionNode) {
+        ChainedNode chainedNode1 = expressionNode.getLastChainedNode();
+
+        if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
+            if (!isClassOrArray(expressionNode.nodeType.getName())) {
+                if (expressionNode.nodeType.getName().equals("Double")) {
+                    string.append("l.d $f0 0($a0)");
+                }
+                else {
+                    string.append("lw $a0 0($a0)");
+                }
+            }
+        }
+    }
+
+    public boolean isClassOrArray(String type) {
+        if (type.equals("Int") ||
+                type.equals("void") ||
+                type.equals("Bool") ||
+                type.equals("Str") ||
+                type.equals("Char") ||
+                type.equals("Double") ||
+                type.equals("nil")) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public ExpressionNode getLeftNode() {

@@ -63,7 +63,49 @@ public class ParenthesizedExpressionNode extends ExpressionNode {
     }
 
     public void codeGen(StringBuilder string) {
-        //Pendiente
+        expressionNode.codeGen(string);
+        checkChained(string, expressionNode);
+        if (expressionNode instanceof ArrayAccessNode) {
+            string.append("#Se obtiene el valor del array desde la direccion \n");
+            if (expressionNode.nodeType.getName().equals("Double")) {
+                string.append("l.d $f0, 0($a0) \n");
+            }
+            else {
+                string.append("lw $a0, 0($a0) \n");
+            }
+        }
+        if (chainedNode != null) {
+            chainedNode.codeGen(string);
+        }
+    }
+
+    public void checkChained(StringBuilder string, ExpressionNode expressionNode) {
+        ChainedNode chainedNode1 = expressionNode.getLastChainedNode();
+
+        if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
+            if (!isClassOrArray(expressionNode.nodeType.getName())) {
+                if (expressionNode.nodeType.getName().equals("Double")) {
+                    string.append("l.d $f0 0($a0)");
+                }
+                else {
+                    string.append("lw $a0 0($a0)");
+                }
+            }
+        }
+    }
+
+    public boolean isClassOrArray(String type) {
+        if (type.equals("Int") ||
+                type.equals("void") ||
+                type.equals("Bool") ||
+                type.equals("Str") ||
+                type.equals("Char") ||
+                type.equals("Double") ||
+                type.equals("nil")) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public ChainedNode getLastChainedNode() {

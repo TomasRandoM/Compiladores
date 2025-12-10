@@ -148,7 +148,7 @@ public class VariableNode extends OperandNode {
         }
         else {
             string.append("#Cargamos la direccion de la variable en a0 utilizando el \n");
-            string.append("offset con el fp \n");
+            string.append("#offset con el fp \n");
             string.append("la $a0, ").append(offset).append("($fp) \n");
         }
 

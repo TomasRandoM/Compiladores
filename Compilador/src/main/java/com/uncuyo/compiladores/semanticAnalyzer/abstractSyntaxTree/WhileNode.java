@@ -68,12 +68,51 @@ public class WhileNode extends SentenceNode {
         String endName = "endWhile_" + methodName + className + token.getRow() + "_" + token.getColumn();
         string.append(name).append(":\n");
         expressionNode.codeGen(string);
+        checkChained(string, expressionNode);
+        if (expressionNode instanceof ArrayAccessNode) {
+            string.append("#Se obtiene el valor del array desde la direccion \n");
+            if (expressionNode.nodeType.getName().equals("Double")) {
+                //No debería llegarse a este caso, pero se mantiene por coherencia
+                string.append("l.d $f0, 0($a0) \n");
+            }
+            else {
+                string.append("lw $a0, 0($a0) \n");
+            }
+        }
         string.append("beq $a0, $zero, ").append(endName).append("\n");
         sentenceNode.codeGen(string);
         string.append("j ").append(name).append("\n");
         string.append(endName).append(":\n");
     }
 
+    public void checkChained(StringBuilder string, ExpressionNode expressionNode) {
+        ChainedNode chainedNode1 = expressionNode.getLastChainedNode();
+
+        if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
+            if (!isClassOrArray(expressionNode.nodeType.getName())) {
+                if (expressionNode.nodeType.getName().equals("Double")) {
+                    string.append("l.d $f0 0($a0)");
+                }
+                else {
+                    string.append("lw $a0 0($a0)");
+                }
+            }
+        }
+    }
+
+    public boolean isClassOrArray(String type) {
+        if (type.equals("Int") ||
+                type.equals("void") ||
+                type.equals("Bool") ||
+                type.equals("Str") ||
+                type.equals("Char") ||
+                type.equals("Double") ||
+                type.equals("nil")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
     public ExpressionNode getExpressionNode() {
         return expressionNode;
     }

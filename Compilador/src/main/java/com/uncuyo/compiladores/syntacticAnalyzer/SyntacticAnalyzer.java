@@ -42,7 +42,6 @@ public class SyntacticAnalyzer {
         System.out.println("CORRECTO: ANÁLISIS SEMÁNTICO - DECLARACIONES");
         AST.check();
         System.out.println("CORRECTO: ANÁLISIS SEMÁNTICO - SENTENCIAS");
-
     }
 
     /**

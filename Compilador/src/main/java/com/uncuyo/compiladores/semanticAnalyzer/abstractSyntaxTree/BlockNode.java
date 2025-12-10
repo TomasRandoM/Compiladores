@@ -122,6 +122,7 @@ public class BlockNode extends SentenceNode {
     public void codeGen(StringBuilder string) {
         int memory = 0;
         if (methodBlock) {
+            checkClassVTable(string);
             if (methodName != null) {
                 if (!methodName.equals("start")) {
                     string.append(methodName).append(className).append(": \n");
@@ -137,10 +138,6 @@ public class BlockNode extends SentenceNode {
                     for (SentenceNode sentenceNode : sentences) {
                         sentenceNode.codeGen(string);
                     }
-
-                    //Fin del programa
-                    string.append("li $v0, 10 \n");
-                    string.append("syscall \n");
                 }
                 else {
                     //Inicio del main
@@ -157,7 +154,10 @@ public class BlockNode extends SentenceNode {
                     for (SentenceNode sentenceNode : sentences) {
                         sentenceNode.codeGen(string);
                     }
-
+                    //Fin del programa
+                    string.append("#Fin del programa \n");
+                    string.append("li $v0, 10 \n");
+                    string.append("syscall \n");
                 }
             }
             else {
@@ -187,6 +187,16 @@ public class BlockNode extends SentenceNode {
         }
     }
 
+    public void checkClassVTable(StringBuilder string) {
+        if (className != null) {
+            if (!AST.getVtablesMade().contains(className)) {
+                string.append("vtable").append(className).append(": \n");
+                for (Method m : SymbolTable.getClass(className).getMethods().values()){
+                    string.append(".word ").append(m.getName()).append(className).append("\n");
+                }
+            }
+        }
+    }
     public int calcultateMemoryV(Map<String, Variable> variables, StringBuilder string) {
         int memory = 0;
         string.append("#Declaración de variables \n");
@@ -194,7 +204,7 @@ public class BlockNode extends SentenceNode {
         for (Variable variable : variables.values()) {
             if (variable.getType().getName().equals("Double")) {
                 string.append("l.d $f0, zeroDouble\n");
-                string.append("s.d, $f0, 0($sp)\n");
+                string.append("s.d $f0, 0($sp)\n");
                 string.append("addiu $sp $sp -8\n");
                 memory += 8;
             }
@@ -214,4 +224,6 @@ public class BlockNode extends SentenceNode {
         }
         return memory;
     }
+
+
 }
