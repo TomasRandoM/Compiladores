@@ -87,7 +87,7 @@ public class ChainedAccessNode extends ChainedNode {
             }
             else {
                 string.append("#Cargamos la direccion de la variable o parametro en a0 utilizando el \n");
-                string.append("offset con el fp \n");
+                string.append("#offset con el fp \n");
                 string.append("addiu $a0 $fp ").append(offset).append("\n");
                 //string.append("la $a0, ").append(offset).append("($fp) \n");
             }

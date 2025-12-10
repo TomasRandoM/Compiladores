@@ -204,7 +204,7 @@ public class NewNode extends OperandNode{
         }
         else {
             string.append("#Metemos a la pila el parametro que representa el espacio que ocupan los elementos \n");
-            string.append("#del array. 8 si es Double, 4 si es otra cosa");
+            string.append("#del array. 8 si es Double, 4 si es otra cosa \n");
             if (type.getLexeme().equals("Double")) {
                 string.append("li $a0, 8 \n");
                 string.append("sw $a0, 0($sp) \n");
@@ -220,12 +220,37 @@ public class NewNode extends OperandNode{
             if (expressionNode instanceof ArrayAccessNode) {
                 string.append("lw $a0, 0($a0)");
             }
-            string.append("#Guardamos en la pila el tamaño del array para pasarlo como parametro");
+            string.append("#Guardamos en la pila el tamaño del array para pasarlo como parametro \n");
             string.append("sw $a0, 0($sp) \n");
             string.append("addiu $sp $sp -4 \n");
-            string.append("jal constructorArray \n");
-            string.append("#La direccion de memoria del array queda en a0 \n");
-            string.append("addiu $sp $sp 16 \n");
+            if (type.getLexeme().equals("Double")) {
+                string.append("#Guardo el 0.0 en la pila para usarlo de inicializador \n");
+                string.append("l.d $f0, zeroDouble \n");
+                string.append("sw $f0, 0($sp) \n");
+                string.append("addiu $sp $sp -8 \n");
+                string.append("jal constructorArrayDouble \n");
+                string.append("#La direccion de memoria del array queda en a0 \n");
+                string.append("addiu $sp $sp 24 \n");
+            }
+            else {
+                if (type.getLexeme().equals("Str")) {
+                    string.append("li $v0, 9\n");
+                    string.append("li $a0, 8 \n");
+                    string.append("syscall \n");
+                    string.append("la $a0, stringInitialization \n");
+                    string.append("sw $a0, 4($v0) \n");
+                    string.append("la $a0, vtableStr \n");
+                    string.append("sw $a0, 0($v0) \n");
+                }
+                else {
+                    string.append("li $a0, 0 \n");
+                }
+                string.append("sw $a0, 0($sp) \n");
+                string.append("addiu $sp $sp -4 \n");
+                string.append("jal constructorArray \n");
+                string.append("#La direccion de memoria del array queda en a0 \n");
+                string.append("addiu $sp $sp 20 \n");
+            }
             string.append("#Restauramos el framepointer \n");
             string.append("lw $fp, 0($sp) \n");
         }

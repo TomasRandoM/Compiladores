@@ -245,6 +245,16 @@ public class BinaryExpressionNode extends ExpressionNode {
         boolean leftIsDouble = false;
         boolean rightIsDouble = false;
         left.codeGen(string);
+        checkChained(string, left);
+        if (left instanceof ArrayAccessNode) {
+            string.append("#Se obtiene el valor del array desde la direccion \n");
+            if (left.nodeType.getName().equals("Double")) {
+                string.append("l.d $f0, 0($a0) \n");
+            }
+            else {
+                string.append("lw $a0, 0($a0) \n");
+            }
+        }
         if (left.nodeType.getName().equals("Double")) {
             string.append("#Left es double\n");
             string.append("s.d $f0, 0($sp) \n");
@@ -256,6 +266,16 @@ public class BinaryExpressionNode extends ExpressionNode {
             string.append("addiu $sp $sp -4 \n");
         }
         right.codeGen(string);
+        checkChained(string, right);
+        if (right instanceof ArrayAccessNode) {
+            string.append("#Se obtiene el valor del array desde la direccion \n");
+            if (right.nodeType.getName().equals("Double")) {
+                string.append("l.d $f0, 0($a0) \n");
+            }
+            else {
+                string.append("lw $a0, 0($a0) \n");
+            }
+        }
         if (right.nodeType.getName().equals("Double")) {
             rightIsDouble = true;
             if (!leftIsDouble) {
@@ -415,6 +435,36 @@ public class BinaryExpressionNode extends ExpressionNode {
                     System.out.println("Error de operador en la generación de código");
                     break;
             }
+        }
+    }
+
+
+    public void checkChained(StringBuilder string, ExpressionNode expressionNode) {
+        ChainedNode chainedNode1 = expressionNode.getLastChainedNode();
+
+        if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
+            if (!isClassOrArray(expressionNode.nodeType.getName())) {
+                if (expressionNode.nodeType.getName().equals("Double")) {
+                    string.append("l.d $f0 0($a0)");
+                }
+                else {
+                    string.append("lw $a0 0($a0)");
+                }
+            }
+        }
+    }
+
+    public boolean isClassOrArray(String type) {
+        if (type.equals("Int") ||
+                type.equals("void") ||
+                type.equals("Bool") ||
+                type.equals("Str") ||
+                type.equals("Char") ||
+                type.equals("Double") ||
+                type.equals("nil")) {
+            return false;
+        } else {
+            return true;
         }
     }
 

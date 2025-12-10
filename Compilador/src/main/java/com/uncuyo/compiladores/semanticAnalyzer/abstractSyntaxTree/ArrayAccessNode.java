@@ -92,7 +92,7 @@ public class ArrayAccessNode extends OperandNode{
         }
         else {
             string.append("#Cargamos la variable en a0 utilizando el \n");
-            string.append("offset con el fp \n");
+            string.append("#offset con el fp \n");
             string.append("lw $a0, ").append(offset).append("($fp) \n");
         }
 
