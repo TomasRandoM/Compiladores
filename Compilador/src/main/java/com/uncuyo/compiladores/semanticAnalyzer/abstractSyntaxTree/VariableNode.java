@@ -144,7 +144,7 @@ public class VariableNode extends OperandNode {
             string.append("#Cargamos la direccion del atributo en a0 utilizando la \n");
             string.append("#cantidad de parametros para acceder a self, y de ahi al atrubuto\n");
             string.append("lw $a0, ").append(parameterSize).append("($fp)\n");
-            string.append("la $a0, ").append(offset).append("($a0) \n");
+            string.append("addiu $a0, $a0 ").append(offset).append("\n");
         }
         else {
             string.append("#Cargamos la direccion de la variable en a0 utilizando el \n");
@@ -174,5 +174,8 @@ public class VariableNode extends OperandNode {
         this.currentMethod = currentMethod;
     }
 
+    public ChainedNode getLastChainedNode() {
+        return null;
+    }
 
 }

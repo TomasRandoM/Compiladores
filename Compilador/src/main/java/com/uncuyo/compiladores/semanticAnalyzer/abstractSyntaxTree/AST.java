@@ -31,6 +31,7 @@ public class AST {
      */
     private static boolean isReturnPresent = false;
 
+    private static boolean isFirstChained = true;
     /**
      * Comienza el chequeo de sentencias. Llama a chequear todas las sentencias de la lista
      */
@@ -79,5 +80,17 @@ public class AST {
 
     public static void setCurrentClass(String currentClass) {
         AST.currentClass = currentClass;
+    }
+
+    public static boolean isIsReturnPresent() {
+        return isReturnPresent;
+    }
+
+    public static boolean isFirstChained() {
+        return isFirstChained;
+    }
+
+    public static void setIsFirstChained(boolean isFirstChained) {
+        AST.isFirstChained = isFirstChained;
     }
 }

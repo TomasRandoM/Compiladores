@@ -24,4 +24,7 @@ public abstract class ExpressionNode {
     public abstract Token getToken() throws SemanticASTException;
 
     public abstract void codeGen(StringBuilder string);
+
+    public abstract ChainedNode getLastChainedNode();
+
 }

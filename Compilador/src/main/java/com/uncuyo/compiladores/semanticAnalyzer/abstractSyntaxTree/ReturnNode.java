@@ -82,27 +82,56 @@ public class ReturnNode extends SentenceNode {
     public void codeGen(StringBuilder string) {
         expressionNode.codeGen(string);
         string.append("#Return \n");
-        if (expressionNode.nodeType.getName().equals("Double")) {
-            string.append("#El resultado ya debería estar en f0 por lo que se devuelve solo \n");
-            string.append("#Se mueve el resultado al v0, sea valor o direccion \n");
-        }
-        else {
-            if (expressionNode instanceof VariableNode ||
-                expressionNode instanceof ChainedAccessNode ||
-                (expressionNode instanceof SelfNode && ((SelfNode) expressionNode).getChainedNode() != null)
-            ) {
-                //Estos son una direccion, por lo que se carga en el v0 el valor de esa direccion
-                string.append("lw v0, 0($a0)\n");
+        checkChained(string, expressionNode);
+        if (expressionNode instanceof ArrayAccessNode) {
+            string.append("#Se obtiene el valor del array desde la direccion \n");
+            if (expressionNode.nodeType.getName().equals("Double")) {
+                string.append("l.d $f0, 0($a0) \n");
             }
             else {
-                //Estos podrían ser una direccion, pero serian la direccion del retorno directamente, por lo que
-                //se hace igual que el valor
-                string.append("move $v0 $a0 \n");
+                string.append("lw $a0, 0($a0) \n");
             }
-
         }
+    }
 
+    /**
+     * Este metodo se fija si el ultimo encadenado es un ChainedAccessNode
+     * para asi cargar su valor (desde la direccion que retorna).
+     * @param string StringBuilder
+     * @param expressionNode ExpressionNode
+     */
+    public void checkChained(StringBuilder string, ExpressionNode expressionNode) {
+        ChainedNode chainedNode1 = expressionNode.getLastChainedNode();
 
+        if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
+            if (!isClassOrArray(expressionNode.nodeType.getName())) {
+                if (expressionNode.nodeType.getName().equals("Double")) {
+                    string.append("l.d $f0 0($a0)");
+                }
+                else {
+                    string.append("lw $a0 0($a0)");
+                }
+            }
+        }
+    }
+
+    /**
+     * Devuelve false si es un tipo primitivo y true en caso contrario
+     * @param type
+     * @return boolean
+     */
+    public boolean isClassOrArray(String type) {
+        if (type.equals("Int") ||
+                type.equals("void") ||
+                type.equals("Bool") ||
+                type.equals("Str") ||
+                type.equals("Char") ||
+                type.equals("Double") ||
+                type.equals("nil")) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public String getClassName() {

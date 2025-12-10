@@ -163,4 +163,9 @@ public class UnaryExpressionNode extends ExpressionNode {
 
     }
 
+    @Override
+    public ChainedNode getLastChainedNode() {
+        return null;
+    }
+
 }

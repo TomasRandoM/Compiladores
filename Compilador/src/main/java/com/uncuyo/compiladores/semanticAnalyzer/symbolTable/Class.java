@@ -226,4 +226,23 @@ public class Class {
         //No se debería llegar a este return, si se llega falló el semántico
         return memory;
     }
+
+    /**
+     * Metodo para obtener el offset de uno particular en la VTable
+     * @param method String con el identificador del metodo
+     * @return Int con el offset dentro de la vtable
+     */
+    public int getMethodOffset(String method) {
+        int memory = 0;
+        for (Map.Entry<String, Method> entry : methods.entrySet()) {
+            if (entry.getKey().equals(method)) {
+                return memory;
+            }
+            else {
+                memory += 4;
+            }
+        }
+        //No se debería llegar a este return, si se llega falló el semántico
+        return memory;
+    }
 }

@@ -171,6 +171,16 @@ public class NewNode extends OperandNode{
             string.append("#Cargamos los parámetros a la pila \n");
             for (ExpressionNode expressionNode : parameterList.reversed()) {
                 expressionNode.codeGen(string);
+                checkChained(string, expressionNode);
+                if (expressionNode instanceof ArrayAccessNode) {
+                    string.append("#Se obtiene el valor del array desde la direccion \n");
+                    if (expressionNode.nodeType.getName().equals("Double")) {
+                        string.append("l.d $f0, 0($a0) \n");
+                    }
+                    else {
+                        string.append("lw $a0, 0($a0) \n");
+                    }
+                }
                 if (expressionNode.nodeType.getName().equals("Double")) {
                     memory += 8;
                     string.append("s.d $f0, 0($sp) \n");
@@ -185,13 +195,16 @@ public class NewNode extends OperandNode{
             //etiqueta del constructor es constructorClase
             string.append("jal constructor").append(type.getLexeme()).append("\n");
             string.append("addi $sp $sp ").append(memory).append("\n");
-            string.append("#Movemos el resultado de v0 a a0 \n");
-            string.append("move $a0 $v0 \n");
             string.append("#Restauramos el framepointer \n");
             string.append("lw $fp, 0($sp) \n");
-            //FALTA ENCADENADO
+
+            if (chainedNode != null) {
+                chainedNode.codeGen(string);
+            }
         }
         else {
+            string.append("#Metemos a la pila el parametro que representa el espacio que ocupan los elementos \n");
+            string.append("#del array. 8 si es Double, 4 si es otra cosa");
             if (type.getLexeme().equals("Double")) {
                 string.append("li $a0, 8 \n");
                 string.append("sw $a0, 0($sp) \n");
@@ -203,12 +216,16 @@ public class NewNode extends OperandNode{
                 string.append("addiu $sp $sp -4 \n");
             }
             expressionNode.codeGen(string);
+            checkChained(string, expressionNode);
+            if (expressionNode instanceof ArrayAccessNode) {
+                string.append("lw $a0, 0($a0)");
+            }
+            string.append("#Guardamos en la pila el tamaño del array para pasarlo como parametro");
             string.append("sw $a0, 0($sp) \n");
             string.append("addiu $sp $sp -4 \n");
             string.append("jal constructorArray \n");
+            string.append("#La direccion de memoria del array queda en a0 \n");
             string.append("addiu $sp $sp 16 \n");
-            string.append("#Movemos el resultado de v0 a a0 \n");
-            string.append("move $a0 $v0 \n");
             string.append("#Restauramos el framepointer \n");
             string.append("lw $fp, 0($sp) \n");
         }
@@ -216,6 +233,57 @@ public class NewNode extends OperandNode{
 
     public String getOption() {
         return option;
+    }
+
+    /**
+     * Este metodo se fija si el ultimo encadenado es un ChainedAccessNode
+     * para asi cargar su valor (desde la direccion que retorna).
+     * @param string StringBuilder
+     * @param expressionNode ExpressionNode
+     */
+    public void checkChained(StringBuilder string, ExpressionNode expressionNode) {
+        ChainedNode chainedNode1 = expressionNode.getLastChainedNode();
+
+        if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
+            if (!isClassOrArray(expressionNode.nodeType.getName())) {
+                if (expressionNode.nodeType.getName().equals("Double")) {
+                    string.append("l.d $f0 0($a0)");
+                }
+                else {
+                    string.append("lw $a0 0($a0)");
+                }
+            }
+        }
+    }
+
+    /**
+     * Devuelve false si es un tipo primitivo y true en caso contrario
+     * @param type
+     * @return boolean
+     */
+    public boolean isClassOrArray(String type) {
+        if (type.equals("Int") ||
+                type.equals("void") ||
+                type.equals("Bool") ||
+                type.equals("Str") ||
+                type.equals("Char") ||
+                type.equals("Double") ||
+                type.equals("nil")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public ChainedNode getLastChainedNode() {
+        ChainedNode chainedNode1;
+        if (chainedNode != null) {
+            chainedNode1 = chainedNode.getLastChainedNode();
+        }
+        else {
+            chainedNode1 = null;
+        }
+        return chainedNode1;
     }
 
     public void setOption(String option) {
