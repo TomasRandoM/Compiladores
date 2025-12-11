@@ -125,6 +125,7 @@ public class BlockNode extends SentenceNode {
             checkClassVTable(string);
             if (methodName != null) {
                 if (!methodName.equals("start")) {
+                    string.append(".text \n");
                     string.append(methodName).append(className).append(": \n");
                     string.append("#Se forma el nuevo framepointer \n");
                     string.append("move $fp, $sp \n");
@@ -133,11 +134,14 @@ public class BlockNode extends SentenceNode {
                     string.append("addiu $sp $sp -4 \n");
                     Map<String, Variable> variables = SymbolTable.getClass(className).getMethods().get(methodName).getVariables();
                     //Declaraciones
-                    calcultateMemoryV(variables, string);
+                    memory = calcultateMemoryV(variables, string);
                     string.append("#Sentencias del bloque \n");
                     for (SentenceNode sentenceNode : sentences) {
                         sentenceNode.codeGen(string);
                     }
+                    string.append("addiu $sp $sp ").append(memory + 4).append("\n");
+                    string.append("lw $ra, 0($sp) \n");
+                    string.append("jr $ra \n");
                 }
                 else {
                     //Inicio del main
@@ -149,11 +153,12 @@ public class BlockNode extends SentenceNode {
                     string.append("#Movemos la pila para coherencia, pues no va a haber return address en el start \n");
                     string.append("addiu $sp $sp -4 \n");
                     //Declaraciones
-                    calcultateMemoryV(SymbolTable.getStartMethodStored().getVariables(), string);
+                    memory = calcultateMemoryV(SymbolTable.getStartMethodStored().getVariables(), string);
                     string.append("#Sentencias del bloque \n");
                     for (SentenceNode sentenceNode : sentences) {
                         sentenceNode.codeGen(string);
                     }
+                    string.append("addiu $sp $sp ").append(memory + 4).append("\n");
                     //Fin del programa
                     string.append("#Fin del programa \n");
                     string.append("li $v0, 10 \n");
@@ -161,6 +166,7 @@ public class BlockNode extends SentenceNode {
                 }
             }
             else {
+                string.append(".text \n");
                 string.append("constructor").append(className).append(": \n");
                 string.append("#Se forma el nuevo framepointer \n");
                 string.append("move $fp, $sp \n");
@@ -170,11 +176,14 @@ public class BlockNode extends SentenceNode {
                 string.append("#Constructor \n");
                 Map<String, Variable> variables = SymbolTable.getClass(className).getConstructor().getVariables();
                 //Declaraciones
-                calcultateMemoryV(variables, string);
+                memory = calcultateMemoryV(variables, string);
                 string.append("#Sentencias del bloque \n");
                 for (SentenceNode sentenceNode : sentences) {
                     sentenceNode.codeGen(string);
                 }
+                string.append("addiu $sp $sp ").append(memory + 4).append("\n");
+                string.append("lw $ra, 0($sp) \n");
+                string.append("jr $ra \n");
             }
 
         }
@@ -187,16 +196,29 @@ public class BlockNode extends SentenceNode {
         }
     }
 
+    /**
+     * Carga las Vtable 1 vez por clase
+     * @param string StringBuilder
+     */
     public void checkClassVTable(StringBuilder string) {
         if (className != null) {
             if (!AST.getVtablesMade().contains(className)) {
+                string.append(".data \n");
                 string.append("vtable").append(className).append(": \n");
                 for (Method m : SymbolTable.getClass(className).getMethods().values()){
                     string.append(".word ").append(m.getName()).append(className).append("\n");
                 }
+                AST.addClassToVtablesMadeList(className);
             }
         }
     }
+
+    /**
+     * Declara las variables de un metodo, le reserva memoria en la pila y devuelve la memoria utilizada
+     * @param variables Map de las variables
+     * @param string StringBuilder
+     * @return Int con la memoria utilizada
+     */
     public int calcultateMemoryV(Map<String, Variable> variables, StringBuilder string) {
         int memory = 0;
         string.append("#Declaración de variables \n");

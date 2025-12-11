@@ -197,7 +197,7 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
         string.append("#Obtenemos la direccion del array \n");
         string.append("lw $t0, ").append(attributeOffset).append("($t0) \n");
         string.append("beq $t0, $zero, variableNotInitialized \n");
-        string.append("En $a0 tengo el indice del array\n");
+        string.append("#En $a0 tengo el indice del array\n");
         string.append("#Si el índice es negativo salto a la excepcion\n");
         string.append("bltz $a0, negativeArrayIndexException\n");
         string.append("#Obtengo la longitud del array\n");
@@ -216,7 +216,7 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
         string.append("#sumamos 8 debido a que el array posee vtable y la longitud del mismo \n");
         string.append("addiu $a0 $a0 8 \n");
         string.append("#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento \n");
-        string.append("addiu $t0 $t0 $a0 \n");
+        string.append("add $t0 $t0 $a0 \n");
         if (att.getType().getArrType().getName().equals("Double")) {
             string.append("#cargamos el elemento en f0 \n");
             string.append("lw $f0 0($t0) \n");

@@ -49,7 +49,22 @@ public class AST {
     public static void codeGen(String pathName) throws SemanticASTException, WriterException {
         StringBuilder string = new StringBuilder();
         string.append(".globl main \n");
-        for (BlockNode blockNode : blockNodes) {
+        List<BlockNode> blockNodesCopy = new ArrayList<>(blockNodes);
+        boolean stop = false;
+        BlockNode startNode = null;
+        int count = 0;
+        while (!stop) {
+            if (blockNodesCopy.get(count).getClassName() == null) {
+                startNode = blockNodesCopy.get(count);
+                blockNodesCopy.remove(count);
+                stop = true;
+            }
+            else {
+                count++;
+            }
+        }
+        startNode.codeGen(string);
+        for (BlockNode blockNode : blockNodesCopy) {
             blockNode.codeGen(string);
         }
 
@@ -114,7 +129,9 @@ public class AST {
     public static void setBlockNodes(List<BlockNode> blockNodes) {
         AST.blockNodes = blockNodes;
     }
-
+    public static void addClassToVtablesMadeList(String class1) {
+        vtablesMade.add(class1);
+    }
     public static String getCurrentMethod() {
         return currentMethod;
     }
