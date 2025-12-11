@@ -150,7 +150,6 @@ public class LiteralNode extends OperandNode {
                 break;
         }
     }
-
     public ChainedNode getLastChainedNode() {
         return null;
     }

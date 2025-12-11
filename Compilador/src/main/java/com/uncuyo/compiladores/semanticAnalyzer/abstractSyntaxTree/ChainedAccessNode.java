@@ -95,6 +95,7 @@ public class ChainedAccessNode extends ChainedNode {
         else {
             //Tenemos en a0 el self del padre. Entonces, necesitariamos buscar en su CIR el atributo
             //accedido actualmente
+            string.append("beq $a0, $zero, variableNotInitialized \n");
             Class currentClass = SymbolTable.getClass(getParentType().getName());
             int offset = currentClass.getAttributeOffset(name.getLexeme());
             Type attributeType = currentClass.getAttributes().get(name.getLexeme()).getType();

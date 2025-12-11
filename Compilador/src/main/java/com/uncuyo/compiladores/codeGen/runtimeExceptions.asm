@@ -10,7 +10,8 @@
 
     # Excepcion de booleano incorrecto
     incorrectInBoolIO:       .asciiz "RUNTIME EXCEPTION: se esperaba 0 o 1 como entrada de un Bool."
-
+    # Cuando se intenta usar una clase o array no inicializado
+    variableNotInitializedMsg: .asciiz "RUNTIME EXCEPTION: se intenta acceder a una variable no inicializada"
 
 .text
     divZeroException:
@@ -54,3 +55,10 @@
         syscall
         li $v0, 10
         syscall
+
+    variableNotInitialized:
+            la $a0, variableNotInitializedMsg
+            li $v0, 4
+            syscall
+            li $v0, 10
+            syscall

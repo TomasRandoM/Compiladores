@@ -1,14 +1,20 @@
 // Correcto. A y se le asigna un nil
 class A {
     Int x;
-    Int y;
+    B y;
 }
-
+class B {
+    Int c;
+}
+impl B {
+    .() {
+    }
+}
 impl A {
     .() {
 
     }
-    fn Int a() {
+    fn B a() {
         y = nil;
         ret y;
     }

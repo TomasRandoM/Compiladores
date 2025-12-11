@@ -114,8 +114,7 @@ public class NewNode extends OperandNode{
             Type providedType;
             if (expressionNode instanceof ChainedNode) {
                 providedType = ((ChainedNode) expressionNode).checkNames(null);
-            }
-            else {
+            } else {
                 providedType = expressionNode.check();
             }
 
@@ -132,17 +131,21 @@ public class NewNode extends OperandNode{
                     }
                 }
                 index++;
-            }
-            else {
-                if ((!providedType.getName().equals("void")) && SymbolTable.getClass(providedType.getName()).isInheritedClass(parameterType.getName())) {
+            } else {
+                //Se verifica el polimorfismo
+                if (!(providedType.getName().equals("void")) && !(providedType.getName().equals("nil")) && SymbolTable.getClass(providedType.getName()).isInheritedClass(parameterType.getName())) {
                     index++;
-                }
-                else {
-                    throw new SemanticASTException(providedType.getToken(), "Tipo incorrecto en " +
-                            "parámetros del constructor de la " +
-                            "clase " + class1 + ". Se obtuvo: " +
-                            providedType.getName() + ".Se esperaba " +
-                            parameterType.getName());
+                } else {
+                    //En caso de que el parametro sea nil, se verifica que el tipo del mismo sea una clase o array
+                    if (providedType.getName().equals("nil") && (isClassOrArray(parameterType.getName()))) {
+                        index++;
+                    } else {
+                        throw new SemanticASTException(providedType.getToken(), "Tipo incorrecto en " +
+                                "parámetros del constructor de la " +
+                                "clase " + class1 + ". Se obtuvo: " +
+                                providedType.getName() + ".Se esperaba " +
+                                parameterType.getName());
+                    }
                 }
             }
         }
@@ -291,7 +294,6 @@ public class NewNode extends OperandNode{
                 type.equals("void") ||
                 type.equals("Bool") ||
                 type.equals("Str") ||
-                type.equals("Char") ||
                 type.equals("Double") ||
                 type.equals("nil")) {
             return false;
