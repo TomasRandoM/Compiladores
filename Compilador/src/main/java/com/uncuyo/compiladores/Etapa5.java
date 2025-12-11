@@ -9,7 +9,7 @@ import com.uncuyo.compiladores.syntacticAnalyzer.SyntacticAnalyzer;
 import com.uncuyo.compiladores.utils.JsonASTGenerator;
 
 /**
- * Clase del ejecutor de la Etapa 4.
+ * Clase del ejecutor de la Etapa 5.
  * @author Paulina Suden
  */
 public class Etapa5 {
