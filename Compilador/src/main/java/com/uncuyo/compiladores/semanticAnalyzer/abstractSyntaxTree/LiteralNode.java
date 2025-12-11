@@ -141,6 +141,7 @@ public class LiteralNode extends OperandNode {
                 string.append((".text\n"));
                 string.append("li $v0, 9 \n");
                 string.append("li $a0, 8 \n");
+                string.append("syscall \n");
                 string.append("la $a0, vtableStr \n");
                 string.append("sw $a0, 0($v0)\n");
                 string.append("la $a0, ").append(name).append("\n");

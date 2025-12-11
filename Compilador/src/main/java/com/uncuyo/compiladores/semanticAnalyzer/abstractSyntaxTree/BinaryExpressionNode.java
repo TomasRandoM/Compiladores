@@ -328,14 +328,18 @@ public class BinaryExpressionNode extends ExpressionNode {
                     string.append("sub.d $f0, $f2, $f0\n");
                     break;
                 case op_div:
-                    string.append("beq $f0, $zeroDouble, divZeroException\n");
+                    string.append("l.d $f8, zeroDouble \n");
+                    string.append("c.eq.d $f0, $f8 \n");
+                    string.append("bc1t divZeroException\n");
                     string.append("div.d $f0, $f2, $f0\n");
                     break;
                 case op_mult:
                     string.append("mul.d $f0, $f2, $f0\n");
                     break;
                 case op_mod:
-                    string.append("beq $f0, $zeroDouble, modZeroException\n");
+                    string.append("l.d $f8, zeroDouble \n");
+                    string.append("c.eq.d $f0, $f8 \n");
+                    string.append("bc1t modZeroException\n");
                     //No hay operador implementado directamente por lo que se realiza este proceso:
                     // a - int(a/b) * b
                     //Divido left / right y lo guardo en f4
@@ -449,10 +453,10 @@ public class BinaryExpressionNode extends ExpressionNode {
         if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
             if (!isClassOrArray(expressionNode.nodeType.getName())) {
                 if (expressionNode.nodeType.getName().equals("Double")) {
-                    string.append("l.d $f0 0($a0)");
+                    string.append("l.d $f0, 0($a0) \n");
                 }
                 else {
-                    string.append("lw $a0 0($a0)");
+                    string.append("lw $a0, 0($a0) \n");
                 }
             }
         }

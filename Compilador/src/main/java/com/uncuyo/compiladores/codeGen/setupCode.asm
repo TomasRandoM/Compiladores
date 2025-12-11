@@ -4,7 +4,7 @@
     stringInitialization: .asciiz ""
     brackets1: .asciiz "["
     brackets2: .asciiz "]"
-    comma: .ascizz ", "
+    comma: .asciiz ", "
 
     vtableStr:
         .word lengthStr
@@ -125,6 +125,7 @@
             addiu $sp $sp -4
             #Cargo el size del array en t0
             lw $t0 12($fp)
+            bltz $t0, negativeArraySizeException
             #Cargo la memoria que ocupan los elementos en t1
 
             lw $t1 16($fp)
