@@ -172,6 +172,17 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
         expression.codeGen(string);
         //Queda en a0 el resultado de la expresión
         checkChained(string, expression);
+
+        string.append("En $a0 tengo el indice del array\n");
+        string.append("#Si el índice es negativo salto a la excepcion\n");
+        string.append("bltz $a0, negativeArrayIndexException\n");
+        string.append("#Obtengo la direccion del array para obtener length\n");
+        string.append("lw $t0, 0($sp)\n");
+        string.append("#Obtengo la longitud del array\n");
+        string.append("lw $t1, 4($t0)\n");
+        string.append("#Si el indice es mayor o igual a la longitud salto a la excepcion\n");
+        string.append("bge $a0, $t1, arrayIndexOutOfRangeException\n");
+
         if (expression instanceof ArrayAccessNode) {
             string.append("#Se obtiene el valor del array desde la direccion \n");
             if (expression.nodeType.getName().equals("Double")) {
