@@ -3,8 +3,10 @@ package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 import com.uncuyo.compiladores.exceptions.SemanticASTException;
 import com.uncuyo.compiladores.exceptions.WriterException;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +52,27 @@ public class AST {
         for (BlockNode blockNode : blockNodes) {
             blockNode.codeGen(string);
         }
+
+        try {
+            Path setupPath = Paths.get("src/main/java/com/uncuyo/compiladores/codeGen/setupCode.asm");
+            Path exceptionsPath = Paths.get("src/main/java/com/uncuyo/compiladores/codeGen/runtimeExceptions.asm");
+
+            if (!Files.exists(setupPath)) {
+                throw new WriterException("ERROR: No se encontró setupCode.asm en: " + setupPath.toAbsolutePath());
+            }
+            if (!Files.exists(exceptionsPath)) {
+                throw new WriterException("ERROR: No se encontró runtimeExceptions.asm en: " + exceptionsPath.toAbsolutePath());
+            }
+
+            String setupCode = Files.readString(setupPath);
+            String exceptionsCode = Files.readString(exceptionsPath);
+            string.append(setupCode);
+            string.append(exceptionsCode);
+
+        } catch (IOException e) {
+            throw new WriterException("ERROR AL LEER setupCode.asm O runtimeExceptions.asm: " + e.getMessage());
+        }
+
         try (FileWriter writer = new FileWriter(pathName)) {
             writer.write(string.toString());
         } catch (IOException e) {

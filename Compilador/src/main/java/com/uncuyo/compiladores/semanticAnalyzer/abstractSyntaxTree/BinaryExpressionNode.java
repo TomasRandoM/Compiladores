@@ -328,12 +328,14 @@ public class BinaryExpressionNode extends ExpressionNode {
                     string.append("sub.d $f0, $f2, $f0\n");
                     break;
                 case op_div:
+                    string.append("beq $f0, $zeroDouble, divZeroException\n");
                     string.append("div.d $f0, $f2, $f0\n");
                     break;
                 case op_mult:
                     string.append("mul.d $f0, $f2, $f0\n");
                     break;
                 case op_mod:
+                    string.append("beq $f0, $zeroDouble, modZeroException\n");
                     //No hay operador implementado directamente por lo que se realiza este proceso:
                     // a - int(a/b) * b
                     //Divido left / right y lo guardo en f4
@@ -388,6 +390,7 @@ public class BinaryExpressionNode extends ExpressionNode {
                     string.append("sub $a0, $t0, $a0\n");
                     break;
                 case op_div:
+                    string.append("beq $a0, $zero, divZeroException\n");
                     string.append("#Se convierten los tipos a double para la operacion de division \n");
                     string.append("mtc1 $t0, $f2\n");
                     string.append("mtc1 $a0, $f0\n");
@@ -399,6 +402,7 @@ public class BinaryExpressionNode extends ExpressionNode {
                     string.append("mul $a0, $t0, $a0\n");
                     break;
                 case op_mod:
+                    string.append("beq $a0, $zero, modZeroException\n");
                     //Guardamos el resto en a0
                     string.append("div $t0, $a0\n");
                     string.append("mfhi $a0\n");

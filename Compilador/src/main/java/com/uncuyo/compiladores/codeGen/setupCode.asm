@@ -52,9 +52,9 @@
     notEqualDouble:
         c.eq.d $f2, $f0
         li $a0, 0
-        bc1t enddouble
+        bc1t endDouble
         li $a0, 1
-        j enddouble
+        j endDouble
 
     greaterEqualDouble:  #!(f2<f0) f2>=f0
         c.lt.d $f2, $f0
@@ -81,6 +81,7 @@
         addiu $sp $sp -4
         #Cargo el size del array en t0
         lw $t0 8($fp)
+        bltz $t0, negativeArraySizeException
         #Cargo la memoria que ocupan los elementos en t1
         lw $t1 12($fp)
         #Cargo en t2 el elemento que se usará para inicializar el array
@@ -128,7 +129,7 @@
 
             lw $t1 16($fp)
             #Cargo en f0 el elemento que se usará para inicializar el array
-            lw $f0 8($fp)
+            l.d $f0 8($fp)
             #Memoria que ocuparan los elementos del array
             mul $a0, $t1, $t0
             #Sumo 8 bytes para la longitud del array y la vtable del mismo
@@ -149,7 +150,7 @@
             beq $t0, $zero, endConstructorDouble
             forConstructorDouble:
                 #Coloco el elemento inicializador en 0($v0)
-                sw $f0, 0($v0)
+                s.d $f0, 0($v0)
                 add $v0, $t1, $v0
                 #Resto 1 al size
                 sub $t0, $t0, $t3
@@ -249,7 +250,7 @@
         addiu $sp $sp -4
 
         #Cargamos el double al f0
-        lw $f0 8($fp)
+        l.d $f0 8($fp)
         li $v0, 3
         syscall
 
@@ -424,10 +425,17 @@
         #Paso la entrada a a0
         move $a0 $v0
 
-        #La retorno
-        lw $ra, 0($fp)
-        addiu $sp $sp 4
-        jr $ra
+        #Verifico si la entrada fue 1 o 0
+        beq $a0, $zero, correctBoolInput
+        li $t0, 1
+        beq $a0, $t0, correctBoolInput
+        j incorrectInBoolIOException
+
+        correctBoolInput:
+            #La retorno
+            lw $ra, 0($fp)
+            addiu $sp $sp 4
+            jr $ra
 
     in_intIO:
         move $fp, $sp
@@ -448,7 +456,7 @@
 
     in_strIO:
         move $fp, $sp
-        sw $ra 0($sp)
+        sw $ra, 0($sp)
         addiu $sp $sp -4
 
         # Reservo buffer para el string
