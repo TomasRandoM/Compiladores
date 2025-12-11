@@ -105,7 +105,6 @@ public class WhileNode extends SentenceNode {
                 type.equals("void") ||
                 type.equals("Bool") ||
                 type.equals("Str") ||
-                type.equals("Char") ||
                 type.equals("Double") ||
                 type.equals("nil")) {
             return false;

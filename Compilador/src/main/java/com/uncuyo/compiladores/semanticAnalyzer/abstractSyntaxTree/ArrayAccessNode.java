@@ -97,6 +97,7 @@ public class ArrayAccessNode extends OperandNode{
         }
 
         string.append("#Guardamos a0 en la pila, que es la direccion del array\n");
+        string.append("beq $a0, $zero, variableNotInitialized \n");
         string.append("sw $a0, 0($sp) \n");
         string.append("addiu $sp $sp -4 \n");
         expressionNode.codeGen(string);
@@ -115,7 +116,7 @@ public class ArrayAccessNode extends OperandNode{
         string.append("#Si el índice es negativo salto a la excepcion\n");
         string.append("bltz $a0, negativeArrayIndexException\n");
         string.append("#Obtengo la direccion del array para obtener length\n");
-        string.append("lw $t0, 0($sp)\n");
+        string.append("lw $t0, 4($sp)\n");
         string.append("#Obtengo la longitud del array\n");
         string.append("lw $t1, 4($t0)\n");
         string.append("#Si el indice es mayor o igual a la longitud salto a la excepcion\n");
@@ -166,7 +167,6 @@ public class ArrayAccessNode extends OperandNode{
                 type.equals("void") ||
                 type.equals("Bool") ||
                 type.equals("Str") ||
-                type.equals("Char") ||
                 type.equals("Double") ||
                 type.equals("nil")) {
             return false;

@@ -71,6 +71,14 @@ public class AssignmentNode extends SentenceNode {
                             ". Se obtuvo: " + rightType.getName() + ".");
                 }
             }
+            else {
+                if (!isClassOrArray(leftType.getName())) {
+                    throw new SemanticASTException(rightNode.getToken(), "Se le asigna un nil " +
+                            "a un tipo primitivo. " +
+                            "Se esperaba: " + leftType.getName() +
+                            ". Se obtuvo: nil.");
+                }
+            }
         }
     }
 
@@ -139,7 +147,6 @@ public class AssignmentNode extends SentenceNode {
                 type.equals("void") ||
                 type.equals("Bool") ||
                 type.equals("Str") ||
-                type.equals("Char") ||
                 type.equals("Double") ||
                 type.equals("nil")) {
             return false;

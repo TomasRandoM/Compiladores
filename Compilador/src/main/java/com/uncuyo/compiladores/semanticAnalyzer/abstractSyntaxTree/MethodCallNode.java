@@ -94,6 +94,7 @@ public class MethodCallNode extends OperandNode {
             methodOffset = class1.getMethodOffset(token.getLexeme());
             string.append("#Cargamos en a0 el self \n");
             string.append("lw $a0 ").append(selfOffset).append("($fp) \n");
+            string.append("beq $a0, $zero, variableNotInitialized \n");
             string.append("sw $a0 0($sp) \n");
             string.append("addiu $sp $sp -4 \n");
             memory = codeGenParameters(string, memory);
@@ -193,7 +194,6 @@ public class MethodCallNode extends OperandNode {
                 type.equals("void") ||
                 type.equals("Bool") ||
                 type.equals("Str") ||
-                type.equals("Char") ||
                 type.equals("Double") ||
                 type.equals("nil")) {
             return false;
@@ -375,15 +375,23 @@ public class MethodCallNode extends OperandNode {
                 index++;
             }
             else {
-                if (!(providedType.getName().equals("void")) && SymbolTable.getClass(providedType.getName()).isInheritedClass(parameterType.getName())) {
+                //Se verifica el polimorfismo
+                if (!(providedType.getName().equals("void")) && !(providedType.getName().equals("nil")) && SymbolTable.getClass(providedType.getName()).isInheritedClass(parameterType.getName())) {
                     index++;
                 }
                 else {
-                    throw new SemanticASTException(providedType.getToken(), "Tipo incorrecto en " +
-                            "parámetros de llamada a método " + method.getName() + ". Se obtuvo: " +
-                            providedType.getName() + ". Se esperaba " +
-                            parameterType.getName());
+                    //En caso de que el parametro sea nil, se verifica que el tipo del mismo sea una clase o array
+                    if (providedType.getName().equals("nil") && (isClassOrArray(parameterType.getName()))) {
+                        index++;
+                    }
+                    else {
+                        throw new SemanticASTException(providedType.getToken(), "Tipo incorrecto en " +
+                                "parámetros de llamada a método " + method.getName() + ". Se obtuvo: " +
+                                providedType.getName() + ". Se esperaba " +
+                                parameterType.getName());
+                    }
                 }
+
             }
         }
     }

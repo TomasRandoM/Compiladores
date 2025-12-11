@@ -9,7 +9,7 @@ impl A {
 
     }
     fn Int a() {
-        y = nil;
+        y = 5;
         ret y;
     }
 

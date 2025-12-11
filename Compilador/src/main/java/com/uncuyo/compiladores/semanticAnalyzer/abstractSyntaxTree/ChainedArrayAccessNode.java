@@ -173,6 +173,7 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
         Attribute att = class1.getAttributes().get(name.getLexeme());
         int attributeOffset = class1.getAttributeOffset(name.getLexeme());
         string.append("#Guardamos a0 en la pila, que es el padre\n");
+        string.append("beq $a0, $zero, variableNotInitialized \n");
         string.append("sw $a0, 0($sp) \n");
         string.append("addiu $sp $sp -4 \n");
         expression.codeGen(string);
@@ -189,20 +190,20 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
                 string.append("lw $a0, 0($a0) \n");
             }
         }
-        string.append("En $a0 tengo el indice del array\n");
-        string.append("#Si el índice es negativo salto a la excepcion\n");
-        string.append("bltz $a0, negativeArrayIndexException\n");
-        string.append("#Obtengo la direccion del array para obtener length\n");
-        string.append("lw $t0, 0($sp)\n");
-        string.append("#Obtengo la longitud del array\n");
-        string.append("lw $t1, 4($t0)\n");
-        string.append("#Si el indice es mayor o igual a la longitud salto a la excepcion\n");
-        string.append("bge $a0, $t1, arrayIndexOutOfRangeException\n");
 
         string.append("#Restauramos el self que habiamos dejado en la pila \n");
         string.append("addiu $sp $sp 4 \n");
         string.append("lw $t0, 0($sp) \n");
+        string.append("#Obtenemos la direccion del array \n");
         string.append("lw $t0, ").append(attributeOffset).append("($t0) \n");
+        string.append("beq $t0, $zero, variableNotInitialized \n");
+        string.append("En $a0 tengo el indice del array\n");
+        string.append("#Si el índice es negativo salto a la excepcion\n");
+        string.append("bltz $a0, negativeArrayIndexException\n");
+        string.append("#Obtengo la longitud del array\n");
+        string.append("lw $t1, 4($t0)\n");
+        string.append("#Si el indice es mayor o igual a la longitud salto a la excepcion\n");
+        string.append("bge $a0, $t1, arrayIndexOutOfRangeException\n");
         string.append("#Calculamos el offset usando la posicion (en a0) y\n");
         string.append("#el espacio que ocupan los elementos del array\n");
         if (att.getType().getArrType().getName().equals("Double")) {
@@ -252,7 +253,6 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
                 type.equals("void") ||
                 type.equals("Bool") ||
                 type.equals("Str") ||
-                type.equals("Char") ||
                 type.equals("Double") ||
                 type.equals("nil")) {
             return false;

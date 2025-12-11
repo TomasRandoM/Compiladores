@@ -41,6 +41,7 @@ public class ChainedCallNode extends ChainedNode {
         string.append("sw $fp, 0($sp) \n");
         string.append("addiu $sp $sp -4 \n");
         string.append("#Guardamos el self en la pila. Es el que venia del anterior encadenado \n");
+        string.append("beq $a0, $zero, variableNotInitialized \n");
         string.append("sw $a0, 0($sp) \n");
         string.append("addiu $sp $sp -4 \n");
         int memory = codeGenParameters(string, 8);
@@ -123,7 +124,6 @@ public class ChainedCallNode extends ChainedNode {
                 type.equals("void") ||
                 type.equals("Bool") ||
                 type.equals("Str") ||
-                type.equals("Char") ||
                 type.equals("Double") ||
                 type.equals("nil")) {
             return false;
@@ -226,6 +226,13 @@ public class ChainedCallNode extends ChainedNode {
             }
 
             if (!correctType.getName().equals(actualType.getName())) {
+                if (actualType.getName().equals("nil") && !(isClassOrArray(correctType.getName()))) {
+                    throw new SemanticASTException(actualType.getToken(), "El parámetro " +
+                            parameterList.get(i).getToken().getLexeme() +
+                            " es de tipo incorrecto. Se obtuvo " +
+                            actualType.getName() +
+                            " y se esperaba " + correctType.getName());
+                }
                 if (actualType.getName().equals("void") || !(SymbolTable.getClass(actualType.getName()).isInheritedClass(correctType.getName()))) {
                     throw new SemanticASTException(actualType.getToken(), "El parámetro " +
                             parameterList.get(i).getToken().getLexeme() +

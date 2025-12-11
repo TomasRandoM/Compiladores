@@ -315,7 +315,7 @@ public class BinaryExpressionNode extends ExpressionNode {
             }
         }
 
-        //si son int --> left $t0, right $a0
+        //si no son double --> left $t0, right $a0
         //si uno o los dos son double: left $f2, right $f0
 
         if (leftIsDouble || rightIsDouble) {
@@ -467,7 +467,6 @@ public class BinaryExpressionNode extends ExpressionNode {
                 type.equals("void") ||
                 type.equals("Bool") ||
                 type.equals("Str") ||
-                type.equals("Char") ||
                 type.equals("Double") ||
                 type.equals("nil")) {
             return false;

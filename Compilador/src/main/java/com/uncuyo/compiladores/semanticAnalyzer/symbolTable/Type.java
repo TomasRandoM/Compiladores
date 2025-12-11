@@ -32,9 +32,6 @@ public class Type {
             case "Str":
                 name = "Str";
                 break;
-            case "Char":
-                name = "Char";
-                break;
             case "class":
                 name = token.getLexeme();
                 break;
