@@ -357,7 +357,7 @@ public class BinaryExpressionNode extends ExpressionNode {
                     string.append("mul.d $f6, $f6, $f0\n");
                     //Resta el left menos todo lo demas
                     string.append("#a - int(a/b) * b se guarda en f0 \n");
-                    string.append("$f0, $f2, $f6 \n");
+                    string.append("sub.d $f0, $f2, $f6 \n");
                     break;
 
                 // relacionales

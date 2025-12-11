@@ -175,10 +175,10 @@ public class MethodCallNode extends OperandNode {
         if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
             if (!isClassOrArray(expressionNode.nodeType.getName())) {
                 if (expressionNode.nodeType.getName().equals("Double")) {
-                    string.append("l.d $f0 0($a0)");
+                    string.append("l.d $f0, 0($a0) \n");
                 }
                 else {
-                    string.append("lw $a0 0($a0)");
+                    string.append("lw $a0, 0($a0) \n");
                 }
             }
         }

@@ -91,6 +91,7 @@ public class ChainedAccessNode extends ChainedNode {
                 string.append("addiu $a0 $fp ").append(offset).append("\n");
                 //string.append("la $a0, ").append(offset).append("($fp) \n");
             }
+            string.append("lw $a0 0($a0) \n");
         }
         else {
             //Tenemos en a0 el self del padre. Entonces, necesitariamos buscar en su CIR el atributo

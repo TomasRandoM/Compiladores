@@ -53,10 +53,10 @@ public class ChainedCallNode extends ChainedNode {
         string.append("addiu $a0, $a0, ").append(offset).append("\n");
         string.append("#Cargamos la direccion del metodo en el a0\n");
         string.append("lw $a0, 0($a0)\n");
-        string.append("#Saltamos al metodo y el retorno lo traemos en a0");
+        string.append("#Saltamos al metodo y el retorno lo traemos en a0 \n");
         string.append("jalr $a0 \n");
         string.append("addiu $sp $sp ").append(memory).append("\n");
-        string.append("lw fp 0($sp) \n");
+        string.append("lw $fp, 0($sp) \n");
         if (chainedNode != null) {
             chainedNode.codeGen(string);
         }

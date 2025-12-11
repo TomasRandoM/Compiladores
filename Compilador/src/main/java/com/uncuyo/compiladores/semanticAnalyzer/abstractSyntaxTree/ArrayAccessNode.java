@@ -112,7 +112,7 @@ public class ArrayAccessNode extends OperandNode{
                 string.append("lw $a0, 0($a0) \n");
             }
         }
-        string.append("En $a0 tengo el indice del array\n");
+        string.append("#En $a0 tengo el indice del array\n");
         string.append("#Si el índice es negativo salto a la excepcion\n");
         string.append("bltz $a0, negativeArrayIndexException\n");
         string.append("#Obtengo la direccion del array para obtener length\n");
@@ -138,7 +138,7 @@ public class ArrayAccessNode extends OperandNode{
         string.append("#sumamos 8 debido a que el array posee vtable y la longitud del mismo \n");
         string.append("addiu $a0 $a0 8 \n");
         string.append("#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento \n");
-        string.append("addiu $t0 $t0 $a0 \n");
+        string.append("add $t0 $t0 $a0 \n");
         string.append("move $a0, $t0 \n");
     }
 
