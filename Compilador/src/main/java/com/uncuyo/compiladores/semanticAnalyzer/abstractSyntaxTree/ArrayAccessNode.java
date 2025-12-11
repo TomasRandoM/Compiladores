@@ -101,6 +101,16 @@ public class ArrayAccessNode extends OperandNode{
         string.append("addiu $sp $sp -4 \n");
         expressionNode.codeGen(string);
         checkChained(string, expressionNode);
+        if (expressionNode instanceof ArrayAccessNode) {
+            string.append("#Se obtiene el valor del array desde la direccion \n");
+            if (expressionNode.nodeType.getName().equals("Double")) {
+                //No deberia aparecer pero se deja por coherencia
+                string.append("l.d $f0, 0($a0) \n");
+            }
+            else {
+                string.append("lw $a0, 0($a0) \n");
+            }
+        }
         string.append("En $a0 tengo el indice del array\n");
         string.append("#Si el índice es negativo salto a la excepcion\n");
         string.append("bltz $a0, negativeArrayIndexException\n");
@@ -111,15 +121,6 @@ public class ArrayAccessNode extends OperandNode{
         string.append("#Si el indice es mayor o igual a la longitud salto a la excepcion\n");
         string.append("bge $a0, $t1, arrayIndexOutOfRangeException\n");
 
-        if (expressionNode instanceof ArrayAccessNode) {
-            string.append("#Se obtiene el valor del array desde la direccion \n");
-            if (expressionNode.nodeType.getName().equals("Double")) {
-                string.append("l.d $f0, 0($a0) \n");
-            }
-            else {
-                string.append("lw $a0, 0($a0) \n");
-            }
-        }
 
         string.append("#Restauramos la direccion en t0 que habiamos dejado en la pila \n");
         string.append("addiu $sp $sp 4 \n");
