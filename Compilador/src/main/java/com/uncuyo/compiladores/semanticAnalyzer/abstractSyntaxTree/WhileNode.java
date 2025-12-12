@@ -63,11 +63,13 @@ public class WhileNode extends SentenceNode {
      */
     @Override
     public void codeGen(StringBuilder string) {
-        string.append("#Bucle while \n");
+        string.append("#WHILE\n");
         String name = "while_" + methodName + className + token.getRow() + "_" + token.getColumn();
         String endName = "endWhile_" + methodName + className + token.getRow() + "_" + token.getColumn();
         string.append(name).append(":\n");
+        string.append("CODE GEN DE LA EXPRESION\n");
         expressionNode.codeGen(string);
+        string.append("CONTINUA WHILE\n");
         checkChained(string, expressionNode);
         if (expressionNode instanceof ArrayAccessNode) {
             string.append("#Se obtiene el valor del array desde la direccion \n");
@@ -80,6 +82,7 @@ public class WhileNode extends SentenceNode {
             }
         }
         string.append("beq $a0, $zero, ").append(endName).append("\n");
+        string.append("CODE GEN DE LA SENTENCIA\n");
         sentenceNode.codeGen(string);
         string.append("j ").append(name).append("\n");
         string.append(endName).append(":\n");

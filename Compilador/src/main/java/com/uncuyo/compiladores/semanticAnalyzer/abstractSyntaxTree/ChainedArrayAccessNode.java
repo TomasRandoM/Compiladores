@@ -169,6 +169,7 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
      */
     @Override
     public void codeGen(StringBuilder string) {
+        string.append("CHAINED ARRAY ACCESS\n");
         Class class1 = SymbolTable.getClass(parentType.getName());
         Attribute att = class1.getAttributes().get(name.getLexeme());
         int attributeOffset = class1.getAttributeOffset(name.getLexeme());
@@ -176,7 +177,9 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
         string.append("beq $a0, $zero, variableNotInitialized \n");
         string.append("sw $a0, 0($sp) \n");
         string.append("addiu $sp $sp -4 \n");
+        string.append("CODE GEN DE LA EXPRESION:\n");
         expression.codeGen(string);
+        string.append("CONTINUACION DEL CHAINED ARRAY ACCESS\n");
         //Queda en a0 el resultado de la expresión
         checkChained(string, expression);
 

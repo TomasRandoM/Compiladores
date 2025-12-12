@@ -162,6 +162,7 @@ public class NewNode extends OperandNode{
 
     @Override
     public void codeGen(StringBuilder string) {
+        string.append("NEW NODE\n");
         int memory = 8;
         string.append("#Llamada a constructor \n");
         string.append("#Guardamos el framepointer actual en la pila \n");
@@ -173,7 +174,9 @@ public class NewNode extends OperandNode{
         if (!option.equals("array")) {
             string.append("#Cargamos los parámetros a la pila \n");
             for (ExpressionNode expressionNode : parameterList.reversed()) {
+                string.append("CODE GEN DE LA EXPRESION\n");
                 expressionNode.codeGen(string);
+                string.append("CONTINUA NEW NODE\n");
                 checkChained(string, expressionNode);
                 if (expressionNode instanceof ArrayAccessNode) {
                     string.append("#Se obtiene el valor del array desde la direccion \n");
@@ -218,7 +221,9 @@ public class NewNode extends OperandNode{
                 string.append("sw $a0, 0($sp) \n");
                 string.append("addiu $sp $sp -4 \n");
             }
+            string.append("CODE GEN DE LA EXPRESION\n");
             expressionNode.codeGen(string);
+            string.append("CONTINUA NEW NODE\n");
             checkChained(string, expressionNode);
             if (expressionNode instanceof ArrayAccessNode) {
                 string.append("lw $a0, 0($a0)");

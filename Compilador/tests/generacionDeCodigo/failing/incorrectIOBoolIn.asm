@@ -1,3 +1,79 @@
+.globl main 
+.text 
+main: 
+#Bloque start 
+#Se forma el nuevo y primer framepointer 
+move $fp, $sp 
+#Movemos la pila para coherencia, pues no va a haber return address en el start 
+addiu $sp $sp -4 
+#Declaración de variables 
+#Reservamos memoria para las variables en la pila y lo inicializamos
+li $a0, 0 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#Sentencias del bloque 
+#CodeGen Sentencia Simple#Llamada a método 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+addiu $a0, $fp, -4
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 8
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#Asignación 
+#Literales
+li $a0, 0
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+addiu $a0, $fp, -4
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#CodeGen Sentencia Simple#Llamada a método 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+addiu $a0, $fp, -4
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 8
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+addiu $sp $sp 8
+#Fin del programa 
+li $v0, 10 
+syscall 
 .data
     addOne: .double 1.0
     zeroDouble: .double 0.0
@@ -205,10 +281,9 @@
         addiu $sp $sp -4
 
         #Cargamos la direccion del CIR de la Str
-        lw $a0, 4($fp)
+        lw $a0 4($fp)
         #Cargamos la direccion del Str en a0
-        lw $a0, 4($a0)
-
+        lw $a0 4($a0)
         li $v0, 4
         syscall
 
@@ -679,3 +754,67 @@
         addiu $sp $sp 4
         lw $ra, 0($fp)
         jr $ra
+.data
+    # Excepciones de division por cero
+    divZero: .asciiz "RUNTIME EXCEPTION: division por cero."
+    modZero: .asciiz "RUNTIME EXCEPTION: division por cero en operacion modulo."
+
+    # Excepciones de Array
+    negativeArraySize:       .asciiz "RUNTIME EXCEPTION: la longitud del array no puede ser negativa."
+    arrayIndexOutOfRange:    .asciiz "RUNTIME EXCEPTION: indice del array fuera de rango."
+    negativeArrayIndex:      .asciiz "RUNTIME EXCEPTION: indice del array negativo."
+
+    # Excepcion de booleano incorrecto
+    incorrectInBoolIO:       .asciiz "RUNTIME EXCEPTION: se esperaba 0 o 1 como entrada de un Bool."
+    # Cuando se intenta usar una clase o array no inicializado
+    variableNotInitializedMsg: .asciiz "RUNTIME EXCEPTION: se intenta acceder a una variable no inicializada."
+
+.text
+    divZeroException:
+        la $a0, divZero
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    modZeroException:
+        la $a0, modZero
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    negativeArraySizeException:
+        la $a0, negativeArraySize
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    arrayIndexOutOfRangeException:
+        la $a0, arrayIndexOutOfRange
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    negativeArrayIndexException:
+        la $a0, negativeArrayIndex
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    incorrectInBoolIOException:
+        la $a0, incorrectInBoolIO
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    variableNotInitialized:
+            la $a0, variableNotInitializedMsg
+            li $v0, 4
+            syscall
+            li $v0, 10
+            syscall

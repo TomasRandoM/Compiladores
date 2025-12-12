@@ -113,7 +113,8 @@ public class UnaryExpressionNode extends ExpressionNode {
      */
     @Override
     public void codeGen(StringBuilder string) {
-        string.append("#Expresion unaria \n");
+        string.append("#UNARY EXPRESSION\n");
+        string.append("CODE GEN DE LA EXPRESION\n");
         expressionNode.codeGen(string);
         checkChained(string, expressionNode);
         if (expressionNode instanceof ArrayAccessNode) {

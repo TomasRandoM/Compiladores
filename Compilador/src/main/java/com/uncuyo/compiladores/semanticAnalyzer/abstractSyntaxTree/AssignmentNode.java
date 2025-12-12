@@ -89,7 +89,7 @@ public class AssignmentNode extends SentenceNode {
      */
     @Override
     public void codeGen(StringBuilder string) {
-        string.append("#Asignación \n");
+        string.append("#ASIGNACION \n");
         rightNode.codeGen(string);
         checkChained(string, rightNode);
         if (rightNode instanceof ArrayAccessNode) {
@@ -120,6 +120,7 @@ public class AssignmentNode extends SentenceNode {
         }
         else {
             string.append("addiu $sp $sp 4 \n");
+            string.append("#Cargamos el valor del lado derecho \n");
             string.append("lw $t0, 0($sp) \n");
             string.append("#Se guarda lo del lado derecho en la direccion de a0 \n");
             string.append("sw $t0, 0($a0) \n");

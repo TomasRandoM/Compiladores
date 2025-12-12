@@ -49,6 +49,7 @@ public class ArrayAccessNode extends OperandNode{
      */
     @Override
     public void codeGen(StringBuilder string) {
+        string.append("ARRAY ACCESS NODE\n");
         Class currentClass = null;
         if (className != null) {
             currentClass = SymbolTable.getClass(className);

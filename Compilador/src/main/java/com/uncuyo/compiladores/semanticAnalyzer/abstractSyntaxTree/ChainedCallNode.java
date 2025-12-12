@@ -34,7 +34,7 @@ public class ChainedCallNode extends ChainedNode {
      */
     @Override
     public void codeGen(StringBuilder string) {
-        string.append("#ChainedCallNode \n");
+        string.append("#CHAINED CALL NODE \n");
         //en a0 tenemos el objeto que nos dejo ChainedAccessNode (u otro).
         Class class1 = SymbolTable.getClass(parentType.getName());
         int offset = class1.getMethodOffset(name.getLexeme());

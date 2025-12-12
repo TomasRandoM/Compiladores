@@ -82,7 +82,7 @@ public class MethodCallNode extends OperandNode {
      */
     @Override
     public void codeGen(StringBuilder string) {
-        string.append("#Llamada a método \n");
+        string.append("#METHOD CALL \n");
         string.append("#Guardamos el framepointer actual en la pila \n");
         string.append("sw $fp, 0($sp) \n");
         string.append("addiu $sp $sp -4 \n");
@@ -108,7 +108,7 @@ public class MethodCallNode extends OperandNode {
             methodOffset = SymbolTable.getClass(className).getMethodOffset(token.getLexeme());
             string.append("#Se deja espacio para el self \n");
             string.append("#En este caso no existe, pero para coherencia \n");
-            string.append("addiu $sp $sp -4");
+            string.append("addiu $sp $sp -4\n");
             memory = codeGenParameters(string, memory);
             string.append("la $a0, ").append(vtableName).append("\n");
         }

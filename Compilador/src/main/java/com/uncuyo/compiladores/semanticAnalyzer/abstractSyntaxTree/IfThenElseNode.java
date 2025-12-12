@@ -73,12 +73,15 @@ public class IfThenElseNode extends SentenceNode {
      */
     @Override
     public void codeGen(StringBuilder string) {
+        string.append("IF THEN ELSE:\n");
         string.append("#If \n");
         String name = "if_" + methodName + className + token.getRow() + token.getColumn();
         String elseName = "elseif_" + methodName + className + token.getRow() + token.getColumn();
         String endName = "endif_" + methodName + className + token.getRow() + token.getColumn();
         string.append(name).append(": \n");
+        string.append("CODE GEN DE LA EXPRESION\n");
         expressionNode.codeGen(string);
+        string.append("CONTINUA IF THEN ELSE\n");
         checkChained(string, expressionNode);
         if (expressionNode instanceof ArrayAccessNode) {
             string.append("#Se obtiene el valor del array desde la direccion \n");
@@ -91,12 +94,14 @@ public class IfThenElseNode extends SentenceNode {
         }
         string.append("#Verifica si la condicion es falsa. Si es falsa salta a la etiqueta else \n");
         string.append("beq $a0, $zero, ").append(elseName).append("\n");
+        string.append("SENTENCIA DEL IF\n");
         sentenceNode.codeGen(string);
         string.append("#Al terminar salta a la etiqueta end del if \n");
         string.append("j ").append(endName).append(" \n");
         string.append("#Etiqueta del else. Si no hay else, esta vacia \n");
         string.append(elseName).append(": \n");
         if (elseSentenceNode != null) {
+            string.append("SENTENCIA DEL ELSE\n");
             elseSentenceNode.codeGen(string);
         }
         string.append(endName).append(": \n");

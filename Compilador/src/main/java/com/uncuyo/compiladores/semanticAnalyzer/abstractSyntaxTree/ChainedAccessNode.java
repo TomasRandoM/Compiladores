@@ -44,7 +44,7 @@ public class ChainedAccessNode extends ChainedNode {
 
     @Override
     public void codeGen(StringBuilder string) {
-        string.append("#ChainedAccessNode \n");
+        string.append("#CHAINED ACCESS NODE \n");
         if (getParentType() == null) {
 
             Class currentClass = null;

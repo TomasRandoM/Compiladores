@@ -112,7 +112,7 @@ public class LiteralNode extends OperandNode {
      */
     public void codeGen(StringBuilder string) {
         String name;
-        string.append("#Literales\n");
+        string.append("#LITERAL\n");
         switch (option) {
             case "nil":
                 string.append("li $a0, 0\n");
@@ -136,8 +136,8 @@ public class LiteralNode extends OperandNode {
             case "const_string":
                 name = "string_"+ token.getRow() + "_" + token.getColumn();
                 string.append(".data\n");
-                string.append(name).append(": .asciiz ").
-                        append(token.getLexeme()).append("\n");
+                string.append(name).append(": .asciiz \"")
+                        .append(token.getLexeme()).append("\"\n");
                 string.append((".text\n"));
                 string.append("li $v0, 9 \n");
                 string.append("li $a0, 8 \n");
