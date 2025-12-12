@@ -63,7 +63,10 @@ public class ParenthesizedExpressionNode extends ExpressionNode {
     }
 
     public void codeGen(StringBuilder string) {
+        string.append("EXPRESION PARENTIZADA\n");
+        string.append("CODE GEN DE LA EXPRESION\n");
         expressionNode.codeGen(string);
+        string.append("CONTINUA EXPRESION PARENTIZADA\n");
         checkChained(string, expressionNode);
         if (expressionNode instanceof ArrayAccessNode) {
             string.append("#Se obtiene el valor del array desde la direccion \n");
@@ -77,6 +80,7 @@ public class ParenthesizedExpressionNode extends ExpressionNode {
         if (chainedNode != null) {
             chainedNode.codeGen(string);
         }
+        string.append("FIN EXPRESION PARENTIZADA\n");
     }
 
     public void checkChained(StringBuilder string, ExpressionNode expressionNode) {

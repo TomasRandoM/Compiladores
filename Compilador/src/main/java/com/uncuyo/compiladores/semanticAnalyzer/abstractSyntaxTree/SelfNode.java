@@ -36,7 +36,7 @@ public class SelfNode extends OperandNode {
      */
     @Override
     public void codeGen(StringBuilder string) {
-        string.append("#Self \n");
+        string.append("#SELF \n");
         int selfOffset = SymbolTable.getClass(className).
                 getMethods().get(methodName).getParameterMemory();
         string.append("lw $a0, ").append(selfOffset).append("($fp) \n");

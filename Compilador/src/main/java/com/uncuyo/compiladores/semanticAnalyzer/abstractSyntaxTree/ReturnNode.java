@@ -80,8 +80,10 @@ public class ReturnNode extends SentenceNode {
      */
     @Override
     public void codeGen(StringBuilder string) {
+        string.append("RETURN\n");
+        string.append("CODE GEN DE LA EXPRESION\n");
         expressionNode.codeGen(string);
-        string.append("#Return \n");
+        string.append("#CONTINUA RETURN \n");
         checkChained(string, expressionNode);
         if (expressionNode instanceof ArrayAccessNode) {
             string.append("#Se obtiene el valor del array desde la direccion \n");

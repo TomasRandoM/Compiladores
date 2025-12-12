@@ -39,8 +39,9 @@ public class SimpleSentenceNode extends SentenceNode {
      */
     @Override
     public void codeGen(StringBuilder string) {
-        string.append("#CodeGen Sentencia Simple");
+        string.append("#SIMPLE SENTENCE - CODE GEN DE EXPRESION\n");
         expressionNode.codeGen(string);
+        string.append("FIN SIMPLE SENTENCE\n");
     }
 
     public ExpressionNode getExpressionNode() {

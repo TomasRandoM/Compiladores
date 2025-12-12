@@ -11,23 +11,54 @@ addiu $sp $sp -4
 li $a0, 0 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
+la $a0, stringInitialization 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
 #Sentencias del bloque 
-#CodeGen Sentencia Simple#Llamada a método 
+#Asignación 
+#Literales
+.data
+string_3_8: .asciiz "BOOOL"
+.text
+li $v0, 9 
+li $a0, 8 
+syscall 
+la $a0, vtableStr 
+sw $a0, 0($v0)
+la $a0, string_3_8
+sw $a0, 4($v0)
+move $a0, $v0
+li $v0, 4
+syscall
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+addiu $a0, $fp, -8
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#CodeGen Sentencia Simple
+#Llamada a método 
 #Guardamos el framepointer actual en la pila 
 sw $fp, 0($sp) 
 addiu $sp $sp -4 
 #Se deja espacio para el self 
 #En este caso no existe, pero para coherencia 
-addiu $sp $sp -4#Cargamos los parámetros a la pila 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
 #Carga de variable 
 #Cargamos la direccion de la variable en a0 utilizando el 
 #offset con el fp 
-la $a0, -4($fp) 
+addiu $a0, $fp, -8
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 la $a0, vtableIO
 #Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 8
+addiu $a0, $a0, 0
 #Cargamos la direccion del metodo en el a0
 lw $a0, 0($a0)
 jalr $a0 
@@ -40,7 +71,8 @@ sw $fp, 0($sp)
 addiu $sp $sp -4 
 #Se deja espacio para el self 
 #En este caso no existe, pero para coherencia 
-addiu $sp $sp -4#Cargamos los parámetros a la pila 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
 la $a0, vtableIO
 #Buscamos la direccion del metodo (usando el offset) 
 addiu $a0, $a0, 40
@@ -49,27 +81,32 @@ lw $a0, 0($a0)
 jalr $a0 
 addi $sp $sp 8
 lw $fp, 0($sp) 
+li $v0, 4
+syscall
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 #Carga de variable 
 #Cargamos la direccion de la variable en a0 utilizando el 
 #offset con el fp 
-la $a0, -4($fp) 
+addiu $a0, $fp, -4
 addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
 lw $t0, 0($sp) 
 #Se guarda lo del lado derecho en la direccion de a0 
 sw $t0, 0($a0) 
-#CodeGen Sentencia Simple#Llamada a método 
+#CodeGen Sentencia Simple
+#Llamada a método 
 #Guardamos el framepointer actual en la pila 
 sw $fp, 0($sp) 
 addiu $sp $sp -4 
 #Se deja espacio para el self 
 #En este caso no existe, pero para coherencia 
-addiu $sp $sp -4#Cargamos los parámetros a la pila 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
 #Carga de variable 
 #Cargamos la direccion de la variable en a0 utilizando el 
 #offset con el fp 
-la $a0, -4($fp) 
+addiu $a0, $fp, -4
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 la $a0, vtableIO
@@ -80,6 +117,7 @@ lw $a0, 0($a0)
 jalr $a0 
 addi $sp $sp 12
 lw $fp, 0($sp) 
+addiu $sp $sp 12
 #Fin del programa 
 li $v0, 10 
 syscall 
@@ -89,7 +127,7 @@ syscall
     stringInitialization: .asciiz ""
     brackets1: .asciiz "["
     brackets2: .asciiz "]"
-    comma: .ascizz ", "
+    comma: .asciiz ", "
 
     vtableStr:
         .word lengthStr
@@ -161,6 +199,7 @@ syscall
 
 
     constructorArray:
+        #constructorArray
         move $fp, $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -205,11 +244,13 @@ syscall
         jr $ra
 
     constructorArrayDouble:
+        #Metodo constructorArrayDouble
             move $fp, $sp
             sw $ra 0($sp)
             addiu $sp $sp -4
             #Cargo el size del array en t0
             lw $t0 12($fp)
+            bltz $t0, negativeArraySizeException
             #Cargo la memoria que ocupan los elementos en t1
 
             lw $t1 16($fp)
@@ -250,6 +291,7 @@ syscall
 
 
     constructorStr:
+        #constructorStr
         #Cargo el framepointer
         move $fp, $sp
         sw $ra 0($sp)
@@ -280,14 +322,16 @@ syscall
         jr $ra
 
     out_strIO:
+        #Metodo out_strIO
         move $fp, $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
 
         #Cargamos la direccion del CIR de la Str
-        lw $a0 4($fp)
+        lw $a0, 4($fp)
         #Cargamos la direccion del Str en a0
-        lw $a0 4($a0)
+        lw $a0, 4($a0)
+
         li $v0, 4
         syscall
 
@@ -297,12 +341,15 @@ syscall
         jr $ra
 
     out_boolIO:
+        #Metodo out_boolIO
         move $fp, $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
 
-        #Cargamos el entero al a0
-        lw $a0 4($fp)
+        #Cargamos la direccion del bool en a0
+        lw $a0, 4($fp)
+        #Cargamos el valor
+        lw $a0, 0($a0)
         li $v0, 1
         syscall
 
@@ -311,7 +358,9 @@ syscall
         addiu $sp $sp 4
         jr $ra
 
+
     out_intIO:
+        #Metodo out_intIO
         move $fp, $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -327,6 +376,7 @@ syscall
         jr $ra
 
     out_doubleIO:
+        #Metodo out_doubleIO
         move $fp, $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -342,6 +392,7 @@ syscall
         jr $ra
 
     out_array_doubleIO:
+        #Metodo out_array_doubleIO
         move $fp $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -394,6 +445,7 @@ syscall
 
     out_array_intIO:
     out_array_boolIO:
+        #Metodo out_array_boolIO o out_array_intIO
         move $fp $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -445,6 +497,7 @@ syscall
 
 
     out_array_strIO:
+        #Metodo out_array_strIO
         move $fp $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -496,6 +549,7 @@ syscall
         jr $ra
 
     in_boolIO:
+        #Metodo in_boolIO
         move $fp, $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -507,16 +561,20 @@ syscall
         #Paso la entrada a a0
         move $a0 $v0
 
+        #Verifico si la entrada fue 1 o 0
         beq $a0, $zero, correctBoolInput
-        li $to, 1
-        beq $a0, $t0
+        li $t0, 1
+        beq $a0, $t0, correctBoolInput
+        j incorrectInBoolIOException
 
-        #La retorno
-        lw $ra, 0($fp)
-        addiu $sp $sp 4
-        jr $ra
+        correctBoolInput:
+            #La retorno
+            lw $ra, 0($fp)
+            addiu $sp $sp 4
+            jr $ra
 
     in_intIO:
+        #Metodo in_intIO
         move $fp, $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -534,6 +592,7 @@ syscall
         jr $ra
 
     in_strIO:
+        #Metodo in_strIO
         move $fp, $sp
         sw $ra, 0($sp)
         addiu $sp $sp -4
@@ -573,6 +632,7 @@ syscall
 
 
     in_doubleIO:
+        #Metodo in_doubleIO
         move $fp, $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -588,6 +648,7 @@ syscall
 
 
     lengthArray:
+        #Metodo lengthArray
         move $fp $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -602,6 +663,7 @@ syscall
 
 
     lengthStr:
+        #Metodo lengthStr
         move $fp $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -630,6 +692,7 @@ syscall
 
 
     concatStr:
+        #Metodo concatStr
         move $fp, $sp
         sw $ra, 0($fp)
         addiu $sp $sp -4
@@ -752,7 +815,7 @@ syscall
     # Excepcion de booleano incorrecto
     incorrectInBoolIO:       .asciiz "RUNTIME EXCEPTION: se esperaba 0 o 1 como entrada de un Bool."
     # Cuando se intenta usar una clase o array no inicializado
-    variableNotInitializedMsg: .asciiz "RUNTIME EXCEPTION: se intenta acceder a una variable no inicializada"
+    variableNotInitializedMsg: .asciiz "RUNTIME EXCEPTION: se intenta acceder a una variable no inicializada."
 
 .text
     divZeroException:
