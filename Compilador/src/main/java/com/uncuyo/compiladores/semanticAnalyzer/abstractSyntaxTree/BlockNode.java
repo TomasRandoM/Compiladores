@@ -174,6 +174,7 @@ public class BlockNode extends SentenceNode {
                 string.append("sw $ra, 0($sp) \n");
                 string.append("addiu $sp $sp -4 \n");
                 string.append("#Constructor \n");
+
                 Map<String, Variable> variables = SymbolTable.getClass(className).getConstructor().getVariables();
                 //Declaraciones
                 memory = calcultateMemoryV(variables, string);

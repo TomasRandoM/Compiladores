@@ -12,6 +12,7 @@
         li $a0, 0
         j endDouble
 
+
     greaterDouble:
         c.lt.d $f0, $f2
         li $a0, 1
