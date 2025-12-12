@@ -67,11 +67,11 @@ public class WhileNode extends SentenceNode {
         String name = "while_" + methodName + className + token.getRow() + "_" + token.getColumn();
         String endName = "endWhile_" + methodName + className + token.getRow() + "_" + token.getColumn();
         string.append(name).append(":\n");
-        string.append("CODE GEN DE LA EXPRESION\n");
+        string.append("#CODE GEN DE LA EXPRESION\n");
         expressionNode.codeGen(string);
-        string.append("CONTINUA WHILE\n");
+        string.append("#CONTINUA WHILE\n");
         checkChained(string, expressionNode);
-        if (expressionNode instanceof ArrayAccessNode) {
+        if (expressionNode instanceof ArrayAccessNode || expressionNode instanceof VariableNode) {
             string.append("#Se obtiene el valor del array desde la direccion \n");
             if (expressionNode.nodeType.getName().equals("Double")) {
                 //No debería llegarse a este caso, pero se mantiene por coherencia
@@ -82,7 +82,7 @@ public class WhileNode extends SentenceNode {
             }
         }
         string.append("beq $a0, $zero, ").append(endName).append("\n");
-        string.append("CODE GEN DE LA SENTENCIA\n");
+        string.append("#CODE GEN DE LA SENTENCIA\n");
         sentenceNode.codeGen(string);
         string.append("j ").append(name).append("\n");
         string.append(endName).append(":\n");
@@ -92,13 +92,11 @@ public class WhileNode extends SentenceNode {
         ChainedNode chainedNode1 = expressionNode.getLastChainedNode();
 
         if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
-            if (!isClassOrArray(expressionNode.nodeType.getName())) {
-                if (expressionNode.nodeType.getName().equals("Double")) {
-                    string.append("l.d $f0, 0($a0) \n");
-                }
-                else {
-                    string.append("lw $a0, 0($a0) \n");
-                }
+            if (expressionNode.nodeType.getName().equals("Double")) {
+                string.append("l.d $f0, 0($a0) \n");
+            }
+            else {
+                string.append("lw $a0, 0($a0) \n");
             }
         }
     }

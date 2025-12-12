@@ -109,7 +109,7 @@ public class VariableNode extends OperandNode {
      */
     @Override
     public void codeGen(StringBuilder string) {
-        string.append("VARIABLE NODE\n");
+        string.append("#VARIABLE NODE\n");
         Class currentClass = null;
         if (this.currentClass != null) {
             currentClass = SymbolTable.getClass(this.currentClass);

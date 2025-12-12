@@ -169,7 +169,7 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
      */
     @Override
     public void codeGen(StringBuilder string) {
-        string.append("CHAINED ARRAY ACCESS\n");
+        string.append("#CHAINED ARRAY ACCESS\n");
         Class class1 = SymbolTable.getClass(parentType.getName());
         Attribute att = class1.getAttributes().get(name.getLexeme());
         int attributeOffset = class1.getAttributeOffset(name.getLexeme());
@@ -177,13 +177,13 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
         string.append("beq $a0, $zero, variableNotInitialized \n");
         string.append("sw $a0, 0($sp) \n");
         string.append("addiu $sp $sp -4 \n");
-        string.append("CODE GEN DE LA EXPRESION:\n");
+        string.append("#CODE GEN DE LA EXPRESION:\n");
         expression.codeGen(string);
-        string.append("CONTINUACION DEL CHAINED ARRAY ACCESS\n");
+        string.append("#CONTINUACION DEL CHAINED ARRAY ACCESS\n");
         //Queda en a0 el resultado de la expresión
         checkChained(string, expression);
 
-        if (expression instanceof ArrayAccessNode) {
+        if (expression instanceof ArrayAccessNode || expression instanceof VariableNode) {
             string.append("#Se obtiene el valor del array desde la direccion \n");
             if (expression.nodeType.getName().equals("Double")) {
                 //Aca no deberia entrar
@@ -220,6 +220,9 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
         string.append("addiu $a0 $a0 8 \n");
         string.append("#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento \n");
         string.append("add $t0 $t0 $a0 \n");
+        string.append("#Cargamos la direcicon en a0 \n");
+        string.append("move $a0, $t0 \n");
+        /*
         if (att.getType().getArrType().getName().equals("Double")) {
             string.append("#cargamos el elemento en f0 \n");
             string.append("lw $f0, 0($t0) \n");
@@ -228,6 +231,7 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
             string.append("#cargamos el elemento en a0 \n");
             string.append("lw $a0, 0($t0) \n");
         }
+        */
     }
 
     /**
@@ -240,13 +244,11 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
         ChainedNode chainedNode1 = expressionNode.getLastChainedNode();
         //contempla el caso de chainedNode1 == null.
         if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
-            if (!isClassOrArray(expressionNode.nodeType.getName())) {
-                if (expressionNode.nodeType.getName().equals("Double")) {
-                    string.append("l.d $f0, 0($a0) \n");
-                }
-                else {
-                    string.append("lw $a0, 0($a0) \n");
-                }
+            if (expressionNode.nodeType.getName().equals("Double")) {
+                string.append("l.d $f0, 0($a0) \n");
+            }
+            else {
+                string.append("lw $a0, 0($a0) \n");
             }
         }
     }

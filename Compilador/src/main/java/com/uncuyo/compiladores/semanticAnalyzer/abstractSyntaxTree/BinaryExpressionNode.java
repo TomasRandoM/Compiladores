@@ -249,7 +249,7 @@ public class BinaryExpressionNode extends ExpressionNode {
         left.codeGen(string);
         string.append("EXP BINARIA CONTINUACION\n");
         checkChained(string, left);
-        if (left instanceof ArrayAccessNode) {
+        if (left instanceof ArrayAccessNode || left instanceof VariableNode) {
             string.append("#Se obtiene el valor del array desde la direccion \n");
             if (left.nodeType.getName().equals("Double")) {
                 string.append("l.d $f0, 0($a0) \n");
@@ -272,7 +272,7 @@ public class BinaryExpressionNode extends ExpressionNode {
         right.codeGen(string);
         string.append("EXP BINARIA CONTINUACION\n");
         checkChained(string, right);
-        if (right instanceof ArrayAccessNode) {
+        if (right instanceof ArrayAccessNode || right instanceof VariableNode) {
             string.append("#Se obtiene el valor del array desde la direccion \n");
             if (right.nodeType.getName().equals("Double")) {
                 string.append("l.d $f0, 0($a0) \n");
@@ -456,13 +456,11 @@ public class BinaryExpressionNode extends ExpressionNode {
         ChainedNode chainedNode1 = expressionNode.getLastChainedNode();
 
         if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
-            if (!isClassOrArray(expressionNode.nodeType.getName())) {
-                if (expressionNode.nodeType.getName().equals("Double")) {
-                    string.append("l.d $f0, 0($a0) \n");
-                }
-                else {
-                    string.append("lw $a0, 0($a0) \n");
-                }
+            if (expressionNode.nodeType.getName().equals("Double")) {
+                string.append("l.d $f0, 0($a0) \n");
+            }
+            else {
+                string.append("lw $a0, 0($a0) \n");
             }
         }
     }
