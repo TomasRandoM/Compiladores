@@ -2,6 +2,8 @@ package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
 import com.uncuyo.compiladores.exceptions.SemanticASTException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Attribute;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Class;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Method;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.SymbolTable;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Variable;
@@ -167,13 +169,31 @@ public class BlockNode extends SentenceNode {
             }
             else {
                 string.append(".text \n");
+                string.append("#Constructor \n");
                 string.append("constructor").append(className).append(": \n");
                 string.append("#Se forma el nuevo framepointer \n");
                 string.append("move $fp, $sp \n");
                 string.append("#Se guarda el return address en la pila \n");
                 string.append("sw $ra, 0($sp) \n");
                 string.append("addiu $sp $sp -4 \n");
-                string.append("#Constructor \n");
+
+                int attributeMemory = SymbolTable.getClass(className).calculateAttributeMemory();
+                Class classAux = SymbolTable.getClass(className);
+                int selfOffset = classAux.getConstructor().getParameterMemory();
+                string.append("#Se deja espacio para los atributos \n");
+                string.append("li $a0, ").append(attributeMemory).append(" \n");
+                string.append("#A la memoria de los atributos se le suman 4 bytes para la vtable \n");
+                string.append("addiu $a0 $a0 4 \n");
+                string.append("li $v0, 9 \n");
+                string.append("syscall \n");
+                string.append("#Se carga la direccion de la vtable en a0 y se inserta en la primera posicion de la memoria \n");
+                string.append("la $a0, vtable").append(className).append(" \n");
+                string.append("sw $a0, 0($v0) \n");
+                string.append("#Guardamos en el registro de activacion, en la direccion designada para self, la memoria \n");
+                string.append("sw $v0, ").append(selfOffset).append("($fp) \n");
+
+                string.append("#Llamada a inicializar los atributos \n");
+                memory = initializeAttributes(classAux.getAttributes(), string);
 
                 Map<String, Variable> variables = SymbolTable.getClass(className).getConstructor().getVariables();
                 //Declaraciones
@@ -182,7 +202,9 @@ public class BlockNode extends SentenceNode {
                 for (SentenceNode sentenceNode : sentences) {
                     sentenceNode.codeGen(string);
                 }
-                string.append("addiu $sp $sp ").append(memory + 4).append("\n");
+                string.append("#Guardamos el self en a0 para retornarlo \n");
+                string.append("lw $a0, ").append(selfOffset).append("($fp) \n");
+                string.append("addiu $sp $sp ").append(4).append("\n");
                 string.append("lw $ra, 0($sp) \n");
                 string.append("jr $ra \n");
             }
@@ -233,8 +255,14 @@ public class BlockNode extends SentenceNode {
             }
             else {
                 if (variable.getType().getName().equals("Str")) {
+                    string.append("li $a0, 8 \n");
+                    string.append("li $v0, 9 \n");
+                    string.append("syscall \n");
                     string.append("la $a0, stringInitialization \n");
-                    string.append("sw $a0, 0($sp) \n");
+                    string.append("sw $a0, 4($v0) \n");
+                    string.append("la $a0, vtableStr \n");
+                    string.append("sw $a0, 0($v0) \n");
+                    string.append("sw $v0, 0($sp) \n");
                     string.append("addiu $sp $sp -4 \n");
                 }
                 else {
@@ -248,5 +276,49 @@ public class BlockNode extends SentenceNode {
         return memory;
     }
 
+    /**
+     * Inicializa los atributos de una clase (en el constructor). La direccion del objeto se encuentra en v0 al entrar y al salir
+     * @param attributes Map de las atributos
+     * @param string StringBuilder
+     * @return Int con la memoria utilizada
+     */
+    public int initializeAttributes(Map<String, Attribute> attributes, StringBuilder string) {
+        int memory = 0;
+        int offset = 4;
+        string.append("#Declaración de atributos \n");
+        string.append("#Inicializamos los atributos \n");
+        for (Attribute attribute : attributes.values()) {
+            if (attribute.getType().getName().equals("Double")) {
+                string.append("l.d $f0, zeroDouble\n");
+                string.append("s.d $f0, ").append(offset).append("($v0)\n");
+                offset += 8;
+                memory += 8;
+            }
+            else {
+                if (attribute.getType().getName().equals("Str")) {
+                    string.append("li $a0, 8 \n");
+                    string.append("#Guardamos en t0 el v0 temporalmente \n");
+                    string.append("move $t0, $v0 \n");
+                    string.append("li $v0, 9 \n");
+                    string.append("syscall \n");
+                    string.append("la $a0, stringInitialization \n");
+                    string.append("sw $a0, 4($v0) \n");
+                    string.append("la $a0, vtableStr \n");
+                    string.append("sw $a0, 0($v0) \n");
+                    string.append("#Guardamos el Str en t0, que es la direccion del objeto \n");
+                    string.append("sw $v0, ").append(offset).append("($t0) \n");
+                    string.append("#Restauramos nuevamente el v0 \n");
+                    string.append("move $v0, $t0 \n");
+                }
+                else {
+                    string.append("li $a0, 0 \n");
+                    string.append("sw $a0, ").append(offset).append("($v0) \n");
+                }
+                memory += 4;
+                offset += 4;
+            }
+        }
+        return memory;
+    }
 
 }

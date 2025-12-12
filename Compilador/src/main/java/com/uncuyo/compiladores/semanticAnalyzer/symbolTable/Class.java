@@ -245,4 +245,17 @@ public class Class {
         //No se debería llegar a este return, si se llega falló el semántico
         return memory;
     }
+
+    public int calculateAttributeMemory() {
+        int memory = 0;
+        for (Map.Entry<String, Attribute> entry : attributes.entrySet()) {
+            if (entry.getValue().getType().getName().equals("Double")) {
+                memory += 8;
+            }
+            else {
+                memory += 4;
+            }
+        }
+        return memory;
+    }
 }

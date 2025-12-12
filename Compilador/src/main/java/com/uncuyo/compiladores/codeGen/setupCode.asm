@@ -223,10 +223,9 @@
         sw $ra 0($sp)
         addiu $sp $sp -4
 
-        #Cargamos la direccion del bool en a0
-        lw $a0, 4($fp)
         #Cargamos el valor
-        lw $a0, 0($a0)
+        lw $a0, 4($fp)
+
         li $v0, 1
         syscall
 

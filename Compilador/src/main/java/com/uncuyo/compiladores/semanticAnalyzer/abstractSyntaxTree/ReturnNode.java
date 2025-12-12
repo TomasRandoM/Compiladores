@@ -80,12 +80,12 @@ public class ReturnNode extends SentenceNode {
      */
     @Override
     public void codeGen(StringBuilder string) {
-        string.append("RETURN\n");
-        string.append("CODE GEN DE LA EXPRESION\n");
+        string.append("#RETURN\n");
+        string.append("#CODE GEN DE LA EXPRESION\n");
         expressionNode.codeGen(string);
         string.append("#CONTINUA RETURN \n");
         checkChained(string, expressionNode);
-        if (expressionNode instanceof ArrayAccessNode) {
+        if (expressionNode instanceof ArrayAccessNode || expressionNode instanceof VariableNode) {
             string.append("#Se obtiene el valor del array desde la direccion \n");
             if (expressionNode.nodeType.getName().equals("Double")) {
                 string.append("l.d $f0, 0($a0) \n");
@@ -106,13 +106,11 @@ public class ReturnNode extends SentenceNode {
         ChainedNode chainedNode1 = expressionNode.getLastChainedNode();
 
         if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
-            if (!isClassOrArray(expressionNode.nodeType.getName())) {
-                if (expressionNode.nodeType.getName().equals("Double")) {
-                    string.append("l.d $f0, 0($a0) \n");
-                }
-                else {
-                    string.append("lw $a0, 0($a0) \n");
-                }
+            if (expressionNode.nodeType.getName().equals("Double")) {
+                string.append("l.d $f0, 0($a0) \n");
+            }
+            else {
+                string.append("lw $a0, 0($a0) \n");
             }
         }
     }

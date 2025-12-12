@@ -101,7 +101,8 @@ public class ChainedAccessNode extends ChainedNode {
             int offset = currentClass.getAttributeOffset(name.getLexeme());
             Type attributeType = currentClass.getAttributes().get(name.getLexeme()).getType();
             string.append("#Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior\n");
-            string.append("lw $a0, ").append(offset).append("($a0) \n");
+            string.append("addiu $a0 $a0 ").append(offset).append("\n");
+            //string.append("lw $a0, ").append(offset).append("($a0) \n");
         }
         if (chainedNode != null) {
             chainedNode.codeGen(string);
