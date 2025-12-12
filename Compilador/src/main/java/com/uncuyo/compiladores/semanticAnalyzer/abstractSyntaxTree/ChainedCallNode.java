@@ -233,7 +233,9 @@ public class ChainedCallNode extends ChainedNode {
                             actualType.getName() +
                             " y se esperaba " + correctType.getName());
                 }
-                if (actualType.getName().equals("void") || !(SymbolTable.getClass(actualType.getName()).isInheritedClass(correctType.getName()))) {
+                if (actualType.getName().equals("void") ||
+                        (!actualType.getName().equals("nil") &&
+                                !(SymbolTable.getClass(actualType.getName()).isInheritedClass(correctType.getName())))) {
                     throw new SemanticASTException(actualType.getToken(), "El parámetro " +
                             parameterList.get(i).getToken().getLexeme() +
                             " es de tipo incorrecto. Se obtuvo " +

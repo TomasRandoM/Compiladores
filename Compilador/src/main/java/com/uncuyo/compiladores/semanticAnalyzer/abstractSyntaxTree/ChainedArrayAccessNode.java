@@ -219,11 +219,11 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
         string.append("add $t0 $t0 $a0 \n");
         if (att.getType().getArrType().getName().equals("Double")) {
             string.append("#cargamos el elemento en f0 \n");
-            string.append("lw $f0 0($t0) \n");
+            string.append("lw $f0, 0($t0) \n");
         }
         else {
             string.append("#cargamos el elemento en a0 \n");
-            string.append("lw $a0 0($t0) \n");
+            string.append("lw $a0, 0($t0) \n");
         }
     }
 
@@ -239,10 +239,10 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
         if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
             if (!isClassOrArray(expressionNode.nodeType.getName())) {
                 if (expressionNode.nodeType.getName().equals("Double")) {
-                    string.append("l.d $f0 0($a0)");
+                    string.append("l.d $f0, 0($a0) \n");
                 }
                 else {
-                    string.append("lw $a0 0($a0)");
+                    string.append("lw $a0, 0($a0) \n");
                 }
             }
         }
