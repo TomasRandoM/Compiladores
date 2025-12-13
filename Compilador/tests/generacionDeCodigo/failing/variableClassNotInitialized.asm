@@ -754,6 +754,16 @@ jr $ra
         addiu $sp $sp 12
         lw $fp 0($sp)
         #En v0 sigo teniendo la direccion de la nueva string
+        #La guardo en t0
+        move $t0, $v0
+        #Reservo memoria para el objeto Str
+        li $v0, 9
+        li $a0, 8
+        syscall
+        la $a0, vtableStr
+        sw $a0, 0($v0)
+        sw $t0, 4($v0)
+
         #retorno en a0
         move $a0, $v0
 
