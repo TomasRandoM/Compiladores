@@ -57,6 +57,7 @@ public class LiteralNode extends OperandNode {
      */
     public Type check() throws SemanticASTException {
         Type type;
+        
         if (option.equals("true") || option.equals("false")) {
             type = new Type(token, "Bool");
         }
