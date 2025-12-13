@@ -29,7 +29,7 @@ public class NewNode extends OperandNode{
      */
     private ChainedNode chainedNode;
     /**
-     * chainedNode representa la expresion dentro de un array
+     * expressionNode representa la expresion dentro de un array
      */
     private ExpressionNode expressionNode;
     /**
@@ -90,6 +90,7 @@ public class NewNode extends OperandNode{
                 throw new SemanticASTException(chainedNode.getToken(), "Un array no puede tener un encadenamiento");
             }
             else {
+                expressionNode.check();
                 //Si pudiese haber arrays de tipo diferente aca debería haber resolución de nombres
                 newType = new Type(type, "Array");
                 newType.setArrType(new Type(type, type.getLexeme()));
@@ -242,6 +243,7 @@ public class NewNode extends OperandNode{
             }
             else {
                 if (type.getLexeme().equals("Str")) {
+                    System.out.println("hola");
                     string.append("li $v0, 9\n");
                     string.append("li $a0, 8 \n");
                     string.append("syscall \n");
@@ -249,6 +251,7 @@ public class NewNode extends OperandNode{
                     string.append("sw $a0, 4($v0) \n");
                     string.append("la $a0, vtableStr \n");
                     string.append("sw $a0, 0($v0) \n");
+                    string.append("move $a0, $v0 \n");
                 }
                 else {
                     string.append("li $a0, 0 \n");

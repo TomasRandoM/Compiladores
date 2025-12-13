@@ -11,7 +11,28 @@ addiu $sp $sp -4
 li $a0, 0 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
+li $a0, 0 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
 #Sentencias del bloque 
+#ASIGNACION 
+#UNARY EXPRESSION
+#CODE GEN DE LA EXPRESION
+#LITERAL
+li $a0, 5
+sub $a0, $zero, $a0 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -8($fp) 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
 #ASIGNACION 
 #NEW NODE
 #Llamada a constructor 
@@ -22,23 +43,25 @@ addiu $sp $sp -4
 addiu $sp $sp -4 
 #Metemos a la pila el parametro que representa el espacio que ocupan los elementos 
 #del array. 8 si es Double, 4 si es otra cosa 
-li $a0, 8 
+li $a0, 4 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 #CODE GEN DE LA EXPRESION
+#UNARY EXPRESSION
+#CODE GEN DE LA EXPRESION
 #LITERAL
 li $a0, 5
+sub $a0, $zero, $a0 
 #CONTINUA NEW NODE
 #Guardamos en la pila el tamaño del array para pasarlo como parametro 
 sw $a0, 0($sp) 
-addiu $sp $sp -8 
-#Guardo el 0.0 en la pila para usarlo de inicializador 
-l.d $f0, zeroDouble 
-s.d $f0, 0($sp) 
-addiu $sp $sp -8 
-jal constructorArrayDouble 
+addiu $sp $sp -4 
+li $a0, 0 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+jal constructorArray 
 #La direccion de memoria del array queda en a0 
-addiu $sp $sp 24 
+addiu $sp $sp 20 
 #Restauramos el framepointer 
 lw $fp, 0($sp) 
 sw $a0, 0($sp) 
@@ -53,182 +76,6 @@ addiu $sp $sp 4
 lw $t0, 0($sp) 
 #Se guarda lo del lado derecho en la direccion de a0 
 sw $t0, 0($a0) 
-#ASIGNACION 
-#LITERAL
-.data 
-double1.1_3_11: .double 1.1
-.text 
- l.d $f0, double1.1_3_11
-s.d $f0, 0($sp) 
-addiu $sp $sp -8 
-#ARRAY ACCESS NODE
-#Carga de variable 
-#Cargamos la variable en a0 utilizando el 
-#offset con el fp 
-lw $a0, -4($fp) 
-#Guardamos a0 en la pila, que es la direccion del array
-beq $a0, $zero, variableNotInitialized 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#LITERAL
-li $a0, 0
-#En $a0 tengo el indice del array
-#Si el índice es negativo salto a la excepcion
-bltz $a0, negativeArrayIndexException
-#Obtengo la direccion del array para obtener length
-lw $t0, 4($sp)
-#Obtengo la longitud del array
-lw $t1, 4($t0)
-#Si el indice es mayor o igual a la longitud salto a la excepcion
-bge $a0, $t1, arrayIndexOutOfRangeException
-#Restauramos la direccion en t0 que habiamos dejado en la pila 
-addiu $sp $sp 4 
-lw $t0, 0($sp) 
-#Calculamos el offset usando la posicion (en a0) y
-#el espacio que ocupan los elementos del array
-li $t1, 8 
-mul $a0, $a0, $t1 
-#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
-addiu $a0 $a0 8 
-#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
-add $t0 $t0 $a0 
-move $a0, $t0 
-addiu $sp $sp 8 
-l.d $f0, 0($sp) 
-#Se guarda el double del lado derecho en la direccion de a0 
-s.d $f0, 0($a0) 
-#ASIGNACION 
-#LITERAL
-.data 
-double2.2_4_11: .double 2.2
-.text 
- l.d $f0, double2.2_4_11
-s.d $f0, 0($sp) 
-addiu $sp $sp -8 
-#ARRAY ACCESS NODE
-#Carga de variable 
-#Cargamos la variable en a0 utilizando el 
-#offset con el fp 
-lw $a0, -4($fp) 
-#Guardamos a0 en la pila, que es la direccion del array
-beq $a0, $zero, variableNotInitialized 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#LITERAL
-li $a0, 1
-#En $a0 tengo el indice del array
-#Si el índice es negativo salto a la excepcion
-bltz $a0, negativeArrayIndexException
-#Obtengo la direccion del array para obtener length
-lw $t0, 4($sp)
-#Obtengo la longitud del array
-lw $t1, 4($t0)
-#Si el indice es mayor o igual a la longitud salto a la excepcion
-bge $a0, $t1, arrayIndexOutOfRangeException
-#Restauramos la direccion en t0 que habiamos dejado en la pila 
-addiu $sp $sp 4 
-lw $t0, 0($sp) 
-#Calculamos el offset usando la posicion (en a0) y
-#el espacio que ocupan los elementos del array
-li $t1, 8 
-mul $a0, $a0, $t1 
-#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
-addiu $a0 $a0 8 
-#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
-add $t0 $t0 $a0 
-move $a0, $t0 
-addiu $sp $sp 8 
-l.d $f0, 0($sp) 
-#Se guarda el double del lado derecho en la direccion de a0 
-s.d $f0, 0($a0) 
-#ASIGNACION 
-#LITERAL
-.data 
-double4.2_5_11: .double 4.2
-.text 
- l.d $f0, double4.2_5_11
-s.d $f0, 0($sp) 
-addiu $sp $sp -8 
-#ARRAY ACCESS NODE
-#Carga de variable 
-#Cargamos la variable en a0 utilizando el 
-#offset con el fp 
-lw $a0, -4($fp) 
-#Guardamos a0 en la pila, que es la direccion del array
-beq $a0, $zero, variableNotInitialized 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#LITERAL
-li $a0, 3
-#En $a0 tengo el indice del array
-#Si el índice es negativo salto a la excepcion
-bltz $a0, negativeArrayIndexException
-#Obtengo la direccion del array para obtener length
-lw $t0, 4($sp)
-#Obtengo la longitud del array
-lw $t1, 4($t0)
-#Si el indice es mayor o igual a la longitud salto a la excepcion
-bge $a0, $t1, arrayIndexOutOfRangeException
-#Restauramos la direccion en t0 que habiamos dejado en la pila 
-addiu $sp $sp 4 
-lw $t0, 0($sp) 
-#Calculamos el offset usando la posicion (en a0) y
-#el espacio que ocupan los elementos del array
-li $t1, 8 
-mul $a0, $a0, $t1 
-#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
-addiu $a0 $a0 8 
-#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
-add $t0 $t0 $a0 
-move $a0, $t0 
-addiu $sp $sp 8 
-l.d $f0, 0($sp) 
-#Se guarda el double del lado derecho en la direccion de a0 
-s.d $f0, 0($a0) 
-#ASIGNACION 
-#LITERAL
-.data 
-double5.5_6_11: .double 5.5
-.text 
- l.d $f0, double5.5_6_11
-s.d $f0, 0($sp) 
-addiu $sp $sp -8 
-#ARRAY ACCESS NODE
-#Carga de variable 
-#Cargamos la variable en a0 utilizando el 
-#offset con el fp 
-lw $a0, -4($fp) 
-#Guardamos a0 en la pila, que es la direccion del array
-beq $a0, $zero, variableNotInitialized 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#LITERAL
-li $a0, 4
-#En $a0 tengo el indice del array
-#Si el índice es negativo salto a la excepcion
-bltz $a0, negativeArrayIndexException
-#Obtengo la direccion del array para obtener length
-lw $t0, 4($sp)
-#Obtengo la longitud del array
-lw $t1, 4($t0)
-#Si el indice es mayor o igual a la longitud salto a la excepcion
-bge $a0, $t1, arrayIndexOutOfRangeException
-#Restauramos la direccion en t0 que habiamos dejado en la pila 
-addiu $sp $sp 4 
-lw $t0, 0($sp) 
-#Calculamos el offset usando la posicion (en a0) y
-#el espacio que ocupan los elementos del array
-li $t1, 8 
-mul $a0, $a0, $t1 
-#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
-addiu $a0 $a0 8 
-#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
-add $t0 $t0 $a0 
-move $a0, $t0 
-addiu $sp $sp 8 
-l.d $f0, 0($sp) 
-#Se guarda el double del lado derecho en la direccion de a0 
-s.d $f0, 0($a0) 
 #SIMPLE SENTENCE - CODE GEN DE EXPRESION
 #METHOD CALL 
 #Guardamos el framepointer actual en la pila 
@@ -249,14 +96,87 @@ sw $a0, 0($sp)
 addiu $sp $sp -4 
 la $a0, vtableIO
 #Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 28
+addiu $a0, $a0, 24
 #Cargamos la direccion del metodo en el a0
 lw $a0, 0($a0)
 jalr $a0 
 addi $sp $sp 12
 lw $fp, 0($sp) 
 #FIN SIMPLE SENTENCE
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 24
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#CHAINED ACCESS NODE 
+#Carga de variable 
+#Cargamos la direccion de la variable o parametro en a0 utilizando el 
+#offset con el fp 
+addiu $a0 $fp -4
+lw $a0 0($a0) 
+#CHAINED CALL NODE 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Guardamos el self en la pila. Es el que venia del anterior encadenado 
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#Cargamos los parámetros a la pila 
+#Cargamos el self en a0 
+lw $a0, 4($sp) 
+#Cargamos la direccion de la vtable de self en a0 
+lw $a0, 0($a0) 
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 0
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+#Saltamos al metodo y el retorno lo traemos en a0 
+jalr $a0 
 addiu $sp $sp 8
+lw $fp, 0($sp) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 4
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+addiu $sp $sp 12
 #Fin del programa 
 li $v0, 10 
 syscall 

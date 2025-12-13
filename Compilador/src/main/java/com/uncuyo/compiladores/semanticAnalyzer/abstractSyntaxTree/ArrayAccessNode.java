@@ -177,7 +177,12 @@ public class ArrayAccessNode extends OperandNode{
 
     @Override
     public ChainedNode getLastChainedNode() {
-        return chainedNode.getLastChainedNode();
+        if (chainedNode != null) {
+            return chainedNode.getLastChainedNode();
+        }
+        else {
+            return null;
+        }
     }
 
     public void setToken(Token token) {
