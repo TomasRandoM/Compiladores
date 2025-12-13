@@ -242,12 +242,12 @@ public class BinaryExpressionNode extends ExpressionNode {
      */
     @Override
     public void codeGen(StringBuilder string) {
-        string.append("EXPRESION BINARIA\n");
+        string.append("#EXPRESION BINARIA\n");
         boolean leftIsDouble = false;
         boolean rightIsDouble = false;
-        string.append("CODE GEN DEL LEFT\n");
+        string.append("#CODE GEN DEL LEFT\n");
         left.codeGen(string);
-        string.append("EXP BINARIA CONTINUACION\n");
+        string.append("#EXP BINARIA CONTINUACION\n");
         checkChained(string, left);
         if (left instanceof ArrayAccessNode || left instanceof VariableNode) {
             string.append("#Se obtiene el valor del array desde la direccion \n");
@@ -268,9 +268,9 @@ public class BinaryExpressionNode extends ExpressionNode {
             string.append("sw $a0, 0($sp) \n");
             string.append("addiu $sp $sp -4 \n");
         }
-        string.append("CODE GEN DEL RIGHT\n");
+        string.append("#CODE GEN DEL RIGHT\n");
         right.codeGen(string);
-        string.append("EXP BINARIA CONTINUACION\n");
+        string.append("#EXP BINARIA CONTINUACION\n");
         checkChained(string, right);
         if (right instanceof ArrayAccessNode || right instanceof VariableNode) {
             string.append("#Se obtiene el valor del array desde la direccion \n");
@@ -375,6 +375,7 @@ public class BinaryExpressionNode extends ExpressionNode {
                     break;
                 case op_rel_notequal:
                     string.append("jal notEqualDouble \n");
+                    break;
                 case op_rel_greaterequal:
                     string.append("jal greaterEqualDouble\n");
                     break;
@@ -429,6 +430,7 @@ public class BinaryExpressionNode extends ExpressionNode {
                     break;
                 case op_rel_notequal:
                     string.append("sne $a0, $t0, $a0\n");
+                    break;
                 case op_rel_greaterequal:
                     string.append("sge $a0, $t0, $a0\n");
                     break;

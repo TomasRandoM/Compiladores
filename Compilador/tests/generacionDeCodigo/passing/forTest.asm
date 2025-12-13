@@ -1,3 +1,141 @@
+.globl main 
+.text 
+main: 
+#Bloque start 
+#Se forma el nuevo y primer framepointer 
+move $fp, $sp 
+#Movemos la pila para coherencia, pues no va a haber return address en el start 
+addiu $sp $sp -4 
+#Declaración de variables 
+#Reservamos memoria para las variables en la pila y lo inicializamos
+li $a0, 0 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+li $a0, 0 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+li $a0, 0 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#Sentencias del bloque 
+#ASIGNACION 
+#LITERAL
+li $a0, 5
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#WHILE
+while_startnull5_5:
+#CODE GEN DE LA EXPRESION
+#EXPRESION BINARIA
+#CODE GEN DEL LEFT
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+#EXP BINARIA CONTINUACION
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#CODE GEN DEL RIGHT
+#LITERAL
+li $a0, 7
+#EXP BINARIA CONTINUACION
+#Ni left ni right son double
+#El lado izquierdo queda en el t0 y el lado derecho en el a0 
+lw $t0, 4($sp) 
+addiu $sp $sp 4
+#Ningun tipo es double
+sle $a0, $t0, $a0
+#CONTINUA WHILE
+beq $a0, $zero, endWhile_startnull5_5
+#CODE GEN DE LA SENTENCIA
+#Sentencias del bloque de un metodo 
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#UNARY EXPRESSION
+#CODE GEN DE LA EXPRESION
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+#Se obtiene el valor del array desde la direccion 
+move $a3, $a0 
+lw $a0, 0($a0) 
+addi $a0, $a0, 1 
+sw $a0, 0($a3)
+#FIN SIMPLE SENTENCE
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 4
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+j while_startnull5_5
+endWhile_startnull5_5:
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 4
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+addiu $sp $sp 16
+#Fin del programa 
+li $v0, 10 
+syscall 
 .data
     addOne: .double 1.0
     zeroDouble: .double 0.0
@@ -651,16 +789,6 @@
         addiu $sp $sp 12
         lw $fp 0($sp)
         #En v0 sigo teniendo la direccion de la nueva string
-        #La guardo en t0
-        move $t0, $v0
-        #Reservo memoria para el objeto Str
-        li $v0, 9
-        li $a0, 8
-        syscall
-        la $a0, vtableStr
-        sw $a0, 0($v0)
-        sw $t0, 4($v0)
-
         #retorno en a0
         move $a0, $v0
 
@@ -688,3 +816,67 @@
         addiu $sp $sp 4
         lw $ra, 0($fp)
         jr $ra
+.data
+    # Excepciones de division por cero
+    divZero: .asciiz "RUNTIME EXCEPTION: division por cero."
+    modZero: .asciiz "RUNTIME EXCEPTION: division por cero en operacion modulo."
+
+    # Excepciones de Array
+    negativeArraySize:       .asciiz "RUNTIME EXCEPTION: la longitud del array no puede ser negativa."
+    arrayIndexOutOfRange:    .asciiz "RUNTIME EXCEPTION: indice del array fuera de rango."
+    negativeArrayIndex:      .asciiz "RUNTIME EXCEPTION: indice del array negativo."
+
+    # Excepcion de booleano incorrecto
+    incorrectInBoolIO:       .asciiz "RUNTIME EXCEPTION: se esperaba 0 o 1 como entrada de un Bool."
+    # Cuando se intenta usar una clase o array no inicializado
+    variableNotInitializedMsg: .asciiz "RUNTIME EXCEPTION: se intenta acceder a una variable no inicializada."
+
+.text
+    divZeroException:
+        la $a0, divZero
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    modZeroException:
+        la $a0, modZero
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    negativeArraySizeException:
+        la $a0, negativeArraySize
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    arrayIndexOutOfRangeException:
+        la $a0, arrayIndexOutOfRange
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    negativeArrayIndexException:
+        la $a0, negativeArrayIndex
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    incorrectInBoolIOException:
+        la $a0, incorrectInBoolIO
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    variableNotInitialized:
+            la $a0, variableNotInitializedMsg
+            li $v0, 4
+            syscall
+            li $v0, 10
+            syscall

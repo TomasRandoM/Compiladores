@@ -119,6 +119,7 @@ public class UnaryExpressionNode extends ExpressionNode {
         checkChained(string, expressionNode);
         if (expressionNode instanceof ArrayAccessNode || expressionNode instanceof VariableNode) {
             string.append("#Se obtiene el valor del array desde la direccion \n");
+            string.append("move $a3, $a0 \n");
             if (expressionNode.nodeType.getName().equals("Double")) {
                 string.append("l.d $f0, 0($a0) \n");
             }
@@ -131,18 +132,22 @@ public class UnaryExpressionNode extends ExpressionNode {
                 if (expressionNode.nodeType.getName().equals("Double")) {
                     string.append("l.d $f2, addOne \n");
                     string.append("sub.d $f0, $f0, $f2 \n");
+                    string.append("s.d $f0, 0($a3) \n");
                 }
                 else {
                     string.append("addi $a0, $a0, -1 \n");
+                    string.append("sw $a0, 0($a3)\n");
                 }
                 break;
             case op_increment:
                 if (expressionNode.nodeType.getName().equals("Int")) {
                     string.append("addi $a0, $a0, 1 \n");
+                    string.append("sw $a0, 0($a3)\n");
                 }
                 else {
                     string.append("l.d $f2, addOne \n");
                     string.append("add.d $f0, $f0, $f2 \n");
+                    string.append("s.d $f0, 0($a3) \n");
                 }
                 break;
 
@@ -178,6 +183,7 @@ public class UnaryExpressionNode extends ExpressionNode {
         ChainedNode chainedNode1 = expressionNode.getLastChainedNode();
 
         if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
+            string.append("move $a3, $a0 \n");
             if (expressionNode.nodeType.getName().equals("Double")) {
                 string.append("l.d $f0, 0($a0) \n");
             }
