@@ -234,7 +234,7 @@ public class NewNode extends OperandNode{
             if (type.getLexeme().equals("Double")) {
                 string.append("#Guardo el 0.0 en la pila para usarlo de inicializador \n");
                 string.append("l.d $f0, zeroDouble \n");
-                string.append("sw $f0, 0($sp) \n");
+                string.append("s.d $f0, 0($sp) \n");
                 string.append("addiu $sp $sp -8 \n");
                 string.append("jal constructorArrayDouble \n");
                 string.append("#La direccion de memoria del array queda en a0 \n");

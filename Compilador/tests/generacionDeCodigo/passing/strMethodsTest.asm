@@ -1,3 +1,161 @@
+.globl main 
+.text 
+main: 
+#Bloque start 
+#Se forma el nuevo y primer framepointer 
+move $fp, $sp 
+#Movemos la pila para coherencia, pues no va a haber return address en el start 
+addiu $sp $sp -4 
+#Declaración de variables 
+#Reservamos memoria para las variables en la pila y lo inicializamos
+li $a0, 8 
+li $v0, 9 
+syscall 
+la $a0, stringInitialization 
+sw $a0, 4($v0) 
+la $a0, vtableStr 
+sw $a0, 0($v0) 
+sw $v0, 0($sp) 
+addiu $sp $sp -4 
+li $a0, 8 
+li $v0, 9 
+syscall 
+la $a0, stringInitialization 
+sw $a0, 4($v0) 
+la $a0, vtableStr 
+sw $a0, 0($v0) 
+sw $v0, 0($sp) 
+addiu $sp $sp -4 
+#Sentencias del bloque 
+#ASIGNACION 
+#LITERAL
+.data
+string_3_9: .asciiz "Hola"
+.text
+li $v0, 9 
+li $a0, 8 
+syscall 
+la $a0, vtableStr 
+sw $a0, 0($v0)
+la $a0, string_3_9
+sw $a0, 4($v0)
+move $a0, $v0
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#ASIGNACION 
+#LITERAL
+.data
+string_4_9: .asciiz "chau"
+.text
+li $v0, 9 
+li $a0, 8 
+syscall 
+la $a0, vtableStr 
+sw $a0, 0($v0)
+la $a0, string_4_9
+sw $a0, 4($v0)
+move $a0, $v0
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -8($fp) 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#CHAINED ACCESS NODE 
+#Carga de variable 
+#Cargamos la direccion de la variable o parametro en a0 utilizando el 
+#offset con el fp 
+addiu $a0 $fp -4
+lw $a0 0($a0) 
+#CHAINED CALL NODE 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Guardamos el self en la pila. Es el que venia del anterior encadenado 
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#Cargamos los parámetros a la pila 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -8($fp) 
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#Cargamos el self en a0 
+lw $a0, 8($sp) 
+#Cargamos la direccion de la vtable de self en a0 
+lw $a0, 0($a0) 
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 4
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+#Saltamos al metodo y el retorno lo traemos en a0 
+jalr $a0 
+addiu $sp $sp 12
+lw $fp, 0($sp) 
+#CHAINED CALL NODE 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Guardamos el self en la pila. Es el que venia del anterior encadenado 
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#Cargamos los parámetros a la pila 
+#Cargamos el self en a0 
+lw $a0, 4($sp) 
+#Cargamos la direccion de la vtable de self en a0 
+lw $a0, 0($a0) 
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 0
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+#Saltamos al metodo y el retorno lo traemos en a0 
+jalr $a0 
+addiu $sp $sp 8
+lw $fp, 0($sp) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 4
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+addiu $sp $sp 12
+#Fin del programa 
+li $v0, 10 
+syscall 
 .data
     addOne: .double 1.0
     zeroDouble: .double 0.0
@@ -688,3 +846,67 @@
         addiu $sp $sp 4
         lw $ra, 0($fp)
         jr $ra
+.data
+    # Excepciones de division por cero
+    divZero: .asciiz "RUNTIME EXCEPTION: division por cero."
+    modZero: .asciiz "RUNTIME EXCEPTION: division por cero en operacion modulo."
+
+    # Excepciones de Array
+    negativeArraySize:       .asciiz "RUNTIME EXCEPTION: la longitud del array no puede ser negativa."
+    arrayIndexOutOfRange:    .asciiz "RUNTIME EXCEPTION: indice del array fuera de rango."
+    negativeArrayIndex:      .asciiz "RUNTIME EXCEPTION: indice del array negativo."
+
+    # Excepcion de booleano incorrecto
+    incorrectInBoolIO:       .asciiz "RUNTIME EXCEPTION: se esperaba 0 o 1 como entrada de un Bool."
+    # Cuando se intenta usar una clase o array no inicializado
+    variableNotInitializedMsg: .asciiz "RUNTIME EXCEPTION: se intenta acceder a una variable no inicializada."
+
+.text
+    divZeroException:
+        la $a0, divZero
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    modZeroException:
+        la $a0, modZero
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    negativeArraySizeException:
+        la $a0, negativeArraySize
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    arrayIndexOutOfRangeException:
+        la $a0, arrayIndexOutOfRange
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    negativeArrayIndexException:
+        la $a0, negativeArrayIndex
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    incorrectInBoolIOException:
+        la $a0, incorrectInBoolIO
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    variableNotInitialized:
+            la $a0, variableNotInitializedMsg
+            li $v0, 4
+            syscall
+            li $v0, 10
+            syscall

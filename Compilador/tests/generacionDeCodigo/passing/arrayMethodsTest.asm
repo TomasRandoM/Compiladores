@@ -1,3 +1,265 @@
+.globl main 
+.text 
+main: 
+#Bloque start 
+#Se forma el nuevo y primer framepointer 
+move $fp, $sp 
+#Movemos la pila para coherencia, pues no va a haber return address en el start 
+addiu $sp $sp -4 
+#Declaración de variables 
+#Reservamos memoria para las variables en la pila y lo inicializamos
+li $a0, 0 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#Sentencias del bloque 
+#ASIGNACION 
+#NEW NODE
+#Llamada a constructor 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Reservamos lugar para el self en la pila 
+addiu $sp $sp -4 
+#Metemos a la pila el parametro que representa el espacio que ocupan los elementos 
+#del array. 8 si es Double, 4 si es otra cosa 
+li $a0, 8 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#CODE GEN DE LA EXPRESION
+#LITERAL
+li $a0, 5
+#CONTINUA NEW NODE
+#Guardamos en la pila el tamaño del array para pasarlo como parametro 
+sw $a0, 0($sp) 
+addiu $sp $sp -8 
+#Guardo el 0.0 en la pila para usarlo de inicializador 
+l.d $f0, zeroDouble 
+s.d $f0, 0($sp) 
+addiu $sp $sp -8 
+jal constructorArrayDouble 
+#La direccion de memoria del array queda en a0 
+addiu $sp $sp 24 
+#Restauramos el framepointer 
+lw $fp, 0($sp) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#ASIGNACION 
+#LITERAL
+.data 
+double1.1_3_11: .double 1.1
+.text 
+ l.d $f0, double1.1_3_11
+s.d $f0, 0($sp) 
+addiu $sp $sp -8 
+#ARRAY ACCESS NODE
+#Carga de variable 
+#Cargamos la variable en a0 utilizando el 
+#offset con el fp 
+lw $a0, -4($fp) 
+#Guardamos a0 en la pila, que es la direccion del array
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#LITERAL
+li $a0, 0
+#En $a0 tengo el indice del array
+#Si el índice es negativo salto a la excepcion
+bltz $a0, negativeArrayIndexException
+#Obtengo la direccion del array para obtener length
+lw $t0, 4($sp)
+#Obtengo la longitud del array
+lw $t1, 4($t0)
+#Si el indice es mayor o igual a la longitud salto a la excepcion
+bge $a0, $t1, arrayIndexOutOfRangeException
+#Restauramos la direccion en t0 que habiamos dejado en la pila 
+addiu $sp $sp 4 
+lw $t0, 0($sp) 
+#Calculamos el offset usando la posicion (en a0) y
+#el espacio que ocupan los elementos del array
+li $t1, 8 
+mul $a0, $a0, $t1 
+#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
+addiu $a0 $a0 8 
+#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
+add $t0 $t0 $a0 
+move $a0, $t0 
+addiu $sp $sp 8 
+l.d $f0, 0($sp) 
+#Se guarda el double del lado derecho en la direccion de a0 
+s.d $f0, 0($a0) 
+#ASIGNACION 
+#LITERAL
+.data 
+double2.2_4_11: .double 2.2
+.text 
+ l.d $f0, double2.2_4_11
+s.d $f0, 0($sp) 
+addiu $sp $sp -8 
+#ARRAY ACCESS NODE
+#Carga de variable 
+#Cargamos la variable en a0 utilizando el 
+#offset con el fp 
+lw $a0, -4($fp) 
+#Guardamos a0 en la pila, que es la direccion del array
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#LITERAL
+li $a0, 1
+#En $a0 tengo el indice del array
+#Si el índice es negativo salto a la excepcion
+bltz $a0, negativeArrayIndexException
+#Obtengo la direccion del array para obtener length
+lw $t0, 4($sp)
+#Obtengo la longitud del array
+lw $t1, 4($t0)
+#Si el indice es mayor o igual a la longitud salto a la excepcion
+bge $a0, $t1, arrayIndexOutOfRangeException
+#Restauramos la direccion en t0 que habiamos dejado en la pila 
+addiu $sp $sp 4 
+lw $t0, 0($sp) 
+#Calculamos el offset usando la posicion (en a0) y
+#el espacio que ocupan los elementos del array
+li $t1, 8 
+mul $a0, $a0, $t1 
+#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
+addiu $a0 $a0 8 
+#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
+add $t0 $t0 $a0 
+move $a0, $t0 
+addiu $sp $sp 8 
+l.d $f0, 0($sp) 
+#Se guarda el double del lado derecho en la direccion de a0 
+s.d $f0, 0($a0) 
+#ASIGNACION 
+#LITERAL
+.data 
+double4.2_5_11: .double 4.2
+.text 
+ l.d $f0, double4.2_5_11
+s.d $f0, 0($sp) 
+addiu $sp $sp -8 
+#ARRAY ACCESS NODE
+#Carga de variable 
+#Cargamos la variable en a0 utilizando el 
+#offset con el fp 
+lw $a0, -4($fp) 
+#Guardamos a0 en la pila, que es la direccion del array
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#LITERAL
+li $a0, 3
+#En $a0 tengo el indice del array
+#Si el índice es negativo salto a la excepcion
+bltz $a0, negativeArrayIndexException
+#Obtengo la direccion del array para obtener length
+lw $t0, 4($sp)
+#Obtengo la longitud del array
+lw $t1, 4($t0)
+#Si el indice es mayor o igual a la longitud salto a la excepcion
+bge $a0, $t1, arrayIndexOutOfRangeException
+#Restauramos la direccion en t0 que habiamos dejado en la pila 
+addiu $sp $sp 4 
+lw $t0, 0($sp) 
+#Calculamos el offset usando la posicion (en a0) y
+#el espacio que ocupan los elementos del array
+li $t1, 8 
+mul $a0, $a0, $t1 
+#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
+addiu $a0 $a0 8 
+#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
+add $t0 $t0 $a0 
+move $a0, $t0 
+addiu $sp $sp 8 
+l.d $f0, 0($sp) 
+#Se guarda el double del lado derecho en la direccion de a0 
+s.d $f0, 0($a0) 
+#ASIGNACION 
+#LITERAL
+.data 
+double5.5_6_11: .double 5.5
+.text 
+ l.d $f0, double5.5_6_11
+s.d $f0, 0($sp) 
+addiu $sp $sp -8 
+#ARRAY ACCESS NODE
+#Carga de variable 
+#Cargamos la variable en a0 utilizando el 
+#offset con el fp 
+lw $a0, -4($fp) 
+#Guardamos a0 en la pila, que es la direccion del array
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#LITERAL
+li $a0, 4
+#En $a0 tengo el indice del array
+#Si el índice es negativo salto a la excepcion
+bltz $a0, negativeArrayIndexException
+#Obtengo la direccion del array para obtener length
+lw $t0, 4($sp)
+#Obtengo la longitud del array
+lw $t1, 4($t0)
+#Si el indice es mayor o igual a la longitud salto a la excepcion
+bge $a0, $t1, arrayIndexOutOfRangeException
+#Restauramos la direccion en t0 que habiamos dejado en la pila 
+addiu $sp $sp 4 
+lw $t0, 0($sp) 
+#Calculamos el offset usando la posicion (en a0) y
+#el espacio que ocupan los elementos del array
+li $t1, 8 
+mul $a0, $a0, $t1 
+#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
+addiu $a0 $a0 8 
+#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
+add $t0 $t0 $a0 
+move $a0, $t0 
+addiu $sp $sp 8 
+l.d $f0, 0($sp) 
+#Se guarda el double del lado derecho en la direccion de a0 
+s.d $f0, 0($a0) 
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 28
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+addiu $sp $sp 8
+#Fin del programa 
+li $v0, 10 
+syscall 
 .data
     addOne: .double 1.0
     zeroDouble: .double 0.0
@@ -688,3 +950,67 @@
         addiu $sp $sp 4
         lw $ra, 0($fp)
         jr $ra
+.data
+    # Excepciones de division por cero
+    divZero: .asciiz "RUNTIME EXCEPTION: division por cero."
+    modZero: .asciiz "RUNTIME EXCEPTION: division por cero en operacion modulo."
+
+    # Excepciones de Array
+    negativeArraySize:       .asciiz "RUNTIME EXCEPTION: la longitud del array no puede ser negativa."
+    arrayIndexOutOfRange:    .asciiz "RUNTIME EXCEPTION: indice del array fuera de rango."
+    negativeArrayIndex:      .asciiz "RUNTIME EXCEPTION: indice del array negativo."
+
+    # Excepcion de booleano incorrecto
+    incorrectInBoolIO:       .asciiz "RUNTIME EXCEPTION: se esperaba 0 o 1 como entrada de un Bool."
+    # Cuando se intenta usar una clase o array no inicializado
+    variableNotInitializedMsg: .asciiz "RUNTIME EXCEPTION: se intenta acceder a una variable no inicializada."
+
+.text
+    divZeroException:
+        la $a0, divZero
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    modZeroException:
+        la $a0, modZero
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    negativeArraySizeException:
+        la $a0, negativeArraySize
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    arrayIndexOutOfRangeException:
+        la $a0, arrayIndexOutOfRange
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    negativeArrayIndexException:
+        la $a0, negativeArrayIndex
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    incorrectInBoolIOException:
+        la $a0, incorrectInBoolIO
+        li $v0, 4
+        syscall
+        li $v0, 10
+        syscall
+
+    variableNotInitialized:
+            la $a0, variableNotInitializedMsg
+            li $v0, 4
+            syscall
+            li $v0, 10
+            syscall
