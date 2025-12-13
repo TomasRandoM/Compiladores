@@ -10,7 +10,7 @@ start {
     a[1] = 1;
     a[3] = 2;
     a[4] = 3;
-    a[0] = (a[1] + b[0]); //6
+    a[0] = ((Int) (b[1] % b[0])); //0
     (IO.out_array_int(a));
     (IO.out_int(a.length()));
 
