@@ -99,8 +99,7 @@ Este documento lista todas las clases del paquete `abstractSyntaxTree` que utili
 **Instrucciones utilizadas:**
 - `l.d $f0, 0($a0)` - Carga de double desde memoria
 - `l.d $f0, zeroDouble` - Carga de constante double (0.0)
-- `s.d $f0, 0($sp)` - Almacenamiento de double en pila
-- `s.d $f0, 0($sp)` - Almacenamiento de double en pila (para constructor de arrays)
+- `s.d $f0, 0($sp)` - Almacenamiento de double en pila (usado en múltiples contextos: para constructor de arrays y manejo de expresiones)
 
 **Contexto:** Creación de objetos y arrays, incluyendo inicialización de arrays de Double.
 
