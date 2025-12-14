@@ -63,6 +63,7 @@ public class WhileNode extends SentenceNode {
      */
     @Override
     public void codeGen(StringBuilder string) {
+        boolean isAttribute = true;
         string.append("#WHILE\n");
         String name = "while_" + methodName + className + token.getRow() + "_" + token.getColumn();
         String endName = "endWhile_" + methodName + className + token.getRow() + "_" + token.getColumn();
@@ -72,10 +73,22 @@ public class WhileNode extends SentenceNode {
         string.append("#CONTINUA WHILE\n");
         checkChained(string, expressionNode);
         if (expressionNode instanceof ArrayAccessNode || expressionNode instanceof VariableNode) {
+            if (expressionNode instanceof VariableNode) {
+                isAttribute = ((VariableNode) expressionNode).isAttribute;
+            }
             string.append("#Se obtiene el valor del array desde la direccion \n");
             if (expressionNode.nodeType.getName().equals("Double")) {
                 //No debería llegarse a este caso, pero se mantiene por coherencia
-                string.append("l.d $f0, 0($a0) \n");
+                if (isAttribute) {
+                    string.append("lw $t0, 0($a0) \n");
+                    string.append("lw $t1, 4($a0) \n");
+                }
+                else {
+                    string.append("lw $t0, 0($a0) \n");
+                    string.append("lw $t1, -4($a0) \n");
+                }
+                string.append("mtc1 $t0, $f0 \n");
+                string.append("mtc1 $t1, $f1 \n");
             }
             else {
                 string.append("lw $a0, 0($a0) \n");
@@ -93,7 +106,10 @@ public class WhileNode extends SentenceNode {
 
         if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
             if (expressionNode.nodeType.getName().equals("Double")) {
-                string.append("l.d $f0, 0($a0) \n");
+                string.append("lw $t0, 0($a0) \n");
+                string.append("lw $t1, 4($a0) \n");
+                string.append("mtc1 $t0, $f0 \n");
+                string.append("mtc1 $t1, $f1 \n");
             }
             else {
                 string.append("lw $a0, 0($a0) \n");

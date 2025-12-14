@@ -249,8 +249,12 @@ public class BlockNode extends SentenceNode {
         for (Variable variable : variables.values()) {
             if (variable.getType().getName().equals("Double")) {
                 string.append("l.d $f0, zeroDouble\n");
-                string.append("s.d $f0, 0($sp)\n");
-                string.append("addiu $sp $sp -8\n");
+                string.append("mfc1 $t0, $f0 \n");
+                string.append("mfc1 $t1, $f1 \n");
+                string.append("sw $t0, 0($sp)\n");
+                string.append("addiu $sp, $sp, -4\n");
+                string.append("sw $t1, 0($sp)\n");
+                string.append("addiu $sp, $sp, -4\n");
                 memory += 8;
             }
             else {
@@ -290,7 +294,12 @@ public class BlockNode extends SentenceNode {
         for (Attribute attribute : attributes.values()) {
             if (attribute.getType().getName().equals("Double")) {
                 string.append("l.d $f0, zeroDouble\n");
-                string.append("s.d $f0, ").append(offset).append("($v0)\n");
+                string.append("mfc1 $t0, $f0 \n");
+                string.append("mfc1 $t1, $f1 \n");
+                string.append("sw $t0, ").append(offset).append("($v0)\n");
+                string.append("addiu $sp, $sp, -4\n");
+                string.append("sw $t1, ").append(offset + 4).append("($v0)\n");
+                string.append("addiu $sp, $sp, -4\n");
                 offset += 8;
                 memory += 8;
             }

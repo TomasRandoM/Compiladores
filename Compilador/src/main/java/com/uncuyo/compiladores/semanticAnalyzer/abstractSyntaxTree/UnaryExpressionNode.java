@@ -115,13 +115,27 @@ public class UnaryExpressionNode extends ExpressionNode {
     public void codeGen(StringBuilder string) {
         string.append("#UNARY EXPRESSION\n");
         string.append("#CODE GEN DE LA EXPRESION\n");
+        boolean isAttribute = true;
         expressionNode.codeGen(string);
         checkChained(string, expressionNode);
         if (expressionNode instanceof ArrayAccessNode || expressionNode instanceof VariableNode) {
+            //Verificamos si es un atributo, un parametro o una variable local
+            if (expressionNode instanceof VariableNode) {
+                isAttribute = ((VariableNode) expressionNode).isAttribute;
+            }
             string.append("#Se obtiene el valor del array desde la direccion \n");
             string.append("move $a3, $a0 \n");
             if (expressionNode.nodeType.getName().equals("Double")) {
-                string.append("l.d $f0, 0($a0) \n");
+                if (isAttribute) {
+                    string.append("lw $t0, 0($a0) \n");
+                    string.append("lw $t1, 4($a0) \n");
+                }
+                else {
+                    string.append("lw $t0, 0($a0) \n");
+                    string.append("lw $t1, -4($a0) \n");
+                }
+                string.append("mtc1 $t0, $f0 \n");
+                string.append("mtc1 $t1, $f1 \n");
             }
             else {
                 string.append("lw $a0, 0($a0) \n");
@@ -132,7 +146,16 @@ public class UnaryExpressionNode extends ExpressionNode {
                 if (expressionNode.nodeType.getName().equals("Double")) {
                     string.append("l.d $f2, addOne \n");
                     string.append("sub.d $f0, $f0, $f2 \n");
-                    string.append("s.d $f0, 0($a3) \n");
+                    string.append("mfc1 $t0, $f0 \n");
+                    string.append("mfc1 $t1, $f1 \n");
+                    if (isAttribute) {
+                        string.append("sw $t0, 0($a3) \n");
+                        string.append("sw $t1, 4($a3) \n");
+                    }
+                    else {
+                        string.append("sw $t0, 0($a3) \n");
+                        string.append("sw $t1, -4($a3) \n");
+                    }
                 }
                 else {
                     string.append("addi $a0, $a0, -1 \n");
@@ -147,7 +170,16 @@ public class UnaryExpressionNode extends ExpressionNode {
                 else {
                     string.append("l.d $f2, addOne \n");
                     string.append("add.d $f0, $f0, $f2 \n");
-                    string.append("s.d $f0, 0($a3) \n");
+                    string.append("mfc1 $t0, $f0 \n");
+                    string.append("mfc1 $t1, $f1 \n");
+                    if (isAttribute) {
+                        string.append("sw $t0, 0($a3) \n");
+                        string.append("sw $t1, 4($a3) \n");
+                    }
+                    else {
+                        string.append("sw $t0, 0($a3) \n");
+                        string.append("sw $t1, -4($a3) \n");
+                    }
                 }
                 break;
 
@@ -185,7 +217,10 @@ public class UnaryExpressionNode extends ExpressionNode {
         if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
             string.append("move $a3, $a0 \n");
             if (expressionNode.nodeType.getName().equals("Double")) {
-                string.append("l.d $f0, 0($a0) \n");
+                string.append("lw $t0, 0($a0) \n");
+                string.append("lw $t1, 4($a0) \n");
+                string.append("mtc1 $t0, $f0 \n");
+                string.append("mtc1 $t1, $f1 \n");
             }
             else {
                 string.append("lw $a0, 0($a0) \n");

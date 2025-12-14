@@ -90,20 +90,37 @@ public class AssignmentNode extends SentenceNode {
     @Override
     public void codeGen(StringBuilder string) {
         string.append("#ASIGNACION \n");
+        boolean isAttribute = true;
         rightNode.codeGen(string);
         checkChained(string, rightNode);
         if (rightNode instanceof ArrayAccessNode || rightNode instanceof VariableNode) {
+            if (rightNode instanceof VariableNode) {
+                isAttribute = ((VariableNode) rightNode).isAttribute;
+            }
             string.append("#Se obtiene el valor del array desde la direccion \n");
             if (rightNode.nodeType.getName().equals("Double")) {
-                string.append("l.d $f0, 0($a0) \n");
+                if (isAttribute) {
+                    string.append("lw $t0, 0($a0) \n");
+                    string.append("lw $t1, 4($a0) \n");
+                }
+                else {
+                    string.append("lw $t0, 0($a0) \n");
+                    string.append("lw $t1, -4($a0) \n");
+                }
+                string.append("mtc1 $t0, $f0 \n");
+                string.append("mtc1 $t1, $f1 \n");
             }
             else {
                 string.append("lw $a0, 0($a0) \n");
             }
         }
         if (rightNode.nodeType.getName().equals("Double")) {
-            string.append("s.d $f0, 0($sp) \n");
-            string.append("addiu $sp $sp -8 \n");
+            string.append("mfc1 $t0, $f0 \n");
+            string.append("mfc1 $t1, $f1 \n");
+            string.append("sw $t0, 0($sp)\n");
+            string.append("addiu $sp, $sp, -4\n");
+            string.append("sw $t1, 0($sp)\n");
+            string.append("addiu $sp, $sp, -4\n");
         }
         else {
             string.append("sw $a0, 0($sp) \n");
@@ -111,12 +128,27 @@ public class AssignmentNode extends SentenceNode {
         }
         //esta en el $a0 la direccion de la variable
         leftNode.codeGen(string);
+        isAttribute = true;
+        if (leftNode instanceof VariableNode) {
+            isAttribute = ((VariableNode) leftNode).isAttribute;
+        }
 
         if (rightNode.nodeType.getName().equals("Double")) {
+            string.append("#Se saca el double de la pila y se guarda en f0 \n");
             string.append("addiu $sp $sp 8 \n");
-            string.append("l.d $f0, 0($sp) \n");
+            string.append("lw $t0, 0($sp) \n");
+            string.append("lw $t1, -4($sp) \n");
+            string.append("mtc1 $t0, $f0 \n");
+            string.append("mtc1 $t1, $f1 \n");
             string.append("#Se guarda el double del lado derecho en la direccion de a0 \n");
-            string.append("s.d $f0, 0($a0) \n");
+            if (isAttribute) {
+                string.append("lw $t0, 0($a0) \n");
+                string.append("lw $t1, 4($a0) \n");
+            }
+            else {
+                string.append("lw $t0, 0($a0) \n");
+                string.append("lw $t1, -4($a0) \n");
+            }
         }
         else {
             string.append("addiu $sp $sp 4 \n");
@@ -133,7 +165,10 @@ public class AssignmentNode extends SentenceNode {
 
         if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
             if (expressionNode.nodeType.getName().equals("Double")) {
-                string.append("l.d $f0, 0($a0) \n");
+                string.append("lw $t0, 0($a0) \n");
+                string.append("lw $t1, 4($a0) \n");
+                string.append("mtc1 $t0, $f0 \n");
+                string.append("mtc1 $t1, $f1 \n");
             }
             else {
                 string.append("lw $a0, 0($a0) \n");
