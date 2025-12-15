@@ -8,13 +8,6 @@ move $fp, $sp
 addiu $sp $sp -4 
 #Declaración de variables 
 #Reservamos memoria para las variables en la pila y lo inicializamos
-l.d $f0, zeroDouble
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-sw $t0, 0($sp)
-addiu $sp, $sp, -4
-sw $t1, 0($sp)
-addiu $sp, $sp, -4
 li $a0, 0 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
@@ -41,18 +34,276 @@ addiu $sp $sp -4
 #Carga de variable 
 #Cargamos la direccion de la variable en a0 utilizando el 
 #offset con el fp 
-la $a0, -12($fp) 
+la $a0, -4($fp) 
 addiu $sp $sp 4 
 #Cargamos el valor del lado derecho 
 lw $t0, 0($sp) 
 #Se guarda lo del lado derecho en la direccion de a0 
 sw $t0, 0($a0) 
 #ASIGNACION 
+#NEW NODE
+#Llamada a constructor 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Reservamos lugar para el self en la pila 
+addiu $sp $sp -4 
+#Metemos a la pila el parametro que representa el espacio que ocupan los elementos 
+#del array. 8 si es Double, 4 si es otra cosa 
+li $a0, 4 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#CODE GEN DE LA EXPRESION
+#LITERAL
+li $a0, 5
+#CONTINUA NEW NODE
+#Guardamos en la pila el tamaño del array para pasarlo como parametro 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+li $a0, 0 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+jal constructorArray 
+#La direccion de memoria del array queda en a0 
+addiu $sp $sp 20 
+#Restauramos el framepointer 
+lw $fp, 0($sp) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -8($fp) 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#ASIGNACION 
+#LITERAL
+li $a0, 3
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#ARRAY ACCESS NODE
+#Carga de variable 
+#Cargamos la variable en a0 utilizando el 
+#offset con el fp 
+lw $a0, -8($fp) 
+#Guardamos a0 en la pila, que es la direccion del array
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#LITERAL
+li $a0, 0
+#En $a0 tengo el indice del array
+#Si el índice es negativo salto a la excepcion
+bltz $a0, negativeArrayIndexException
+#Obtengo la direccion del array para obtener length
+lw $t0, 4($sp)
+#Obtengo la longitud del array
+lw $t1, 4($t0)
+#Si el indice es mayor o igual a la longitud salto a la excepcion
+bge $a0, $t1, arrayIndexOutOfRangeException
+#Restauramos la direccion en t0 que habiamos dejado en la pila 
+addiu $sp $sp 4 
+lw $t0, 0($sp) 
+#Calculamos el offset usando la posicion (en a0) y
+#el espacio que ocupan los elementos del array
+li $t1, 4
+mul $a0, $a0, $t1 
+#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
+addiu $a0 $a0 8 
+#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
+add $t0 $t0 $a0 
+move $a0, $t0 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#ASIGNACION 
+#LITERAL
+li $a0, 7
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#ARRAY ACCESS NODE
+#Carga de variable 
+#Cargamos la variable en a0 utilizando el 
+#offset con el fp 
+lw $a0, -8($fp) 
+#Guardamos a0 en la pila, que es la direccion del array
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#LITERAL
+li $a0, 1
+#En $a0 tengo el indice del array
+#Si el índice es negativo salto a la excepcion
+bltz $a0, negativeArrayIndexException
+#Obtengo la direccion del array para obtener length
+lw $t0, 4($sp)
+#Obtengo la longitud del array
+lw $t1, 4($t0)
+#Si el indice es mayor o igual a la longitud salto a la excepcion
+bge $a0, $t1, arrayIndexOutOfRangeException
+#Restauramos la direccion en t0 que habiamos dejado en la pila 
+addiu $sp $sp 4 
+lw $t0, 0($sp) 
+#Calculamos el offset usando la posicion (en a0) y
+#el espacio que ocupan los elementos del array
+li $t1, 4
+mul $a0, $a0, $t1 
+#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
+addiu $a0 $a0 8 
+#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
+add $t0 $t0 $a0 
+move $a0, $t0 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#ASIGNACION 
+#LITERAL
+li $a0, 2
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#ARRAY ACCESS NODE
+#Carga de variable 
+#Cargamos la variable en a0 utilizando el 
+#offset con el fp 
+lw $a0, -8($fp) 
+#Guardamos a0 en la pila, que es la direccion del array
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#LITERAL
+li $a0, 2
+#En $a0 tengo el indice del array
+#Si el índice es negativo salto a la excepcion
+bltz $a0, negativeArrayIndexException
+#Obtengo la direccion del array para obtener length
+lw $t0, 4($sp)
+#Obtengo la longitud del array
+lw $t1, 4($t0)
+#Si el indice es mayor o igual a la longitud salto a la excepcion
+bge $a0, $t1, arrayIndexOutOfRangeException
+#Restauramos la direccion en t0 que habiamos dejado en la pila 
+addiu $sp $sp 4 
+lw $t0, 0($sp) 
+#Calculamos el offset usando la posicion (en a0) y
+#el espacio que ocupan los elementos del array
+li $t1, 4
+mul $a0, $a0, $t1 
+#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
+addiu $a0 $a0 8 
+#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
+add $t0 $t0 $a0 
+move $a0, $t0 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#ASIGNACION 
+#LITERAL
+li $a0, 9
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#ARRAY ACCESS NODE
+#Carga de variable 
+#Cargamos la variable en a0 utilizando el 
+#offset con el fp 
+lw $a0, -8($fp) 
+#Guardamos a0 en la pila, que es la direccion del array
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#LITERAL
+li $a0, 3
+#En $a0 tengo el indice del array
+#Si el índice es negativo salto a la excepcion
+bltz $a0, negativeArrayIndexException
+#Obtengo la direccion del array para obtener length
+lw $t0, 4($sp)
+#Obtengo la longitud del array
+lw $t1, 4($t0)
+#Si el indice es mayor o igual a la longitud salto a la excepcion
+bge $a0, $t1, arrayIndexOutOfRangeException
+#Restauramos la direccion en t0 que habiamos dejado en la pila 
+addiu $sp $sp 4 
+lw $t0, 0($sp) 
+#Calculamos el offset usando la posicion (en a0) y
+#el espacio que ocupan los elementos del array
+li $t1, 4
+mul $a0, $a0, $t1 
+#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
+addiu $a0 $a0 8 
+#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
+add $t0 $t0 $a0 
+move $a0, $t0 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#ASIGNACION 
+#LITERAL
+li $a0, 1
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#ARRAY ACCESS NODE
+#Carga de variable 
+#Cargamos la variable en a0 utilizando el 
+#offset con el fp 
+lw $a0, -8($fp) 
+#Guardamos a0 en la pila, que es la direccion del array
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#LITERAL
+li $a0, 4
+#En $a0 tengo el indice del array
+#Si el índice es negativo salto a la excepcion
+bltz $a0, negativeArrayIndexException
+#Obtengo la direccion del array para obtener length
+lw $t0, 4($sp)
+#Obtengo la longitud del array
+lw $t1, 4($t0)
+#Si el indice es mayor o igual a la longitud salto a la excepcion
+bge $a0, $t1, arrayIndexOutOfRangeException
+#Restauramos la direccion en t0 que habiamos dejado en la pila 
+addiu $sp $sp 4 
+lw $t0, 0($sp) 
+#Calculamos el offset usando la posicion (en a0) y
+#el espacio que ocupan los elementos del array
+li $t1, 4
+mul $a0, $a0, $t1 
+#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
+addiu $a0 $a0 8 
+#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
+add $t0 $t0 $a0 
+move $a0, $t0 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
 #CHAINED ACCESS NODE 
 #Carga de variable 
 #Cargamos la direccion de la variable o parametro en a0 utilizando el 
 #offset con el fp 
-addiu $a0 $fp -12
+addiu $a0 $fp -4
 lw $a0 0($a0) 
 #CHAINED CALL NODE 
 sw $fp, 0($sp) 
@@ -63,15 +314,20 @@ sw $a0, 0($sp)
 addiu $sp $sp -4 
 #Cargamos los parámetros a la pila 
 #LITERAL
-li $a0, 6
+li $a0, 9
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 #LITERAL
-li $a0, 4
+li $a0, 5
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
-#LITERAL
-li $a0, 3
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -8($fp) 
+#Se obtiene el valor del elemento desde la direccion 
+lw $a0, 0($a0) 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 #Cargamos el self en a0 
@@ -88,34 +344,6 @@ addiu $sp $sp 20
 lw $fp, 0($sp) 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, -16($fp) 
-addiu $sp $sp 4 
-#Cargamos el valor del lado derecho 
-lw $t0, 0($sp) 
-#Se guarda lo del lado derecho en la direccion de a0 
-sw $t0, 0($a0) 
-#SIMPLE SENTENCE - CODE GEN DE EXPRESION
-#METHOD CALL 
-#Guardamos el framepointer actual en la pila 
-sw $fp, 0($sp) 
-addiu $sp $sp -4 
-#Se deja espacio para el self 
-#En este caso no existe, pero para coherencia 
-addiu $sp $sp -4
-#Cargamos los parámetros a la pila 
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, -16($fp) 
-#Se obtiene el valor del array desde la direccion 
-lw $a0, 0($a0) 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
 la $a0, vtableIO
 #Buscamos la direccion del metodo (usando el offset) 
 addiu $a0, $a0, 4
@@ -125,184 +353,13 @@ jalr $a0
 addi $sp $sp 12
 lw $fp, 0($sp) 
 #FIN SIMPLE SENTENCE
-#SIMPLE SENTENCE - CODE GEN DE EXPRESION
-#METHOD CALL 
-#Guardamos el framepointer actual en la pila 
-sw $fp, 0($sp) 
-addiu $sp $sp -4 
-#Se deja espacio para el self 
-#En este caso no existe, pero para coherencia 
-addiu $sp $sp -4
-#Cargamos los parámetros a la pila 
-#LITERAL
-.data
-string_27_16: .asciiz "\n"
-.text
-li $v0, 9 
-li $a0, 8 
-syscall 
-la $a0, vtableStr 
-sw $a0, 0($v0)
-la $a0, string_27_16
-sw $a0, 4($v0)
-move $a0, $v0
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-la $a0, vtableIO
-#Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 0
-#Cargamos la direccion del metodo en el a0
-lw $a0, 0($a0)
-jalr $a0 
-addi $sp $sp 12
-lw $fp, 0($sp) 
-#FIN SIMPLE SENTENCE
-#ASIGNACION 
-#CHAINED ACCESS NODE 
-#Carga de variable 
-#Cargamos la direccion de la variable o parametro en a0 utilizando el 
-#offset con el fp 
-addiu $a0 $fp -12
-lw $a0 0($a0) 
-#CHAINED CALL NODE 
-sw $fp, 0($sp) 
-addiu $sp $sp -4 
-#Guardamos el self en la pila. Es el que venia del anterior encadenado 
-beq $a0, $zero, variableNotInitialized 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#Cargamos los parámetros a la pila 
-#LITERAL
-li $a0, 4
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#LITERAL
-.data 
-double3.0_29_30: .double 3.0
-.text 
- l.d $f0, double3.0_29_30
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-sw $t0, 0($sp)
-addiu $sp, $sp, -4
-sw $t1, 0($sp)
-addiu $sp, $sp, -4
-#LITERAL
-.data 
-double2.0_29_25: .double 2.0
-.text 
- l.d $f0, double2.0_29_25
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-sw $t0, 0($sp)
-addiu $sp, $sp, -4
-sw $t1, 0($sp)
-addiu $sp, $sp, -4
-#Cargamos el self en a0 
-lw $a0, 24($sp) 
-#Cargamos la direccion de la vtable de self en a0 
-lw $a0, 0($a0) 
-#Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 4
-#Cargamos la direccion del metodo en el a0
-lw $a0, 0($a0)
-#Saltamos al metodo y el retorno lo traemos en a0 
-jalr $a0 
-addiu $sp $sp 28
-lw $fp, 0($sp) 
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-sw $t0, 0($sp)
-addiu $sp, $sp, -4
-sw $t1, 0($sp)
-addiu $sp, $sp, -4
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, -4($fp) 
-#Se saca el double de la pila y se guarda en f0 
-addiu $sp $sp 8 
-lw $t0, 0($sp) 
-lw $t1, -4($sp) 
-mtc1 $t0, $f0 
-mtc1 $t1, $f1 
-#Se guarda el double del lado derecho en la direccion de a0 
-sw $t0, 0($a0) 
-sw $t1, -4($a0) 
-#SIMPLE SENTENCE - CODE GEN DE EXPRESION
-#METHOD CALL 
-#Guardamos el framepointer actual en la pila 
-sw $fp, 0($sp) 
-addiu $sp $sp -4 
-#Se deja espacio para el self 
-#En este caso no existe, pero para coherencia 
-addiu $sp $sp -4
-#Cargamos los parámetros a la pila 
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, -4($fp) 
-#Se obtiene el valor del array desde la direccion 
-lw $t0, 0($a0) 
-lw $t1, -4($a0) 
-mtc1 $t0, $f0 
-mtc1 $t1, $f1 
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-addiu $sp $sp -8 
-sw $t0, 8($sp)
-sw $t1, 4($sp)
-la $a0, vtableIO
-#Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 12
-#Cargamos la direccion del metodo en el a0
-lw $a0, 0($a0)
-jalr $a0 
-addi $sp $sp 16
-lw $fp, 0($sp) 
-#FIN SIMPLE SENTENCE
-#SIMPLE SENTENCE - CODE GEN DE EXPRESION
-#METHOD CALL 
-#Guardamos el framepointer actual en la pila 
-sw $fp, 0($sp) 
-addiu $sp $sp -4 
-#Se deja espacio para el self 
-#En este caso no existe, pero para coherencia 
-addiu $sp $sp -4
-#Cargamos los parámetros a la pila 
-#LITERAL
-.data
-string_31_16: .asciiz "\n"
-.text
-li $v0, 9 
-li $a0, 8 
-syscall 
-la $a0, vtableStr 
-sw $a0, 0($v0)
-la $a0, string_31_16
-sw $a0, 4($v0)
-move $a0, $v0
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-la $a0, vtableIO
-#Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 0
-#Cargamos la direccion del metodo en el a0
-lw $a0, 0($a0)
-jalr $a0 
-addi $sp $sp 12
-lw $fp, 0($sp) 
-#FIN SIMPLE SENTENCE
-addiu $sp $sp 20
+addiu $sp $sp 12
 #Fin del programa 
 li $v0, 10 
 syscall 
 .data 
 vtableA: 
-.word complexIntA
-.word complexDoubleA
+.word findA
 .text 
 #Constructor 
 constructorA: 
@@ -334,7 +391,7 @@ addiu $sp $sp 4
 lw $ra, 0($sp) 
 jr $ra 
 .text 
-complexIntA: 
+findA: 
 #Se forma el nuevo framepointer 
 move $fp, $sp 
 #Se guarda el return address en la pila 
@@ -342,20 +399,27 @@ sw $ra, 0($sp)
 addiu $sp $sp -4 
 #Declaración de variables 
 #Reservamos memoria para las variables en la pila y lo inicializamos
+li $a0, 0 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
 #Sentencias del bloque 
-#RETURN
-#CODE GEN DE LA EXPRESION
-#UNARY EXPRESSION
-#CODE GEN DE LA EXPRESION
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#EXPRESION PARENTIZADA
+#ASIGNACION 
+#LITERAL
+li $a0, 0
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#WHILE
+while_findA9_8:
 #CODE GEN DE LA EXPRESION
 #EXPRESION BINARIA
 #CODE GEN DEL LEFT
@@ -363,7 +427,7 @@ addiu $sp $sp -4
 #Carga de variable 
 #Cargamos la direccion de la variable en a0 utilizando el 
 #offset con el fp 
-la $a0, 4($fp) 
+la $a0, -4($fp) 
 #EXP BINARIA CONTINUACION
 #Se obtiene el valor del array desde la direccion 
 lw $a0, 0($a0) 
@@ -383,17 +447,60 @@ lw $a0, 0($a0)
 lw $t0, 4($sp) 
 addiu $sp $sp 4
 #Ningun tipo es double
-add $a0, $t0, $a0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#EXP BINARIA CONTINUACION
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#CODE GEN DEL RIGHT
-#EXPRESION PARENTIZADA
+slt $a0, $t0, $a0
+#CONTINUA WHILE
+beq $a0, $zero, endWhile_findA9_8
+#CODE GEN DE LA SENTENCIA
+#Sentencias del bloque de un metodo 
+#IF THEN ELSE:
+#If 
+if_findA1012: 
 #CODE GEN DE LA EXPRESION
 #EXPRESION BINARIA
 #CODE GEN DEL LEFT
+#ARRAY ACCESS NODE
+#Carga de variable 
+#Cargamos la variable en a0 utilizando el 
+#offset con el fp 
+lw $a0, 4($fp) 
+#Guardamos a0 en la pila, que es la direccion del array
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+#En $a0 tengo el indice del array
+#Si el índice es negativo salto a la excepcion
+bltz $a0, negativeArrayIndexException
+#Obtengo la direccion del array para obtener length
+lw $t0, 4($sp)
+#Obtengo la longitud del array
+lw $t1, 4($t0)
+#Si el indice es mayor o igual a la longitud salto a la excepcion
+bge $a0, $t1, arrayIndexOutOfRangeException
+#Restauramos la direccion en t0 que habiamos dejado en la pila 
+addiu $sp $sp 4 
+lw $t0, 0($sp) 
+#Calculamos el offset usando la posicion (en a0) y
+#el espacio que ocupan los elementos del array
+li $t1, 4
+mul $a0, $a0, $t1 
+#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
+addiu $a0 $a0 8 
+#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
+add $t0 $t0 $a0 
+move $a0, $t0 
+#EXP BINARIA CONTINUACION
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#CODE GEN DEL RIGHT
 #VARIABLE NODE
 #Carga de variable 
 #Cargamos la direccion de la variable en a0 utilizando el 
@@ -402,42 +509,41 @@ la $a0, 12($fp)
 #EXP BINARIA CONTINUACION
 #Se obtiene el valor del array desde la direccion 
 lw $a0, 0($a0) 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#CODE GEN DEL RIGHT
-#LITERAL
-li $a0, 2
-#EXP BINARIA CONTINUACION
 #Ni left ni right son double
 #El lado izquierdo queda en el t0 y el lado derecho en el a0 
 lw $t0, 4($sp) 
 addiu $sp $sp 4
 #Ningun tipo es double
-sub $a0, $t0, $a0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#EXP BINARIA CONTINUACION
-#Ni left ni right son double
-#El lado izquierdo queda en el t0 y el lado derecho en el a0 
-lw $t0, 4($sp) 
-addiu $sp $sp 4
-#Ningun tipo es double
-mul $a0, $t0, $a0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#EXP BINARIA CONTINUACION
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#CODE GEN DEL RIGHT
-#EXPRESION PARENTIZADA
+seq $a0, $t0, $a0
+#CONTINUA IF THEN ELSE
+#Verifica si la condicion es falsa. Si es falsa salta a la etiqueta else 
+beq $a0, $zero, elseif_findA1012
+#SENTENCIA DEL IF
+#Sentencias del bloque de un metodo 
+#RETURN
 #CODE GEN DE LA EXPRESION
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+#CONTINUA RETURN 
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+j endfindA
+#Al terminar salta a la etiqueta end del if 
+j endif_findA1012 
+#Etiqueta del else. Si no hay else, esta vacia 
+elseif_findA1012: 
+endif_findA1012: 
+#ASIGNACION 
 #EXPRESION BINARIA
 #CODE GEN DEL LEFT
 #VARIABLE NODE
 #Carga de variable 
 #Cargamos la direccion de la variable en a0 utilizando el 
 #offset con el fp 
-la $a0, 8($fp) 
+la $a0, -4($fp) 
 #EXP BINARIA CONTINUACION
 #Se obtiene el valor del array desde la direccion 
 lw $a0, 0($a0) 
@@ -453,221 +559,31 @@ lw $t0, 4($sp)
 addiu $sp $sp 4
 #Ningun tipo es double
 add $a0, $t0, $a0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#EXP BINARIA CONTINUACION
-#Ni left ni right son double
-#El lado izquierdo queda en el t0 y el lado derecho en el a0 
-lw $t0, 4($sp) 
-addiu $sp $sp 4
-#Ningun tipo es double
-beq $a0, $zero, divZeroException
-#Se convierten los tipos a double para la operacion de division 
-mtc1 $t0, $f2
-mtc1 $a0, $f0
-cvt.d.w $f0, $f0
-cvt.d.w $f2, $f2
-div.d $f0, $f2, $f0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#Se castea a Int el Double y se deja en f0 
-cvt.w.d $f2, $f0 
-mfc1 $a0, $f2 
-#CONTINUA RETURN 
-j endcomplexIntA
-endcomplexIntA:
-addiu $sp $sp 4
-lw $ra, 0($sp) 
-jr $ra 
-.text 
-complexDoubleA: 
-#Se forma el nuevo framepointer 
-move $fp, $sp 
-#Se guarda el return address en la pila 
-sw $ra, 0($sp) 
-addiu $sp $sp -4 
-#Declaración de variables 
-#Reservamos memoria para las variables en la pila y lo inicializamos
-#Sentencias del bloque 
-#RETURN
-#CODE GEN DE LA EXPRESION
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, 8($fp) 
-#EXP BINARIA CONTINUACION
-#Se obtiene el valor del array desde la direccion 
-lw $t0, 0($a0) 
-lw $t1, -4($a0) 
-mtc1 $t0, $f0 
-mtc1 $t1, $f1 
-#Left es double
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-sw $t0, 0($sp)
-addiu $sp, $sp, -4
-sw $t1, 0($sp)
-addiu $sp, $sp, -4
-#CODE GEN DEL RIGHT
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, 16($fp) 
-#EXP BINARIA CONTINUACION
-#Se obtiene el valor del array desde la direccion 
-lw $t0, 0($a0) 
-lw $t1, -4($a0) 
-mtc1 $t0, $f0 
-mtc1 $t1, $f1 
-#Left es double
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-sw $t0, 0($sp)
-addiu $sp, $sp, -4
-sw $t1, 0($sp)
-addiu $sp, $sp, -4
-#CODE GEN DEL RIGHT
-#LITERAL
-.data 
-double2.5_14_23: .double 2.5
-.text 
- l.d $f0, double2.5_14_23
-#EXP BINARIA CONTINUACION
-#Ambos son double asi que no se hace conversion 
-#Se saca de la pila el primer valor y se guarda en f2 
-#El left queda en f2 y el right en f0 
-lw $t0, 8($sp) 
-lw $t1, 4($sp) 
-mtc1 $t0, $f2 
-mtc1 $t1, $f3 
-addiu $sp $sp 8
-#Ambos lados son de tipo double (tras la posible conversion) 
-add.d $f0, $f0, $f2
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#EXP BINARIA CONTINUACION
-#Ambos son double asi que no se hace conversion 
-#Se saca de la pila el primer valor y se guarda en f2 
-#El left queda en f2 y el right en f0 
-lw $t0, 8($sp) 
-lw $t1, 4($sp) 
-mtc1 $t0, $f2 
-mtc1 $t1, $f3 
-addiu $sp $sp 8
-#Ambos lados son de tipo double (tras la posible conversion) 
-mul.d $f0, $f2, $f0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#EXP BINARIA CONTINUACION
-#Left es double
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-sw $t0, 0($sp)
-addiu $sp, $sp, -4
-sw $t1, 0($sp)
-addiu $sp, $sp, -4
-#CODE GEN DEL RIGHT
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, 20($fp) 
-#EXP BINARIA CONTINUACION
-#Se obtiene el valor del array desde la direccion 
-lw $a0, 0($a0) 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
-#CODE GEN DEL RIGHT
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
 #VARIABLE NODE
 #Carga de variable 
 #Cargamos la direccion de la variable en a0 utilizando el 
 #offset con el fp 
-la $a0, 8($fp) 
-#EXP BINARIA CONTINUACION
-#Se obtiene el valor del array desde la direccion 
-lw $t0, 0($a0) 
-lw $t1, -4($a0) 
-mtc1 $t0, $f0 
-mtc1 $t1, $f1 
-#Left es double
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-sw $t0, 0($sp)
-addiu $sp, $sp, -4
-sw $t1, 0($sp)
-addiu $sp, $sp, -4
-#CODE GEN DEL RIGHT
+la $a0, -4($fp) 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+j while_findA9_8
+endWhile_findA9_8:
+#RETURN
+#CODE GEN DE LA EXPRESION
+#UNARY EXPRESSION
+#CODE GEN DE LA EXPRESION
 #LITERAL
-.data 
-double1.0_14_41: .double 1.0
-.text 
- l.d $f0, double1.0_14_41
-#EXP BINARIA CONTINUACION
-#Ambos son double asi que no se hace conversion 
-#Se saca de la pila el primer valor y se guarda en f2 
-#El left queda en f2 y el right en f0 
-lw $t0, 8($sp) 
-lw $t1, 4($sp) 
-mtc1 $t0, $f2 
-mtc1 $t1, $f3 
-addiu $sp $sp 8
-#Ambos lados son de tipo double (tras la posible conversion) 
-sub.d $f0, $f2, $f0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#EXP BINARIA CONTINUACION
-#Convertimos el valor de la izquierda en double y 
-#queda guardado en f2 
-lw $a0, 4($sp) 
-addiu $sp $sp 4
-mtc1 $a0, $f2
-cvt.d.w $f2, $f2
-#Ambos lados son de tipo double (tras la posible conversion) 
-l.d $f8, zeroDouble 
-c.eq.d $f0, $f8 
-bc1t divZeroException
-div.d $f0, $f2, $f0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#EXP BINARIA CONTINUACION
-#Ambos son double asi que no se hace conversion 
-#Se saca de la pila el primer valor y se guarda en f2 
-#El left queda en f2 y el right en f0 
-lw $t0, 8($sp) 
-lw $t1, 4($sp) 
-mtc1 $t0, $f2 
-mtc1 $t1, $f3 
-addiu $sp $sp 8
-#Ambos lados son de tipo double (tras la posible conversion) 
-sub.d $f0, $f2, $f0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
+li $a0, 1
+sub $a0, $zero, $a0 
 #CONTINUA RETURN 
-j endcomplexDoubleA
-endcomplexDoubleA:
-addiu $sp $sp 4
+j endfindA
+endfindA:
+addiu $sp $sp 8
 lw $ra, 0($sp) 
 jr $ra 
 .data
