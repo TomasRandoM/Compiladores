@@ -30,14 +30,14 @@ addiu $sp $sp -4
 #ASIGNACION 
 #LITERAL
 .data
-string_3_9: .asciiz "Hola"
+string_4_9: .asciiz "Hola"
 .text
 li $v0, 9 
 li $a0, 8 
 syscall 
 la $a0, vtableStr 
 sw $a0, 0($v0)
-la $a0, string_3_9
+la $a0, string_4_9
 sw $a0, 4($v0)
 move $a0, $v0
 sw $a0, 0($sp) 
@@ -55,14 +55,14 @@ sw $t0, 0($a0)
 #ASIGNACION 
 #LITERAL
 .data
-string_4_9: .asciiz "chau"
+string_5_9: .asciiz "chau"
 .text
 li $v0, 9 
 li $a0, 8 
 syscall 
 la $a0, vtableStr 
 sw $a0, 0($v0)
-la $a0, string_4_9
+la $a0, string_5_9
 sw $a0, 4($v0)
 move $a0, $v0
 sw $a0, 0($sp) 
@@ -105,7 +105,62 @@ addiu $sp $sp -4
 #Cargamos la direccion de la variable en a0 utilizando el 
 #offset con el fp 
 la $a0, -8($fp) 
-#Se obtiene el valor del array desde la direccion 
+#Se obtiene el valor del elemento desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#Cargamos el self en a0 
+lw $a0, 8($sp) 
+#Cargamos la direccion de la vtable de self en a0 
+lw $a0, 0($a0) 
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 4
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+#Saltamos al metodo y el retorno lo traemos en a0 
+jalr $a0 
+addiu $sp $sp 12
+lw $fp, 0($sp) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 0
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#CHAINED ACCESS NODE 
+#Carga de variable 
+#Cargamos la direccion de la variable o parametro en a0 utilizando el 
+#offset con el fp 
+addiu $a0 $fp -4
+lw $a0 0($a0) 
+#CHAINED CALL NODE 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Guardamos el self en la pila. Es el que venia del anterior encadenado 
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#Cargamos los parámetros a la pila 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -8($fp) 
+#Se obtiene el valor del elemento desde la direccion 
 lw $a0, 0($a0) 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
@@ -289,8 +344,10 @@ syscall
             #Cargo la memoria que ocupan los elementos en t1
 
             lw $t1 16($fp)
-            #Cargo en f0 el elemento que se usará para inicializar el array
-            l.d $f0 8($fp)
+            #Cargo en $t4 y $t5 las dos partes del double que se usará para inicializar el array
+            lw $t4, 8($fp)
+            lw $t5, 4($fp)
+
             #Memoria que ocuparan los elementos del array
             mul $a0, $t1, $t0
             #Sumo 8 bytes para la longitud del array y la vtable del mismo
@@ -311,7 +368,8 @@ syscall
             beq $t0, $zero, endConstructorDouble
             forConstructorDouble:
                 #Coloco el elemento inicializador en 0($v0)
-                s.d $f0, 0($v0)
+                sw $t4, 0($v0)
+                sw $t5, 4($v0)
                 add $v0, $t1, $v0
                 #Resto 1 al size
                 sub $t0, $t0, $t3
@@ -415,8 +473,12 @@ syscall
         sw $ra 0($sp)
         addiu $sp $sp -4
 
-        #Cargamos el double al f0
-        l.d $f0 8($fp)
+        #Cargamos el double al f12
+        lw $t0, 8($fp)
+        lw $t1, 4($fp)
+        mtc1 $t0, $f0
+        mtc1 $t1, $f1
+        mov.d $f12, $f0
         li $v0, 3
         syscall
 
@@ -448,7 +510,12 @@ syscall
         beq $t1, $zero, endOutArrayDouble
 
         forOutArrayDoubleIO:
-                l.d $f12, 0($t2)
+                lw $t4, 0($t2)
+                lw $t5, 4($t2)
+                mtc1 $t4, $f0
+                mtc1 $t5, $f1
+                mov.d $f12, $f0
+
                 li $v0, 3
                 syscall
 
@@ -644,6 +711,20 @@ syscall
         move $a0, $t0
         li $a1, 256
         syscall
+
+        move $t1, $t0
+
+        sacarSaltoLinea:
+            lb $t2, 0($t1)
+            beq $t2, $zero, endSalto
+            beq $t2, 10, replace
+            addiu $t1, $t1, 1
+            j sacarSaltoLinea
+
+        replace:
+            sb $zero, 0($t1)
+
+        endSalto:
 
         # Reservo espacio para Str
         li $v0, 9

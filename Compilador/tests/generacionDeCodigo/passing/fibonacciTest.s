@@ -1,3 +1,4 @@
+//Imprime f_0=0, f_1=1, f_2=1, f_3=2, f_4=4, f_5=8, 8 para entrada 5
 class Fibonacci {
 pub Int suma;
 pub Int i,j;

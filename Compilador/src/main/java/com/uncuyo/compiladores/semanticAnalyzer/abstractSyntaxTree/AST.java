@@ -100,6 +100,7 @@ public class AST {
     public static void resetAST() {
         currentClass = null;
         currentMethod = null;
+        vtablesMade.clear();
         blockNodes.clear();
     }
 

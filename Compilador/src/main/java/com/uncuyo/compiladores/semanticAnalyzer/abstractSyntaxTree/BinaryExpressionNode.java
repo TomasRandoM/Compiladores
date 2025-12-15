@@ -245,23 +245,41 @@ public class BinaryExpressionNode extends ExpressionNode {
         string.append("#EXPRESION BINARIA\n");
         boolean leftIsDouble = false;
         boolean rightIsDouble = false;
+        boolean isAttribute = true;
         string.append("#CODE GEN DEL LEFT\n");
         left.codeGen(string);
         string.append("#EXP BINARIA CONTINUACION\n");
         checkChained(string, left);
         if (left instanceof ArrayAccessNode || left instanceof VariableNode) {
+            if (left instanceof VariableNode) {
+                isAttribute = ((VariableNode) left).isAttribute;
+            }
             string.append("#Se obtiene el valor del array desde la direccion \n");
             if (left.nodeType.getName().equals("Double")) {
-                string.append("l.d $f0, 0($a0) \n");
+                if (isAttribute) {
+                    string.append("lw $t0, 0($a0) \n");
+                    string.append("lw $t1, 4($a0) \n");
+                }
+                else {
+                    string.append("lw $t0, 0($a0) \n");
+                    string.append("lw $t1, -4($a0) \n");
+                }
+                string.append("mtc1 $t0, $f0 \n");
+                string.append("mtc1 $t1, $f1 \n");
             }
             else {
                 string.append("lw $a0, 0($a0) \n");
             }
         }
+        //Se guarda en la pila la expresion del lado izquierdo temporalmente
         if (left.nodeType.getName().equals("Double")) {
             string.append("#Left es double\n");
-            string.append("s.d $f0, 0($sp) \n");
-            string.append("addiu $sp $sp -8 \n");
+            string.append("mfc1 $t0, $f0 \n");
+            string.append("mfc1 $t1, $f1 \n");
+            string.append("sw $t0, 0($sp)\n");
+            string.append("addiu $sp, $sp, -4\n");
+            string.append("sw $t1, 0($sp)\n");
+            string.append("addiu $sp, $sp, -4\n");
             leftIsDouble = true;
         }
         else {
@@ -272,10 +290,23 @@ public class BinaryExpressionNode extends ExpressionNode {
         right.codeGen(string);
         string.append("#EXP BINARIA CONTINUACION\n");
         checkChained(string, right);
+        isAttribute = true;
         if (right instanceof ArrayAccessNode || right instanceof VariableNode) {
+            if (right instanceof VariableNode) {
+                isAttribute = ((VariableNode) right).isAttribute;
+            }
             string.append("#Se obtiene el valor del array desde la direccion \n");
             if (right.nodeType.getName().equals("Double")) {
-                string.append("l.d $f0, 0($a0) \n");
+                if (isAttribute) {
+                    string.append("lw $t0, 0($a0) \n");
+                    string.append("lw $t1, 4($a0) \n");
+                }
+                else {
+                    string.append("lw $t0, 0($a0) \n");
+                    string.append("lw $t1, -4($a0) \n");
+                }
+                string.append("mtc1 $t0, $f0 \n");
+                string.append("mtc1 $t1, $f1 \n");
             }
             else {
                 string.append("lw $a0, 0($a0) \n");
@@ -295,16 +326,22 @@ public class BinaryExpressionNode extends ExpressionNode {
             else {
                 string.append("#Ambos son double asi que no se hace conversion \n");
                 string.append("#Se saca de la pila el primer valor y se guarda en f2 \n");
-                string.append("El left queda en f2 y el right en f0 \n");
-                string.append("l.d $f2, 8($sp) \n");
+                string.append("#El left queda en f2 y el right en f0 \n");
+                string.append("lw $t0, 8($sp) \n");
+                string.append("lw $t1, 4($sp) \n");
+                string.append("mtc1 $t0, $f2 \n");
+                string.append("mtc1 $t1, $f3 \n");
                 string.append("addiu $sp $sp 8\n");
                 //left en f2 y right en f0
             }
         }
         else {
             if (leftIsDouble) {
-                string.append("#Convertimos right a double \n");
-                string.append("l.d $f2, 8($sp) \n");
+                string.append("#Convertimos right a double y dejamos la expresion de la izquierda en f2 \n");
+                string.append("lw $t0, 8($sp) \n");
+                string.append("lw $t1, 4($sp) \n");
+                string.append("mtc1 $t0, $f2 \n");
+                string.append("mtc1 $t1, $f3 \n");
                 string.append("addiu $sp $sp 8\n");
                 string.append("mtc1 $a0, $f0\n");
                 string.append("#queda guardado en f0 \n");
@@ -459,7 +496,10 @@ public class BinaryExpressionNode extends ExpressionNode {
 
         if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
             if (expressionNode.nodeType.getName().equals("Double")) {
-                string.append("l.d $f0, 0($a0) \n");
+                string.append("lw $t0, 0($a0) \n");
+                string.append("lw $t1, 4($a0) \n");
+                string.append("mtc1 $t0, $f0 \n");
+                string.append("mtc1 $t1, $f1 \n");
             }
             else {
                 string.append("lw $a0, 0($a0) \n");

@@ -71,13 +71,27 @@ public class ChainedCallNode extends ChainedNode {
      */
     public int codeGenParameters(StringBuilder string, int memory) {
         string.append("#Cargamos los parámetros a la pila \n");
+        boolean isAttribute = true;
         for (ExpressionNode expressionNode : parameterList.reversed()) {
             expressionNode.codeGen(string);
             checkChained(string, expressionNode);
+            isAttribute = true;
             if (expressionNode instanceof ArrayAccessNode || expressionNode instanceof VariableNode) {
-                string.append("#Se obtiene el valor del array desde la direccion \n");
+                if (expressionNode instanceof VariableNode) {
+                    isAttribute = ((VariableNode) expressionNode).isAttribute;
+                }
+                string.append("#Se obtiene el valor del elemento desde la direccion \n");
                 if (expressionNode.nodeType.getName().equals("Double")) {
-                    string.append("l.d $f0, 0($a0) \n");
+                    if (isAttribute) {
+                        string.append("lw $t0, 0($a0) \n");
+                        string.append("lw $t1, 4($a0) \n");
+                    }
+                    else {
+                        string.append("lw $t0, 0($a0) \n");
+                        string.append("lw $t1, -4($a0) \n");
+                    }
+                    string.append("mtc1 $t0, $f0 \n");
+                    string.append("mtc1 $t1, $f1 \n");
                 }
                 else {
                     string.append("lw $a0, 0($a0) \n");
@@ -85,8 +99,12 @@ public class ChainedCallNode extends ChainedNode {
             }
 
             if (expressionNode.nodeType.getName().equals("Double")) {
-                string.append("s.d $f0, 0($sp) \n");
-                string.append("addiu $sp $sp -8 \n");
+                string.append("mfc1 $t0, $f0 \n");
+                string.append("mfc1 $t1, $f1 \n");
+                string.append("sw $t0, 0($sp)\n");
+                string.append("addiu $sp, $sp, -4\n");
+                string.append("sw $t1, 0($sp)\n");
+                string.append("addiu $sp, $sp, -4\n");
                 memory += 8;
             } else {
                 string.append("sw $a0, 0($sp) \n");
@@ -109,7 +127,10 @@ public class ChainedCallNode extends ChainedNode {
 
         if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
             if (expressionNode.nodeType.getName().equals("Double")) {
-                string.append("l.d $f0, 0($a0) \n");
+                string.append("lw $t0, 0($a0) \n");
+                string.append("lw $t1, 4($a0) \n");
+                string.append("mtc1 $t0, $f0 \n");
+                string.append("mtc1 $t1, $f1 \n");
             }
             else {
                 string.append("lw $a0, 0($a0) \n");

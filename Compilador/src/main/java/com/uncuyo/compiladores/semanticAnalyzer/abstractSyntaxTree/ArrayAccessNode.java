@@ -89,7 +89,7 @@ public class ArrayAccessNode extends OperandNode{
             string.append("#Cargamos el atributo en a0 utilizando la \n");
             string.append("#cantidad de parametros para acceder a self, y de ahi al atrubuto\n");
             string.append("lw $a0, ").append(parameterSize).append("($fp)\n");
-            string.append("addiu $a0, $a0 ").append(offset).append("\n");
+            string.append("lw $a0 ").append(offset).append("($a0)\n");
         }
         else {
             string.append("#Cargamos la variable en a0 utilizando el \n");
@@ -101,13 +101,26 @@ public class ArrayAccessNode extends OperandNode{
         string.append("beq $a0, $zero, variableNotInitialized \n");
         string.append("sw $a0, 0($sp) \n");
         string.append("addiu $sp $sp -4 \n");
+        boolean isAttributeExpression = true;
         expressionNode.codeGen(string);
         checkChained(string, expressionNode);
         if (expressionNode instanceof ArrayAccessNode || expressionNode instanceof VariableNode) {
+            if (expressionNode instanceof VariableNode) {
+                isAttributeExpression = ((VariableNode) expressionNode).isAttribute;
+            }
             string.append("#Se obtiene el valor del array desde la direccion \n");
             if (expressionNode.nodeType.getName().equals("Double")) {
                 //No deberia aparecer pero se deja por coherencia
-                string.append("l.d $f0, 0($a0) \n");
+                if (isAttributeExpression) {
+                    string.append("lw $t0, 0($a0) \n");
+                    string.append("lw $t1, 4($a0) \n");
+                }
+                else {
+                    string.append("lw $t0, 0($a0) \n");
+                    string.append("lw $t1, -4($a0) \n");
+                }
+                string.append("mtc1 $t0, $f0 \n");
+                string.append("mtc1 $t1, $f1 \n");
             }
             else {
                 string.append("lw $a0, 0($a0) \n");
@@ -153,7 +166,10 @@ public class ArrayAccessNode extends OperandNode{
         ChainedNode chainedNode1 = expressionNode.getLastChainedNode();
         if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
             if (expressionNode.nodeType.getName().equals("Double")) {
-                string.append("l.d $f0, 0($a0) \n");
+                string.append("lw $t0, 0($a0) \n");
+                string.append("lw $t1, 4($a0) \n");
+                string.append("mtc1 $t0, $f0 \n");
+                string.append("mtc1 $t1, $f1 \n");
             }
             else {
                 string.append("lw $a0, 0($a0) \n");

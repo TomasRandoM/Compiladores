@@ -18,6 +18,10 @@ public class VariableNode extends OperandNode {
     private Token token;
 
     /**
+     * Ayuda a la generacion de codigo, si es un atributo es true
+     */
+    public boolean isAttribute = false;
+    /**
      * Clase del metodo (y la variable)
      */
     private String currentClass;
@@ -136,6 +140,7 @@ public class VariableNode extends OperandNode {
                 if ((currentClass != null) && (currentClass.getAttributes().get(token.getLexeme()) != null)) {
                     offset = currentClass.getAttributeOffset(token.getLexeme());
                     isAttribute = true;
+                    this.isAttribute = true;
                 }
             }
         }

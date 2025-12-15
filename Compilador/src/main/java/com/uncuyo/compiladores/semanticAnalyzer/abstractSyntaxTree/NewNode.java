@@ -173,25 +173,42 @@ public class NewNode extends OperandNode{
         string.append("addiu $sp $sp -4 \n");
 
         if (!option.equals("array")) {
+            boolean isAttribute;
             string.append("#Cargamos los parámetros a la pila \n");
             for (ExpressionNode expressionNode : parameterList.reversed()) {
                 string.append("#CODE GEN DE LA EXPRESION\n");
                 expressionNode.codeGen(string);
+                isAttribute = true;
                 string.append("#CONTINUA NEW NODE\n");
                 checkChained(string, expressionNode);
                 if (expressionNode instanceof ArrayAccessNode || expressionNode instanceof VariableNode) {
+                    if (expressionNode instanceof VariableNode) {
+                        isAttribute = ((VariableNode) expressionNode).isAttribute;
+                    }
                     string.append("#Se obtiene el valor del array desde la direccion \n");
                     if (expressionNode.nodeType.getName().equals("Double")) {
-                        string.append("l.d $f0, 0($a0) \n");
+                        if (isAttribute) {
+                            string.append("lw $t0, 0($a0) \n");
+                            string.append("lw $t1, 4($a0) \n");
+                        }
+                        else {
+                            string.append("lw $t0, 0($a0) \n");
+                            string.append("lw $t1, -4($a0) \n");
+                        }
+                        string.append("mtc1 $t0, $f0 \n");
+                        string.append("mtc1 $t1, $f1 \n");
                     }
                     else {
                         string.append("lw $a0, 0($a0) \n");
                     }
                 }
                 if (expressionNode.nodeType.getName().equals("Double")) {
+                    string.append("mfc1 $t0, $f0 \n");
+                    string.append("mfc1 $t1, $f1 \n");
                     memory += 8;
-                    string.append("s.d $f0, 0($sp) \n");
                     string.append("addiu $sp $sp -8 \n");
+                    string.append("sw $t0, 8($sp) \n");
+                    string.append("sw $t1, 4($sp) \n");
                 }
                 else {
                     memory += 4;
@@ -235,15 +252,18 @@ public class NewNode extends OperandNode{
             if (type.getLexeme().equals("Double")) {
                 string.append("#Guardo el 0.0 en la pila para usarlo de inicializador \n");
                 string.append("l.d $f0, zeroDouble \n");
-                string.append("s.d $f0, 0($sp) \n");
-                string.append("addiu $sp $sp -8 \n");
+                string.append("mfc1 $t0, $f0 \n");
+                string.append("mfc1 $t1, $f1 \n");
+                string.append("sw $t0, 0($sp)\n");
+                string.append("addiu $sp, $sp, -4\n");
+                string.append("sw $t1, 0($sp)\n");
+                string.append("addiu $sp, $sp, -4\n");
                 string.append("jal constructorArrayDouble \n");
                 string.append("#La direccion de memoria del array queda en a0 \n");
                 string.append("addiu $sp $sp 24 \n");
             }
             else {
                 if (type.getLexeme().equals("Str")) {
-                    System.out.println("hola");
                     string.append("li $v0, 9\n");
                     string.append("li $a0, 8 \n");
                     string.append("syscall \n");
@@ -282,7 +302,10 @@ public class NewNode extends OperandNode{
 
         if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
             if (expressionNode.nodeType.getName().equals("Double")) {
-                string.append("l.d $f0, 0($a0) \n");
+                string.append("lw $t0, 0($a0) \n");
+                string.append("lw $t1, 4($a0) \n");
+                string.append("mtc1 $t0, $f0 \n");
+                string.append("mtc1 $t1, $f1 \n");
             }
             else {
                 string.append("lw $a0, 0($a0) \n");

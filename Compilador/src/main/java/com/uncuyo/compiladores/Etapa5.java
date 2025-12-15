@@ -1,9 +1,6 @@
 package com.uncuyo.compiladores;
 
-import com.uncuyo.compiladores.exceptions.LexicalException;
-import com.uncuyo.compiladores.exceptions.ReaderException;
-import com.uncuyo.compiladores.exceptions.SyntacticException;
-import com.uncuyo.compiladores.exceptions.WriterException;
+import com.uncuyo.compiladores.exceptions.*;
 import com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree.AST;
 import com.uncuyo.compiladores.syntacticAnalyzer.SyntacticAnalyzer;
 import com.uncuyo.compiladores.utils.JsonASTGenerator;
@@ -34,5 +31,17 @@ public class Etapa5 {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
+
+    }
+
+    /**
+     * Ejecuta el compilador sobre un archivo .s que se le pasa como parametro. Se utiliza para JUnit
+     * path String con el path del archivo fuente
+     */
+    public static void execute(String path) throws LexicalException, SyntacticException, SemanticASTException, ReaderException, SemanticException, WriterException {
+        String outputPath = path.substring(0, path.length() - 1) + "asm";
+        SyntacticAnalyzer syntacticAnalyzer = new SyntacticAnalyzer(path);
+        syntacticAnalyzer.program();
+        AST.codeGen(outputPath);
     }
 }

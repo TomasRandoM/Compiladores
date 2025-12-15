@@ -45,7 +45,7 @@ lw $t0, 0($sp)
 sw $t0, 0($a0) 
 #ASIGNACION 
 #LITERAL
-li $a0, 5
+li $a0, 6
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 #CHAINED ACCESS NODE 
@@ -65,7 +65,7 @@ lw $t0, 0($sp)
 sw $t0, 0($a0) 
 #IF THEN ELSE:
 #If 
-if_startnull125: 
+if_startnull135: 
 #CODE GEN DE LA EXPRESION
 #EXPRESION BINARIA
 #CODE GEN DEL LEFT
@@ -95,7 +95,7 @@ addiu $sp $sp 4
 seq $a0, $t0, $a0
 #CONTINUA IF THEN ELSE
 #Verifica si la condicion es falsa. Si es falsa salta a la etiqueta else 
-beq $a0, $zero, elseif_startnull125
+beq $a0, $zero, elseif_startnull135
 #SENTENCIA DEL IF
 #Sentencias del bloque de un metodo 
 #SIMPLE SENTENCE - CODE GEN DE EXPRESION
@@ -130,9 +130,9 @@ addi $sp $sp 12
 lw $fp, 0($sp) 
 #FIN SIMPLE SENTENCE
 #Al terminar salta a la etiqueta end del if 
-j endif_startnull125 
+j endif_startnull135 
 #Etiqueta del else. Si no hay else, esta vacia 
-elseif_startnull125: 
+elseif_startnull135: 
 #SENTENCIA DEL ELSE
 #Sentencias del bloque de un metodo 
 #SIMPLE SENTENCE - CODE GEN DE EXPRESION
@@ -184,7 +184,7 @@ jalr $a0
 addi $sp $sp 12
 lw $fp, 0($sp) 
 #FIN SIMPLE SENTENCE
-endif_startnull125: 
+endif_startnull135: 
 addiu $sp $sp 16
 #Fin del programa 
 li $v0, 10 
@@ -356,8 +356,10 @@ jr $ra
             #Cargo la memoria que ocupan los elementos en t1
 
             lw $t1 16($fp)
-            #Cargo en f0 el elemento que se usará para inicializar el array
-            l.d $f0 8($fp)
+            #Cargo en $t4 y $t5 las dos partes del double que se usará para inicializar el array
+            lw $t4, 8($fp)
+            lw $t5, 4($fp)
+
             #Memoria que ocuparan los elementos del array
             mul $a0, $t1, $t0
             #Sumo 8 bytes para la longitud del array y la vtable del mismo
@@ -378,7 +380,8 @@ jr $ra
             beq $t0, $zero, endConstructorDouble
             forConstructorDouble:
                 #Coloco el elemento inicializador en 0($v0)
-                s.d $f0, 0($v0)
+                sw $t4, 0($v0)
+                sw $t5, 4($v0)
                 add $v0, $t1, $v0
                 #Resto 1 al size
                 sub $t0, $t0, $t3
@@ -482,8 +485,12 @@ jr $ra
         sw $ra 0($sp)
         addiu $sp $sp -4
 
-        #Cargamos el double al f0
-        l.d $f0 8($fp)
+        #Cargamos el double al f12
+        lw $t0, 8($fp)
+        lw $t1, 4($fp)
+        mtc1 $t0, $f0
+        mtc1 $t1, $f1
+        mov.d $f12, $f0
         li $v0, 3
         syscall
 
@@ -515,7 +522,12 @@ jr $ra
         beq $t1, $zero, endOutArrayDouble
 
         forOutArrayDoubleIO:
-                l.d $f12, 0($t2)
+                lw $t4, 0($t2)
+                lw $t5, 4($t2)
+                mtc1 $t4, $f0
+                mtc1 $t5, $f1
+                mov.d $f12, $f0
+
                 li $v0, 3
                 syscall
 
@@ -712,6 +724,20 @@ jr $ra
         li $a1, 256
         syscall
 
+        move $t1, $t0
+
+        sacarSaltoLinea:
+            lb $t2, 0($t1)
+            beq $t2, $zero, endSalto
+            beq $t2, 10, replace
+            addiu $t1, $t1, 1
+            j sacarSaltoLinea
+
+        replace:
+            sb $zero, 0($t1)
+
+        endSalto:
+
         # Reservo espacio para Str
         li $v0, 9
         li $a0, 8
@@ -876,6 +902,16 @@ jr $ra
         addiu $sp $sp 12
         lw $fp 0($sp)
         #En v0 sigo teniendo la direccion de la nueva string
+        #La guardo en t0
+        move $t0, $v0
+        #Reservo memoria para el objeto Str
+        li $v0, 9
+        li $a0, 8
+        syscall
+        la $a0, vtableStr
+        sw $a0, 0($v0)
+        sw $t0, 4($v0)
+
         #retorno en a0
         move $a0, $v0
 

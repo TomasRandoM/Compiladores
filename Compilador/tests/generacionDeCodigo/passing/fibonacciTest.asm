@@ -97,7 +97,7 @@ addiu $sp $sp -4
 #Cargamos la direccion de la variable en a0 utilizando el 
 #offset con el fp 
 la $a0, -8($fp) 
-#Se obtiene el valor del array desde la direccion 
+#Se obtiene el valor del elemento desde la direccion 
 lw $a0, 0($a0) 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
@@ -192,7 +192,7 @@ lw $t0, 0($sp)
 #Se guarda lo del lado derecho en la direccion de a0 
 sw $t0, 0($a0) 
 #WHILE
-while_sucesion_fibFibonacci7_0:
+while_sucesion_fibFibonacci8_0:
 #CODE GEN DE LA EXPRESION
 #EXPRESION BINARIA
 #CODE GEN DEL LEFT
@@ -223,12 +223,12 @@ addiu $sp $sp 4
 #Ningun tipo es double
 sle $a0, $t0, $a0
 #CONTINUA WHILE
-beq $a0, $zero, endWhile_sucesion_fibFibonacci7_0
+beq $a0, $zero, endWhile_sucesion_fibFibonacci8_0
 #CODE GEN DE LA SENTENCIA
 #Sentencias del bloque de un metodo 
 #IF THEN ELSE:
 #If 
-if_sucesion_fibFibonacci80: 
+if_sucesion_fibFibonacci90: 
 #CODE GEN DE LA EXPRESION
 #EXPRESION BINARIA
 #CODE GEN DEL LEFT
@@ -255,7 +255,7 @@ addiu $sp $sp 4
 seq $a0, $t0, $a0
 #CONTINUA IF THEN ELSE
 #Verifica si la condicion es falsa. Si es falsa salta a la etiqueta else 
-beq $a0, $zero, elseif_sucesion_fibFibonacci80
+beq $a0, $zero, elseif_sucesion_fibFibonacci90
 #SENTENCIA DEL IF
 #Sentencias del bloque de un metodo 
 #SIMPLE SENTENCE - CODE GEN DE EXPRESION
@@ -325,13 +325,13 @@ addi $sp $sp 12
 lw $fp, 0($sp) 
 #FIN SIMPLE SENTENCE
 #Al terminar salta a la etiqueta end del if 
-j endif_sucesion_fibFibonacci80 
+j endif_sucesion_fibFibonacci90 
 #Etiqueta del else. Si no hay else, esta vacia 
-elseif_sucesion_fibFibonacci80: 
+elseif_sucesion_fibFibonacci90: 
 #SENTENCIA DEL ELSE
 #IF THEN ELSE:
 #If 
-if_sucesion_fibFibonacci120: 
+if_sucesion_fibFibonacci130: 
 #CODE GEN DE LA EXPRESION
 #EXPRESION BINARIA
 #CODE GEN DEL LEFT
@@ -358,7 +358,7 @@ addiu $sp $sp 4
 seq $a0, $t0, $a0
 #CONTINUA IF THEN ELSE
 #Verifica si la condicion es falsa. Si es falsa salta a la etiqueta else 
-beq $a0, $zero, elseif_sucesion_fibFibonacci120
+beq $a0, $zero, elseif_sucesion_fibFibonacci130
 #SENTENCIA DEL IF
 #Sentencias del bloque de un metodo 
 #SIMPLE SENTENCE - CODE GEN DE EXPRESION
@@ -471,9 +471,9 @@ addi $sp $sp 12
 lw $fp, 0($sp) 
 #FIN SIMPLE SENTENCE
 #Al terminar salta a la etiqueta end del if 
-j endif_sucesion_fibFibonacci120 
+j endif_sucesion_fibFibonacci130 
 #Etiqueta del else. Si no hay else, esta vacia 
-elseif_sucesion_fibFibonacci120: 
+elseif_sucesion_fibFibonacci130: 
 #SENTENCIA DEL ELSE
 #Sentencias del bloque de un metodo 
 #SIMPLE SENTENCE - CODE GEN DE EXPRESION
@@ -607,8 +607,8 @@ jalr $a0
 addi $sp $sp 12
 lw $fp, 0($sp) 
 #FIN SIMPLE SENTENCE
-endif_sucesion_fibFibonacci120: 
-endif_sucesion_fibFibonacci80: 
+endif_sucesion_fibFibonacci130: 
+endif_sucesion_fibFibonacci90: 
 #SIMPLE SENTENCE - CODE GEN DE EXPRESION
 #UNARY EXPRESSION
 #CODE GEN DE LA EXPRESION
@@ -624,8 +624,8 @@ lw $a0, 0($a0)
 addi $a0, $a0, 1 
 sw $a0, 0($a3)
 #FIN SIMPLE SENTENCE
-j while_sucesion_fibFibonacci7_0
-endWhile_sucesion_fibFibonacci7_0:
+j while_sucesion_fibFibonacci8_0
+endWhile_sucesion_fibFibonacci8_0:
 #RETURN
 #CODE GEN DE LA EXPRESION
 #VARIABLE NODE
@@ -637,6 +637,8 @@ addiu $a0, $a0 4
 #CONTINUA RETURN 
 #Se obtiene el valor del array desde la direccion 
 lw $a0, 0($a0) 
+j endsucesion_fibFibonacci
+endsucesion_fibFibonacci:
 addiu $sp $sp 4
 lw $ra, 0($sp) 
 jr $ra 
@@ -745,14 +747,14 @@ addiu $sp $sp -4
 #Cargamos los parámetros a la pila 
 #LITERAL
 .data
-string_32_12: .asciiz "f_"
+string_33_12: .asciiz "f_"
 .text
 li $v0, 9 
 li $a0, 8 
 syscall 
 la $a0, vtableStr 
 sw $a0, 0($v0)
-la $a0, string_32_12
+la $a0, string_33_12
 sw $a0, 4($v0)
 move $a0, $v0
 sw $a0, 0($sp) 
@@ -804,14 +806,14 @@ addiu $sp $sp -4
 #Cargamos los parámetros a la pila 
 #LITERAL
 .data
-string_34_12: .asciiz "="
+string_35_12: .asciiz "="
 .text
 li $v0, 9 
 li $a0, 8 
 syscall 
 la $a0, vtableStr 
 sw $a0, 0($v0)
-la $a0, string_34_12
+la $a0, string_35_12
 sw $a0, 4($v0)
 move $a0, $v0
 sw $a0, 0($sp) 
@@ -825,6 +827,7 @@ jalr $a0
 addi $sp $sp 12
 lw $fp, 0($sp) 
 #FIN SIMPLE SENTENCE
+endimprimo_numeroFibonacci:
 addiu $sp $sp 4
 lw $ra, 0($sp) 
 jr $ra 
@@ -876,14 +879,14 @@ addiu $sp $sp -4
 #Cargamos los parámetros a la pila 
 #LITERAL
 .data
-string_39_12: .asciiz "\n"
+string_40_12: .asciiz "\n"
 .text
 li $v0, 9 
 li $a0, 8 
 syscall 
 la $a0, vtableStr 
 sw $a0, 0($v0)
-la $a0, string_39_12
+la $a0, string_40_12
 sw $a0, 4($v0)
 move $a0, $v0
 sw $a0, 0($sp) 
@@ -897,6 +900,7 @@ jalr $a0
 addi $sp $sp 12
 lw $fp, 0($sp) 
 #FIN SIMPLE SENTENCE
+endimprimo_sucesionFibonacci:
 addiu $sp $sp 4
 lw $ra, 0($sp) 
 jr $ra 
@@ -1033,8 +1037,10 @@ jr $ra
             #Cargo la memoria que ocupan los elementos en t1
 
             lw $t1 16($fp)
-            #Cargo en f0 el elemento que se usará para inicializar el array
-            l.d $f0 8($fp)
+            #Cargo en $t4 y $t5 las dos partes del double que se usará para inicializar el array
+            lw $t4, 8($fp)
+            lw $t5, 4($fp)
+
             #Memoria que ocuparan los elementos del array
             mul $a0, $t1, $t0
             #Sumo 8 bytes para la longitud del array y la vtable del mismo
@@ -1055,7 +1061,8 @@ jr $ra
             beq $t0, $zero, endConstructorDouble
             forConstructorDouble:
                 #Coloco el elemento inicializador en 0($v0)
-                s.d $f0, 0($v0)
+                sw $t4, 0($v0)
+                sw $t5, 4($v0)
                 add $v0, $t1, $v0
                 #Resto 1 al size
                 sub $t0, $t0, $t3
@@ -1159,8 +1166,12 @@ jr $ra
         sw $ra 0($sp)
         addiu $sp $sp -4
 
-        #Cargamos el double al f0
-        l.d $f0 8($fp)
+        #Cargamos el double al f12
+        lw $t0, 8($fp)
+        lw $t1, 4($fp)
+        mtc1 $t0, $f0
+        mtc1 $t1, $f1
+        mov.d $f12, $f0
         li $v0, 3
         syscall
 
@@ -1192,7 +1203,12 @@ jr $ra
         beq $t1, $zero, endOutArrayDouble
 
         forOutArrayDoubleIO:
-                l.d $f12, 0($t2)
+                lw $t4, 0($t2)
+                lw $t5, 4($t2)
+                mtc1 $t4, $f0
+                mtc1 $t5, $f1
+                mov.d $f12, $f0
+
                 li $v0, 3
                 syscall
 
@@ -1388,6 +1404,20 @@ jr $ra
         move $a0, $t0
         li $a1, 256
         syscall
+
+        move $t1, $t0
+
+        sacarSaltoLinea:
+            lb $t2, 0($t1)
+            beq $t2, $zero, endSalto
+            beq $t2, 10, replace
+            addiu $t1, $t1, 1
+            j sacarSaltoLinea
+
+        replace:
+            sb $zero, 0($t1)
+
+        endSalto:
 
         # Reservo espacio para Str
         li $v0, 9

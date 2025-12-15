@@ -92,6 +92,10 @@ public class ChainedAccessNode extends ChainedNode {
                 //string.append("la $a0, ").append(offset).append("($fp) \n");
             }
             string.append("lw $a0 0($a0) \n");
+            //Es el primer encadenado entonces el self ya va cargado en a0
+            if (chainedNode != null) {
+                chainedNode.codeGen(string);
+            }
         }
         else {
             //Tenemos en a0 el self del padre. Entonces, necesitariamos buscar en su CIR el atributo
@@ -103,10 +107,14 @@ public class ChainedAccessNode extends ChainedNode {
             string.append("#Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior\n");
             string.append("addiu $a0 $a0 ").append(offset).append("\n");
             //string.append("lw $a0, ").append(offset).append("($a0) \n");
+            if (chainedNode != null) {
+                //Cargamos el $a0 con el self, porque sera usado en el proximo encadenado
+                // y necesitamos la direccion del objeto
+                string.append("lw $a0, 0($a0) \n");
+                chainedNode.codeGen(string);
+            }
         }
-        if (chainedNode != null) {
-            chainedNode.codeGen(string);
-        }
+
     }
 
     public void setName(Token name) {
