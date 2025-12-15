@@ -1,3 +1,4 @@
+//Imprime un 5
 class A {
     pub Int a;
 }

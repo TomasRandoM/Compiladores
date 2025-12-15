@@ -1,3 +1,4 @@
+//Imprime "BOOOL" y el booleano ingresado. Si se ingresa algo que no es booleano, da error
 start {
     Bool b;
     Str s;

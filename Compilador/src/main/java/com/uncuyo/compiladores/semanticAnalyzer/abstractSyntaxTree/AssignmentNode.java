@@ -142,12 +142,12 @@ public class AssignmentNode extends SentenceNode {
             string.append("mtc1 $t1, $f1 \n");
             string.append("#Se guarda el double del lado derecho en la direccion de a0 \n");
             if (isAttribute) {
-                string.append("lw $t0, 0($a0) \n");
-                string.append("lw $t1, 4($a0) \n");
+                string.append("sw $t0, 0($a0) \n");
+                string.append("sw $t1, 4($a0) \n");
             }
             else {
-                string.append("lw $t0, 0($a0) \n");
-                string.append("lw $t1, -4($a0) \n");
+                string.append("sw $t0, 0($a0) \n");
+                string.append("sw $t1, -4($a0) \n");
             }
         }
         else {

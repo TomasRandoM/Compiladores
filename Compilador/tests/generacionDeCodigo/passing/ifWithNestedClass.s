@@ -1,3 +1,4 @@
+//Imprime 6
 class A {
     pub B b;
     }

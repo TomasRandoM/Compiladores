@@ -1,3 +1,4 @@
+//Imprime 6788
 start {
      Bool b;
      Int s;

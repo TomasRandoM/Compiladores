@@ -233,8 +233,11 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
         string.append("addiu $a0 $a0 8 \n");
         string.append("#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento \n");
         string.append("add $t0 $t0 $a0 \n");
-        string.append("#Cargamos la direcicon en a0 \n");
+        string.append("#Cargamos la direccion en a0 \n");
         string.append("move $a0, $t0 \n");
+        string.append("#Cargamos directamente el valor en a0 \n");
+        string.append("#Esto debido a que por gramática no se puede asignar un elemento a través de encadenamiento \n");
+        string.append("lw $a0, 0($a0) \n");
         /*
         if (att.getType().getArrType().getName().equals("Double")) {
             string.append("#cargamos el elemento en f0 \n");

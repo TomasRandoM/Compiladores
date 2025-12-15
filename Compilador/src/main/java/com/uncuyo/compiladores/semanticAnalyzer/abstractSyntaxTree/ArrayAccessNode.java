@@ -89,7 +89,7 @@ public class ArrayAccessNode extends OperandNode{
             string.append("#Cargamos el atributo en a0 utilizando la \n");
             string.append("#cantidad de parametros para acceder a self, y de ahi al atrubuto\n");
             string.append("lw $a0, ").append(parameterSize).append("($fp)\n");
-            string.append("addiu $a0, $a0 ").append(offset).append("\n");
+            string.append("lw $a0 ").append(offset).append("($a0)\n");
         }
         else {
             string.append("#Cargamos la variable en a0 utilizando el \n");

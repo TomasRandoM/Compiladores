@@ -1,3 +1,4 @@
+//Imprime el array vacio, luego el array con un 0 en su primera posicion y las otras con los elementos asignados. Finalmente imprime un 5 (longitud del array)
 start {
     Array Int a;
     Array Int b;

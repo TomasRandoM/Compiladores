@@ -204,9 +204,7 @@ public class Method {
      * donde estaria el self. Es decir, la siguiente direccion despues de los parametros
      */
     public int getParameterMemory() {
-        System.out.println("hola");
         int memory = 4;
-        System.out.println("entro " + memory);
         for (Map.Entry<String, Parameter> entry : parameters.entrySet()) {
             if (entry.getValue().getType().getName().equals("Double")) {
                 memory += 8;
@@ -216,7 +214,6 @@ public class Method {
             }
         }
         //No se debería llegar a este return, si se llega falló el semántico
-        System.out.println("salgo " + memory);
         return memory;
     }
 

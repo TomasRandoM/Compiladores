@@ -297,9 +297,7 @@ public class BlockNode extends SentenceNode {
                 string.append("mfc1 $t0, $f0 \n");
                 string.append("mfc1 $t1, $f1 \n");
                 string.append("sw $t0, ").append(offset).append("($v0)\n");
-                string.append("addiu $sp, $sp, -4\n");
                 string.append("sw $t1, ").append(offset + 4).append("($v0)\n");
-                string.append("addiu $sp, $sp, -4\n");
                 offset += 8;
                 memory += 8;
             }

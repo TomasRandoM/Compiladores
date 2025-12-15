@@ -131,8 +131,10 @@
             #Cargo la memoria que ocupan los elementos en t1
 
             lw $t1 16($fp)
-            #Cargo en f0 el elemento que se usará para inicializar el array
-            l.d $f0 8($fp)
+            #Cargo en $t4 y $t5 las dos partes del double que se usará para inicializar el array
+            lw $t4, 8($fp)
+            lw $t5, 4($fp)
+
             #Memoria que ocuparan los elementos del array
             mul $a0, $t1, $t0
             #Sumo 8 bytes para la longitud del array y la vtable del mismo
@@ -153,7 +155,8 @@
             beq $t0, $zero, endConstructorDouble
             forConstructorDouble:
                 #Coloco el elemento inicializador en 0($v0)
-                s.d $f0, 0($v0)
+                sw $t4, 0($v0)
+                sw $t5, 4($v0)
                 add $v0, $t1, $v0
                 #Resto 1 al size
                 sub $t0, $t0, $t3
@@ -257,8 +260,12 @@
         sw $ra 0($sp)
         addiu $sp $sp -4
 
-        #Cargamos el double al f0
-        l.d $f0 8($fp)
+        #Cargamos el double al f12
+        lw $t0, 8($fp)
+        lw $t1, 4($fp)
+        mtc1 $t0, $f0
+        mtc1 $t1, $f1
+        mov.d $f12, $f0
         li $v0, 3
         syscall
 
@@ -290,7 +297,12 @@
         beq $t1, $zero, endOutArrayDouble
 
         forOutArrayDoubleIO:
-                l.d $f12, 0($t2)
+                lw $t4, 0($t2)
+                lw $t5, 4($t2)
+                mtc1 $t4, $f0
+                mtc1 $t5, $f1
+                mov.d $f12, $f0
+
                 li $v0, 3
                 syscall
 

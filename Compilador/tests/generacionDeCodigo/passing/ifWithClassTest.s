@@ -1,3 +1,4 @@
+//Imprime 7
 class A {
     pub Int a;
     }
@@ -9,7 +10,7 @@ start {
      Int s;
      A a;
      a = new A();
-     a.a = 5;
+     a.a = 6;
      if (a.a == 5) {
         (IO.out_int(a.a));
      }

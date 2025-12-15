@@ -8,39 +8,363 @@ move $fp, $sp
 addiu $sp $sp -4 
 #Declaración de variables 
 #Reservamos memoria para las variables en la pila y lo inicializamos
-l.d $f0, zeroDouble
-s.d $f0, 0($sp)
-addiu $sp $sp -8
-#Sentencias del bloque 
-#Asignación 
-#Literales
-li $a0, 5
+li $a0, 0 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
-#Literales
-li $a0, 0
-#Ni left ni right son double
-#El lado izquierdo queda en el t0 y el lado derecho en el a0 
-lw $t0, 4($sp) 
-addiu $sp $sp 4
-#Ningun tipo es double
-beq $a0, $zero, divZeroException
-#Se convierten los tipos a double para la operacion de division 
-mtc1 $t0, $f2
-mtc1 $a0, $f0
-cvt.d.w $f0, $f0
-cvt.d.w $f2, $f2
-div.d $f0, $f2, $f0
-s.d $f0, 0($sp) 
-addiu $sp $sp -8 
+#Sentencias del bloque 
+#ASIGNACION 
+#NEW NODE
+#Llamada a constructor 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Reservamos lugar para el self en la pila 
+addiu $sp $sp -4 
+#Metemos a la pila el parametro que representa el espacio que ocupan los elementos 
+#del array. 8 si es Double, 4 si es otra cosa 
+li $a0, 4 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#CODE GEN DE LA EXPRESION
+#LITERAL
+li $a0, 5
+#CONTINUA NEW NODE
+#Guardamos en la pila el tamaño del array para pasarlo como parametro 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+li $a0, 0 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+jal constructorArray 
+#La direccion de memoria del array queda en a0 
+addiu $sp $sp 20 
+#Restauramos el framepointer 
+lw $fp, 0($sp) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#VARIABLE NODE
 #Carga de variable 
 #Cargamos la direccion de la variable en a0 utilizando el 
 #offset con el fp 
 la $a0, -4($fp) 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 28
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+#ASIGNACION 
+#LITERAL
+.data 
+double1.0_5_11: .double 1.0
+.text 
+ l.d $f0, double1.0_5_11
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
+sw $t0, 0($sp)
+addiu $sp, $sp, -4
+sw $t1, 0($sp)
+addiu $sp, $sp, -4
+#ARRAY ACCESS NODE
+#Carga de variable 
+#Cargamos la variable en a0 utilizando el 
+#offset con el fp 
+lw $a0, -4($fp) 
+#Guardamos a0 en la pila, que es la direccion del array
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#LITERAL
+li $a0, 0
+#En $a0 tengo el indice del array
+#Si el índice es negativo salto a la excepcion
+bltz $a0, negativeArrayIndexException
+#Obtengo la direccion del array para obtener length
+lw $t0, 4($sp)
+#Obtengo la longitud del array
+lw $t1, 4($t0)
+#Si el indice es mayor o igual a la longitud salto a la excepcion
+bge $a0, $t1, arrayIndexOutOfRangeException
+#Restauramos la direccion en t0 que habiamos dejado en la pila 
+addiu $sp $sp 4 
+lw $t0, 0($sp) 
+#Calculamos el offset usando la posicion (en a0) y
+#el espacio que ocupan los elementos del array
+li $t1, 8 
+mul $a0, $a0, $t1 
+#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
+addiu $a0 $a0 8 
+#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
+add $t0 $t0 $a0 
+move $a0, $t0 
+#Se saca el double de la pila y se guarda en f0 
 addiu $sp $sp 8 
-l.d $f0, 0($sp) 
+lw $t0, 0($sp) 
+lw $t1, -4($sp) 
+mtc1 $t0, $f0 
+mtc1 $t1, $f1 
 #Se guarda el double del lado derecho en la direccion de a0 
-s.d $f0, 0($a0) 
+sw $t0, 0($a0) 
+sw $t1, 4($a0) 
+#ASIGNACION 
+#LITERAL
+.data 
+double0.0_6_11: .double 0.0
+.text 
+ l.d $f0, double0.0_6_11
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
+sw $t0, 0($sp)
+addiu $sp, $sp, -4
+sw $t1, 0($sp)
+addiu $sp, $sp, -4
+#ARRAY ACCESS NODE
+#Carga de variable 
+#Cargamos la variable en a0 utilizando el 
+#offset con el fp 
+lw $a0, -4($fp) 
+#Guardamos a0 en la pila, que es la direccion del array
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#LITERAL
+li $a0, 1
+#En $a0 tengo el indice del array
+#Si el índice es negativo salto a la excepcion
+bltz $a0, negativeArrayIndexException
+#Obtengo la direccion del array para obtener length
+lw $t0, 4($sp)
+#Obtengo la longitud del array
+lw $t1, 4($t0)
+#Si el indice es mayor o igual a la longitud salto a la excepcion
+bge $a0, $t1, arrayIndexOutOfRangeException
+#Restauramos la direccion en t0 que habiamos dejado en la pila 
+addiu $sp $sp 4 
+lw $t0, 0($sp) 
+#Calculamos el offset usando la posicion (en a0) y
+#el espacio que ocupan los elementos del array
+li $t1, 8 
+mul $a0, $a0, $t1 
+#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
+addiu $a0 $a0 8 
+#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
+add $t0 $t0 $a0 
+move $a0, $t0 
+#Se saca el double de la pila y se guarda en f0 
+addiu $sp $sp 8 
+lw $t0, 0($sp) 
+lw $t1, -4($sp) 
+mtc1 $t0, $f0 
+mtc1 $t1, $f1 
+#Se guarda el double del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+sw $t1, 4($a0) 
+#ASIGNACION 
+#LITERAL
+.data 
+double3.45_7_11: .double 3.45
+.text 
+ l.d $f0, double3.45_7_11
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
+sw $t0, 0($sp)
+addiu $sp, $sp, -4
+sw $t1, 0($sp)
+addiu $sp, $sp, -4
+#ARRAY ACCESS NODE
+#Carga de variable 
+#Cargamos la variable en a0 utilizando el 
+#offset con el fp 
+lw $a0, -4($fp) 
+#Guardamos a0 en la pila, que es la direccion del array
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#LITERAL
+li $a0, 3
+#En $a0 tengo el indice del array
+#Si el índice es negativo salto a la excepcion
+bltz $a0, negativeArrayIndexException
+#Obtengo la direccion del array para obtener length
+lw $t0, 4($sp)
+#Obtengo la longitud del array
+lw $t1, 4($t0)
+#Si el indice es mayor o igual a la longitud salto a la excepcion
+bge $a0, $t1, arrayIndexOutOfRangeException
+#Restauramos la direccion en t0 que habiamos dejado en la pila 
+addiu $sp $sp 4 
+lw $t0, 0($sp) 
+#Calculamos el offset usando la posicion (en a0) y
+#el espacio que ocupan los elementos del array
+li $t1, 8 
+mul $a0, $a0, $t1 
+#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
+addiu $a0 $a0 8 
+#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
+add $t0 $t0 $a0 
+move $a0, $t0 
+#Se saca el double de la pila y se guarda en f0 
+addiu $sp $sp 8 
+lw $t0, 0($sp) 
+lw $t1, -4($sp) 
+mtc1 $t0, $f0 
+mtc1 $t1, $f1 
+#Se guarda el double del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+sw $t1, 4($a0) 
+#ASIGNACION 
+#LITERAL
+.data 
+double4.14_8_11: .double 4.14
+.text 
+ l.d $f0, double4.14_8_11
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
+sw $t0, 0($sp)
+addiu $sp, $sp, -4
+sw $t1, 0($sp)
+addiu $sp, $sp, -4
+#ARRAY ACCESS NODE
+#Carga de variable 
+#Cargamos la variable en a0 utilizando el 
+#offset con el fp 
+lw $a0, -4($fp) 
+#Guardamos a0 en la pila, que es la direccion del array
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#LITERAL
+li $a0, 4
+#En $a0 tengo el indice del array
+#Si el índice es negativo salto a la excepcion
+bltz $a0, negativeArrayIndexException
+#Obtengo la direccion del array para obtener length
+lw $t0, 4($sp)
+#Obtengo la longitud del array
+lw $t1, 4($t0)
+#Si el indice es mayor o igual a la longitud salto a la excepcion
+bge $a0, $t1, arrayIndexOutOfRangeException
+#Restauramos la direccion en t0 que habiamos dejado en la pila 
+addiu $sp $sp 4 
+lw $t0, 0($sp) 
+#Calculamos el offset usando la posicion (en a0) y
+#el espacio que ocupan los elementos del array
+li $t1, 8 
+mul $a0, $a0, $t1 
+#sumamos 8 debido a que el array posee vtable y la longitud del mismo 
+addiu $a0 $a0 8 
+#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento 
+add $t0 $t0 $a0 
+move $a0, $t0 
+#Se saca el double de la pila y se guarda en f0 
+addiu $sp $sp 8 
+lw $t0, 0($sp) 
+lw $t1, -4($sp) 
+mtc1 $t0, $f0 
+mtc1 $t1, $f1 
+#Se guarda el double del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+sw $t1, 4($a0) 
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 28
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#CHAINED ACCESS NODE 
+#Carga de variable 
+#Cargamos la direccion de la variable o parametro en a0 utilizando el 
+#offset con el fp 
+addiu $a0 $fp -4
+lw $a0 0($a0) 
+#CHAINED CALL NODE 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Guardamos el self en la pila. Es el que venia del anterior encadenado 
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#Cargamos los parámetros a la pila 
+#Cargamos el self en a0 
+lw $a0, 4($sp) 
+#Cargamos la direccion de la vtable de self en a0 
+lw $a0, 0($a0) 
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 0
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+#Saltamos al metodo y el retorno lo traemos en a0 
+jalr $a0 
+addiu $sp $sp 8
+lw $fp, 0($sp) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 4
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+addiu $sp $sp 8
 #Fin del programa 
 li $v0, 10 
 syscall 
@@ -50,7 +374,7 @@ syscall
     stringInitialization: .asciiz ""
     brackets1: .asciiz "["
     brackets2: .asciiz "]"
-    comma: .ascizz ", "
+    comma: .asciiz ", "
 
     vtableStr:
         .word lengthStr
@@ -122,6 +446,7 @@ syscall
 
 
     constructorArray:
+        #constructorArray
         move $fp, $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -166,16 +491,20 @@ syscall
         jr $ra
 
     constructorArrayDouble:
+        #Metodo constructorArrayDouble
             move $fp, $sp
             sw $ra 0($sp)
             addiu $sp $sp -4
             #Cargo el size del array en t0
             lw $t0 12($fp)
+            bltz $t0, negativeArraySizeException
             #Cargo la memoria que ocupan los elementos en t1
 
             lw $t1 16($fp)
-            #Cargo en f0 el elemento que se usará para inicializar el array
-            l.d $f0 8($fp)
+            #Cargo en $t4 y $t5 las dos partes del double que se usará para inicializar el array
+            lw $t4, 8($fp)
+            lw $t5, 4($fp)
+
             #Memoria que ocuparan los elementos del array
             mul $a0, $t1, $t0
             #Sumo 8 bytes para la longitud del array y la vtable del mismo
@@ -196,7 +525,8 @@ syscall
             beq $t0, $zero, endConstructorDouble
             forConstructorDouble:
                 #Coloco el elemento inicializador en 0($v0)
-                s.d $f0, 0($v0)
+                sw $t4, 0($v0)
+                sw $t5, 4($v0)
                 add $v0, $t1, $v0
                 #Resto 1 al size
                 sub $t0, $t0, $t3
@@ -211,6 +541,7 @@ syscall
 
 
     constructorStr:
+        #constructorStr
         #Cargo el framepointer
         move $fp, $sp
         sw $ra 0($sp)
@@ -241,14 +572,16 @@ syscall
         jr $ra
 
     out_strIO:
+        #Metodo out_strIO
         move $fp, $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
 
         #Cargamos la direccion del CIR de la Str
-        lw $a0 4($fp)
+        lw $a0, 4($fp)
         #Cargamos la direccion del Str en a0
-        lw $a0 4($a0)
+        lw $a0, 4($a0)
+
         li $v0, 4
         syscall
 
@@ -258,14 +591,14 @@ syscall
         jr $ra
 
     out_boolIO:
+        #Metodo out_boolIO
         move $fp, $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
 
-        #Cargamos la direccion del CIR de la Str
-        lw $a0 4($fp)
-        #Cargamos la direccion del Str en a0
-        lw $a0 4($a0)
+        #Cargamos el valor
+        lw $a0, 4($fp)
+
         li $v0, 1
         syscall
 
@@ -276,6 +609,7 @@ syscall
 
 
     out_intIO:
+        #Metodo out_intIO
         move $fp, $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -291,12 +625,17 @@ syscall
         jr $ra
 
     out_doubleIO:
+        #Metodo out_doubleIO
         move $fp, $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
 
-        #Cargamos el double al f0
-        l.d $f0 8($fp)
+        #Cargamos el double al f12
+        lw $t0, 8($fp)
+        lw $t1, 4($fp)
+        mtc1 $t0, $f0
+        mtc1 $t1, $f1
+        mov.d $f12, $f0
         li $v0, 3
         syscall
 
@@ -306,6 +645,7 @@ syscall
         jr $ra
 
     out_array_doubleIO:
+        #Metodo out_array_doubleIO
         move $fp $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -327,7 +667,12 @@ syscall
         beq $t1, $zero, endOutArrayDouble
 
         forOutArrayDoubleIO:
-                l.d $f12, 0($t2)
+                lw $t4, 0($t2)
+                lw $t5, 4($t2)
+                mtc1 $t4, $f0
+                mtc1 $t5, $f1
+                mov.d $f12, $f0
+
                 li $v0, 3
                 syscall
 
@@ -358,6 +703,7 @@ syscall
 
     out_array_intIO:
     out_array_boolIO:
+        #Metodo out_array_boolIO o out_array_intIO
         move $fp $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -409,6 +755,7 @@ syscall
 
 
     out_array_strIO:
+        #Metodo out_array_strIO
         move $fp $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -460,6 +807,7 @@ syscall
         jr $ra
 
     in_boolIO:
+        #Metodo in_boolIO
         move $fp, $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -484,6 +832,7 @@ syscall
             jr $ra
 
     in_intIO:
+        #Metodo in_intIO
         move $fp, $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -501,6 +850,7 @@ syscall
         jr $ra
 
     in_strIO:
+        #Metodo in_strIO
         move $fp, $sp
         sw $ra, 0($sp)
         addiu $sp $sp -4
@@ -540,6 +890,7 @@ syscall
 
 
     in_doubleIO:
+        #Metodo in_doubleIO
         move $fp, $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -555,6 +906,7 @@ syscall
 
 
     lengthArray:
+        #Metodo lengthArray
         move $fp $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -569,6 +921,7 @@ syscall
 
 
     lengthStr:
+        #Metodo lengthStr
         move $fp $sp
         sw $ra 0($sp)
         addiu $sp $sp -4
@@ -597,6 +950,7 @@ syscall
 
 
     concatStr:
+        #Metodo concatStr
         move $fp, $sp
         sw $ra, 0($fp)
         addiu $sp $sp -4
@@ -679,6 +1033,16 @@ syscall
         addiu $sp $sp 12
         lw $fp 0($sp)
         #En v0 sigo teniendo la direccion de la nueva string
+        #La guardo en t0
+        move $t0, $v0
+        #Reservo memoria para el objeto Str
+        li $v0, 9
+        li $a0, 8
+        syscall
+        la $a0, vtableStr
+        sw $a0, 0($v0)
+        sw $t0, 4($v0)
+
         #retorno en a0
         move $a0, $v0
 
@@ -718,7 +1082,8 @@ syscall
 
     # Excepcion de booleano incorrecto
     incorrectInBoolIO:       .asciiz "RUNTIME EXCEPTION: se esperaba 0 o 1 como entrada de un Bool."
-
+    # Cuando se intenta usar una clase o array no inicializado
+    variableNotInitializedMsg: .asciiz "RUNTIME EXCEPTION: se intenta acceder a una variable no inicializada."
 
 .text
     divZeroException:
@@ -762,3 +1127,10 @@ syscall
         syscall
         li $v0, 10
         syscall
+
+    variableNotInitialized:
+            la $a0, variableNotInitializedMsg
+            li $v0, 4
+            syscall
+            li $v0, 10
+            syscall
