@@ -58,6 +58,7 @@ lw $a0 0($a0)
 beq $a0, $zero, variableNotInitialized 
 #Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior
 addiu $a0 $a0 4
+lw $a0, 0($a0) 
 #CHAINED ACCESS NODE 
 beq $a0, $zero, variableNotInitialized 
 #Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior
@@ -83,6 +84,7 @@ lw $a0 0($a0)
 beq $a0, $zero, variableNotInitialized 
 #Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior
 addiu $a0 $a0 4
+lw $a0, 0($a0) 
 #CHAINED ACCESS NODE 
 beq $a0, $zero, variableNotInitialized 
 #Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior
@@ -125,6 +127,7 @@ lw $a0 0($a0)
 beq $a0, $zero, variableNotInitialized 
 #Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior
 addiu $a0 $a0 4
+lw $a0, 0($a0) 
 #CHAINED ACCESS NODE 
 beq $a0, $zero, variableNotInitialized 
 #Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior
@@ -160,6 +163,7 @@ lw $a0 0($a0)
 beq $a0, $zero, variableNotInitialized 
 #Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior
 addiu $a0 $a0 4
+lw $a0, 0($a0) 
 #CHAINED ACCESS NODE 
 beq $a0, $zero, variableNotInitialized 
 #Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior
@@ -188,6 +192,7 @@ lw $a0 0($a0)
 beq $a0, $zero, variableNotInitialized 
 #Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior
 addiu $a0 $a0 4
+lw $a0, 0($a0) 
 #CHAINED ACCESS NODE 
 beq $a0, $zero, variableNotInitialized 
 #Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior
@@ -803,6 +808,20 @@ jr $ra
         move $a0, $t0
         li $a1, 256
         syscall
+
+        move $t1, $t0
+
+        sacarSaltoLinea:
+            lb $t2, 0($t1)
+            beq $t2, $zero, endSalto
+            beq $t2, 10, replace
+            addiu $t1, $t1, 1
+            j sacarSaltoLinea
+
+        replace:
+            sb $zero, 0($t1)
+
+        endSalto:
 
         # Reservo espacio para Str
         li $v0, 9

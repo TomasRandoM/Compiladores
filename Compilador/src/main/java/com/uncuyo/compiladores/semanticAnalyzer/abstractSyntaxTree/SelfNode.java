@@ -37,8 +37,15 @@ public class SelfNode extends OperandNode {
     @Override
     public void codeGen(StringBuilder string) {
         string.append("#SELF \n");
-        int selfOffset = SymbolTable.getClass(className).
-                getMethods().get(methodName).getParameterMemory();
+        int selfOffset;
+        if (methodName != null) {
+             selfOffset = SymbolTable.getClass(className).
+                    getMethods().get(methodName).getParameterMemory();
+        }
+        else {
+            selfOffset = SymbolTable.getClass(className).getConstructor().getParameterMemory();
+        }
+
         string.append("lw $a0, ").append(selfOffset).append("($fp) \n");
 
         if (chainedNode != null) {
@@ -86,7 +93,7 @@ public class SelfNode extends OperandNode {
     public Type check() throws SemanticASTException {
         Type type;
         Method method;
-        if (methodName.equals("start")) {
+        if (methodName != null && methodName.equals("start")) {
             throw new SemanticASTException(token, "Self no puede " +
                     "ser referenciado dentro del punto de entrada start");
         }

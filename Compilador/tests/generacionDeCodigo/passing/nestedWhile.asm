@@ -14,13 +14,10 @@ addiu $sp $sp -4
 li $a0, 0 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
-li $a0, 0 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
 #Sentencias del bloque 
 #ASIGNACION 
 #LITERAL
-li $a0, 5
+li $a0, 1
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 #VARIABLE NODE
@@ -34,7 +31,7 @@ lw $t0, 0($sp)
 #Se guarda lo del lado derecho en la direccion de a0 
 sw $t0, 0($a0) 
 #WHILE
-while_startnull6_5:
+while_startnull6_4:
 #CODE GEN DE LA EXPRESION
 #EXPRESION BINARIA
 #CODE GEN DEL LEFT
@@ -50,7 +47,7 @@ sw $a0, 0($sp)
 addiu $sp $sp -4 
 #CODE GEN DEL RIGHT
 #LITERAL
-li $a0, 7
+li $a0, 3
 #EXP BINARIA CONTINUACION
 #Ni left ni right son double
 #El lado izquierdo queda en el t0 y el lado derecho en el a0 
@@ -59,24 +56,54 @@ addiu $sp $sp 4
 #Ningun tipo es double
 sle $a0, $t0, $a0
 #CONTINUA WHILE
-beq $a0, $zero, endWhile_startnull6_5
+beq $a0, $zero, endWhile_startnull6_4
+#CODE GEN DE LA SENTENCIA
+#Sentencias del bloque de un metodo 
+#ASIGNACION 
+#LITERAL
+li $a0, 1
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -8($fp) 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#WHILE
+while_startnull8_8:
+#CODE GEN DE LA EXPRESION
+#EXPRESION BINARIA
+#CODE GEN DEL LEFT
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -8($fp) 
+#EXP BINARIA CONTINUACION
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#CODE GEN DEL RIGHT
+#LITERAL
+li $a0, 4
+#EXP BINARIA CONTINUACION
+#Ni left ni right son double
+#El lado izquierdo queda en el t0 y el lado derecho en el a0 
+lw $t0, 4($sp) 
+addiu $sp $sp 4
+#Ningun tipo es double
+sle $a0, $t0, $a0
+#CONTINUA WHILE
+beq $a0, $zero, endWhile_startnull8_8
 #CODE GEN DE LA SENTENCIA
 #Sentencias del bloque de un metodo 
 #SIMPLE SENTENCE - CODE GEN DE EXPRESION
-#UNARY EXPRESSION
-#CODE GEN DE LA EXPRESION
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, -4($fp) 
-#Se obtiene el valor del array desde la direccion 
-move $a3, $a0 
-lw $a0, 0($a0) 
-addi $a0, $a0, 1 
-sw $a0, 0($a3)
-#FIN SIMPLE SENTENCE
-#SIMPLE SENTENCE - CODE GEN DE EXPRESION
 #METHOD CALL 
 #Guardamos el framepointer actual en la pila 
 sw $fp, 0($sp) 
@@ -85,13 +112,33 @@ addiu $sp $sp -4
 #En este caso no existe, pero para coherencia 
 addiu $sp $sp -4
 #Cargamos los parámetros a la pila 
+#EXPRESION BINARIA
+#CODE GEN DEL LEFT
 #VARIABLE NODE
 #Carga de variable 
 #Cargamos la direccion de la variable en a0 utilizando el 
 #offset con el fp 
 la $a0, -4($fp) 
+#EXP BINARIA CONTINUACION
 #Se obtiene el valor del array desde la direccion 
 lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#CODE GEN DEL RIGHT
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -8($fp) 
+#EXP BINARIA CONTINUACION
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+#Ni left ni right son double
+#El lado izquierdo queda en el t0 y el lado derecho en el a0 
+lw $t0, 4($sp) 
+addiu $sp $sp 4
+#Ningun tipo es double
+mul $a0, $t0, $a0
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 la $a0, vtableIO
@@ -103,8 +150,6 @@ jalr $a0
 addi $sp $sp 12
 lw $fp, 0($sp) 
 #FIN SIMPLE SENTENCE
-j while_startnull6_5
-endWhile_startnull6_5:
 #SIMPLE SENTENCE - CODE GEN DE EXPRESION
 #METHOD CALL 
 #Guardamos el framepointer actual en la pila 
@@ -114,25 +159,104 @@ addiu $sp $sp -4
 #En este caso no existe, pero para coherencia 
 addiu $sp $sp -4
 #Cargamos los parámetros a la pila 
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, -4($fp) 
-#Se obtiene el valor del array desde la direccion 
-lw $a0, 0($a0) 
+#LITERAL
+.data
+string_10_24: .asciiz "\n"
+.text
+li $v0, 9 
+li $a0, 8 
+syscall 
+la $a0, vtableStr 
+sw $a0, 0($v0)
+la $a0, string_10_24
+sw $a0, 4($v0)
+move $a0, $v0
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 la $a0, vtableIO
 #Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 4
+addiu $a0, $a0, 0
 #Cargamos la direccion del metodo en el a0
 lw $a0, 0($a0)
 jalr $a0 
 addi $sp $sp 12
 lw $fp, 0($sp) 
 #FIN SIMPLE SENTENCE
-addiu $sp $sp 16
+#ASIGNACION 
+#EXPRESION BINARIA
+#CODE GEN DEL LEFT
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -8($fp) 
+#EXP BINARIA CONTINUACION
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#CODE GEN DEL RIGHT
+#LITERAL
+li $a0, 1
+#EXP BINARIA CONTINUACION
+#Ni left ni right son double
+#El lado izquierdo queda en el t0 y el lado derecho en el a0 
+lw $t0, 4($sp) 
+addiu $sp $sp 4
+#Ningun tipo es double
+add $a0, $t0, $a0
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -8($fp) 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+j while_startnull8_8
+endWhile_startnull8_8:
+#ASIGNACION 
+#EXPRESION BINARIA
+#CODE GEN DEL LEFT
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+#EXP BINARIA CONTINUACION
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#CODE GEN DEL RIGHT
+#LITERAL
+li $a0, 1
+#EXP BINARIA CONTINUACION
+#Ni left ni right son double
+#El lado izquierdo queda en el t0 y el lado derecho en el a0 
+lw $t0, 4($sp) 
+addiu $sp $sp 4
+#Ningun tipo es double
+add $a0, $t0, $a0
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+j while_startnull6_4
+endWhile_startnull6_4:
+addiu $sp $sp 12
 #Fin del programa 
 li $v0, 10 
 syscall 

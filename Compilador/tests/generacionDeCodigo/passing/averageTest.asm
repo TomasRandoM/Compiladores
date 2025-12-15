@@ -382,14 +382,14 @@ addiu $sp $sp -4
 #Cargamos los parámetros a la pila 
 #LITERAL
 .data
-string_86_16: .asciiz "Promedio = "
+string_74_16: .asciiz "Promedio = "
 .text
 li $v0, 9 
 li $a0, 8 
 syscall 
 la $a0, vtableStr 
 sw $a0, 0($v0)
-la $a0, string_86_16
+la $a0, string_74_16
 sw $a0, 4($v0)
 move $a0, $v0
 sw $a0, 0($sp) 
@@ -441,14 +441,14 @@ addiu $sp $sp -4
 #Cargamos los parámetros a la pila 
 #LITERAL
 .data
-string_88_16: .asciiz "\n"
+string_76_16: .asciiz "\n"
 .text
 li $v0, 9 
 li $a0, 8 
 syscall 
 la $a0, vtableStr 
 sw $a0, 0($v0)
-la $a0, string_88_16
+la $a0, string_76_16
 sw $a0, 4($v0)
 move $a0, $v0
 sw $a0, 0($sp) 
@@ -468,9 +468,9 @@ li $v0, 10
 syscall 
 .data 
 vtableCalculadora: 
-.word calcular_sumaCalculadora
-.word calcular_promedioCalculadora
-.word imprimir_datosCalculadora
+.word calcularSumaCalculadora
+.word calcularPromedioCalculadora
+.word imprimirDatosCalculadora
 .text 
 #Constructor 
 constructorCalculadora: 
@@ -550,10 +550,6 @@ addiu $sp $sp 4
 lw $t0, 0($sp) 
 #Se guarda lo del lado derecho en la direccion de a0 
 sw $t0, 0($a0) 
-#SIMPLE SENTENCE - CODE GEN DE EXPRESION
-#LITERAL
-li $a0, 99
-#FIN SIMPLE SENTENCE
 #SIMPLE SENTENCE - CODE GEN DE EXPRESION
 #METHOD CALL 
 #Guardamos el framepointer actual en la pila 
@@ -639,7 +635,7 @@ addiu $sp $sp 4
 lw $ra, 0($sp) 
 jr $ra 
 .text 
-calcular_sumaCalculadora: 
+calcularSumaCalculadora: 
 #Se forma el nuevo framepointer 
 move $fp, $sp 
 #Se guarda el return address en la pila 
@@ -681,7 +677,7 @@ lw $t0, 0($sp)
 #Se guarda lo del lado derecho en la direccion de a0 
 sw $t0, 0($a0) 
 #WHILE
-while_calcular_sumaCalculadora25_8:
+while_calcularSumaCalculadora21_8:
 #CODE GEN DE LA EXPRESION
 #EXPRESION BINARIA
 #CODE GEN DEL LEFT
@@ -732,7 +728,7 @@ addiu $sp $sp 4
 #Ningun tipo es double
 slt $a0, $t0, $a0
 #CONTINUA WHILE
-beq $a0, $zero, endWhile_calcular_sumaCalculadora25_8
+beq $a0, $zero, endWhile_calcularSumaCalculadora21_8
 #CODE GEN DE LA SENTENCIA
 #Sentencias del bloque de un metodo 
 #ASIGNACION 
@@ -826,8 +822,8 @@ lw $a0, 0($a0)
 addi $a0, $a0, 1 
 sw $a0, 0($a3)
 #FIN SIMPLE SENTENCE
-j while_calcular_sumaCalculadora25_8
-endWhile_calcular_sumaCalculadora25_8:
+j while_calcularSumaCalculadora21_8
+endWhile_calcularSumaCalculadora21_8:
 #RETURN
 #CODE GEN DE LA EXPRESION
 #VARIABLE NODE
@@ -839,11 +835,13 @@ addiu $a0, $a0 8
 #CONTINUA RETURN 
 #Se obtiene el valor del array desde la direccion 
 lw $a0, 0($a0) 
+j endcalcularSumaCalculadora
+endcalcularSumaCalculadora:
 addiu $sp $sp 4
 lw $ra, 0($sp) 
 jr $ra 
 .text 
-calcular_promedioCalculadora: 
+calcularPromedioCalculadora: 
 #Se forma el nuevo framepointer 
 move $fp, $sp 
 #Se guarda el return address en la pila 
@@ -892,7 +890,7 @@ lw $t0, 0($sp)
 sw $t0, 0($a0) 
 #IF THEN ELSE:
 #If 
-if_calcular_promedioCalculadora388: 
+if_calcularPromedioCalculadora338: 
 #CODE GEN DE LA EXPRESION
 #EXPRESION BINARIA
 #CODE GEN DEL LEFT
@@ -938,7 +936,7 @@ addiu $sp $sp 4
 seq $a0, $t0, $a0
 #CONTINUA IF THEN ELSE
 #Verifica si la condicion es falsa. Si es falsa salta a la etiqueta else 
-beq $a0, $zero, elseif_calcular_promedioCalculadora388
+beq $a0, $zero, elseif_calcularPromedioCalculadora338
 #SENTENCIA DEL IF
 #Sentencias del bloque de un metodo 
 #RETURN
@@ -946,10 +944,11 @@ beq $a0, $zero, elseif_calcular_promedioCalculadora388
 #LITERAL
 li $a0, 0
 #CONTINUA RETURN 
+j endcalcularPromedioCalculadora
 #Al terminar salta a la etiqueta end del if 
-j endif_calcular_promedioCalculadora388 
+j endif_calcularPromedioCalculadora338 
 #Etiqueta del else. Si no hay else, esta vacia 
-elseif_calcular_promedioCalculadora388: 
+elseif_calcularPromedioCalculadora338: 
 #SENTENCIA DEL ELSE
 #Sentencias del bloque de un metodo 
 #RETURN
@@ -1002,12 +1001,14 @@ addiu $sp $sp 4
 #Ningun tipo es double
 div $a0, $t0, $a0
 #CONTINUA RETURN 
-endif_calcular_promedioCalculadora388: 
+j endcalcularPromedioCalculadora
+endif_calcularPromedioCalculadora338: 
+endcalcularPromedioCalculadora:
 addiu $sp $sp 8
 lw $ra, 0($sp) 
 jr $ra 
 .text 
-imprimir_datosCalculadora: 
+imprimirDatosCalculadora: 
 #Se forma el nuevo framepointer 
 move $fp, $sp 
 #Se guarda el return address en la pila 
@@ -1116,7 +1117,7 @@ addi $sp $sp 12
 lw $fp, 0($sp) 
 #FIN SIMPLE SENTENCE
 #WHILE
-while_imprimir_datosCalculadora50_8:
+while_imprimirDatosCalculadora44_8:
 #CODE GEN DE LA EXPRESION
 #EXPRESION BINARIA
 #CODE GEN DEL LEFT
@@ -1167,7 +1168,7 @@ addiu $sp $sp 4
 #Ningun tipo es double
 slt $a0, $t0, $a0
 #CONTINUA WHILE
-beq $a0, $zero, endWhile_imprimir_datosCalculadora50_8
+beq $a0, $zero, endWhile_imprimirDatosCalculadora44_8
 #CODE GEN DE LA SENTENCIA
 #Sentencias del bloque de un metodo 
 #SIMPLE SENTENCE - CODE GEN DE EXPRESION
@@ -1181,14 +1182,14 @@ addiu $sp $sp -4
 #Cargamos los parámetros a la pila 
 #LITERAL
 .data
-string_51_24: .asciiz "dato["
+string_45_24: .asciiz "dato["
 .text
 li $v0, 9 
 li $a0, 8 
 syscall 
 la $a0, vtableStr 
 sw $a0, 0($v0)
-la $a0, string_51_24
+la $a0, string_45_24
 sw $a0, 4($v0)
 move $a0, $v0
 sw $a0, 0($sp) 
@@ -1241,14 +1242,14 @@ addiu $sp $sp -4
 #Cargamos los parámetros a la pila 
 #LITERAL
 .data
-string_53_24: .asciiz "] = "
+string_47_24: .asciiz "] = "
 .text
 li $v0, 9 
 li $a0, 8 
 syscall 
 la $a0, vtableStr 
 sw $a0, 0($v0)
-la $a0, string_53_24
+la $a0, string_47_24
 sw $a0, 4($v0)
 move $a0, $v0
 sw $a0, 0($sp) 
@@ -1334,14 +1335,14 @@ addiu $sp $sp -4
 #Cargamos los parámetros a la pila 
 #LITERAL
 .data
-string_55_24: .asciiz "\n"
+string_49_24: .asciiz "\n"
 .text
 li $v0, 9 
 li $a0, 8 
 syscall 
 la $a0, vtableStr 
 sw $a0, 0($v0)
-la $a0, string_55_24
+la $a0, string_49_24
 sw $a0, 4($v0)
 move $a0, $v0
 sw $a0, 0($sp) 
@@ -1370,8 +1371,9 @@ lw $a0, 0($a0)
 addi $a0, $a0, 1 
 sw $a0, 0($a3)
 #FIN SIMPLE SENTENCE
-j while_imprimir_datosCalculadora50_8
-endWhile_imprimir_datosCalculadora50_8:
+j while_imprimirDatosCalculadora44_8
+endWhile_imprimirDatosCalculadora44_8:
+endimprimirDatosCalculadora:
 addiu $sp $sp 4
 lw $ra, 0($sp) 
 jr $ra 
@@ -1875,6 +1877,20 @@ jr $ra
         move $a0, $t0
         li $a1, 256
         syscall
+
+        move $t1, $t0
+
+        sacarSaltoLinea:
+            lb $t2, 0($t1)
+            beq $t2, $zero, endSalto
+            beq $t2, 10, replace
+            addiu $t1, $t1, 1
+            j sacarSaltoLinea
+
+        replace:
+            sb $zero, 0($t1)
+
+        endSalto:
 
         # Reservo espacio para Str
         li $v0, 9

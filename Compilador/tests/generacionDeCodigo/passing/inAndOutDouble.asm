@@ -159,6 +159,8 @@ lw $t0, 0($a0)
 lw $t1, 4($a0) 
 mtc1 $t0, $f0 
 mtc1 $t1, $f1 
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
 addiu $sp $sp -8 
 sw $t0, 8($sp)
 sw $t1, 4($sp)
@@ -712,6 +714,20 @@ jr $ra
         move $a0, $t0
         li $a1, 256
         syscall
+
+        move $t1, $t0
+
+        sacarSaltoLinea:
+            lb $t2, 0($t1)
+            beq $t2, $zero, endSalto
+            beq $t2, 10, replace
+            addiu $t1, $t1, 1
+            j sacarSaltoLinea
+
+        replace:
+            sb $zero, 0($t1)
+
+        endSalto:
 
         # Reservo espacio para Str
         li $v0, 9

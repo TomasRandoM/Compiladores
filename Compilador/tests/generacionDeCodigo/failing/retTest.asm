@@ -11,16 +11,20 @@ addiu $sp $sp -4
 li $a0, 0 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
-li $a0, 0 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-li $a0, 0 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
 #Sentencias del bloque 
 #ASIGNACION 
-#LITERAL
-li $a0, 5
+#NEW NODE
+#Llamada a constructor 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Reservamos lugar para el self en la pila 
+addiu $sp $sp -4 
+#Cargamos los parámetros a la pila 
+jal constructorA
+addi $sp $sp 8
+#Restauramos el framepointer 
+lw $fp, 0($sp) 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 #VARIABLE NODE
@@ -33,8 +37,106 @@ addiu $sp $sp 4
 lw $t0, 0($sp) 
 #Se guarda lo del lado derecho en la direccion de a0 
 sw $t0, 0($a0) 
-#WHILE
-while_startnull6_5:
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#CHAINED ACCESS NODE 
+#Carga de variable 
+#Cargamos la direccion de la variable o parametro en a0 utilizando el 
+#offset con el fp 
+addiu $a0 $fp -4
+lw $a0 0($a0) 
+#CHAINED CALL NODE 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Guardamos el self en la pila. Es el que venia del anterior encadenado 
+beq $a0, $zero, variableNotInitialized 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#Cargamos los parámetros a la pila 
+#LITERAL
+li $a0, 5
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#Cargamos el self en a0 
+lw $a0, 8($sp) 
+#Cargamos la direccion de la vtable de self en a0 
+lw $a0, 0($a0) 
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 0
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+#Saltamos al metodo y el retorno lo traemos en a0 
+jalr $a0 
+addiu $sp $sp 12
+lw $fp, 0($sp) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 4
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+addiu $sp $sp 8
+#Fin del programa 
+li $v0, 10 
+syscall 
+.data 
+vtableA: 
+.word absA
+.text 
+#Constructor 
+constructorA: 
+#Se forma el nuevo framepointer 
+move $fp, $sp 
+#Se guarda el return address en la pila 
+sw $ra, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para los atributos 
+li $a0, 0 
+#A la memoria de los atributos se le suman 4 bytes para la vtable 
+addiu $a0 $a0 4 
+li $v0, 9 
+syscall 
+#Se carga la direccion de la vtable en a0 y se inserta en la primera posicion de la memoria 
+la $a0, vtableA 
+sw $a0, 0($v0) 
+#Guardamos en el registro de activacion, en la direccion designada para self, la memoria 
+sw $v0, 4($fp) 
+#Llamada a inicializar los atributos 
+#Declaración de atributos 
+#Inicializamos los atributos 
+#Declaración de variables 
+#Reservamos memoria para las variables en la pila y lo inicializamos
+#Sentencias del bloque 
+#Guardamos el self en a0 para retornarlo 
+lw $a0, 4($fp) 
+addiu $sp $sp 4
+lw $ra, 0($sp) 
+jr $ra 
+.text 
+absA: 
+#Se forma el nuevo framepointer 
+move $fp, $sp 
+#Se guarda el return address en la pila 
+sw $ra, 0($sp) 
+addiu $sp $sp -4 
+#Declaración de variables 
+#Reservamos memoria para las variables en la pila y lo inicializamos
+#Sentencias del bloque 
+#IF THEN ELSE:
+#If 
+if_absA68: 
 #CODE GEN DE LA EXPRESION
 #EXPRESION BINARIA
 #CODE GEN DEL LEFT
@@ -42,7 +144,7 @@ while_startnull6_5:
 #Carga de variable 
 #Cargamos la direccion de la variable en a0 utilizando el 
 #offset con el fp 
-la $a0, -4($fp) 
+la $a0, 4($fp) 
 #EXP BINARIA CONTINUACION
 #Se obtiene el valor del array desde la direccion 
 lw $a0, 0($a0) 
@@ -50,92 +152,49 @@ sw $a0, 0($sp)
 addiu $sp $sp -4 
 #CODE GEN DEL RIGHT
 #LITERAL
-li $a0, 7
+li $a0, 0
 #EXP BINARIA CONTINUACION
 #Ni left ni right son double
 #El lado izquierdo queda en el t0 y el lado derecho en el a0 
 lw $t0, 4($sp) 
 addiu $sp $sp 4
 #Ningun tipo es double
-sle $a0, $t0, $a0
-#CONTINUA WHILE
-beq $a0, $zero, endWhile_startnull6_5
-#CODE GEN DE LA SENTENCIA
+slt $a0, $t0, $a0
+#CONTINUA IF THEN ELSE
+#Verifica si la condicion es falsa. Si es falsa salta a la etiqueta else 
+beq $a0, $zero, elseif_absA68
+#SENTENCIA DEL IF
 #Sentencias del bloque de un metodo 
-#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#RETURN
+#CODE GEN DE LA EXPRESION
 #UNARY EXPRESSION
 #CODE GEN DE LA EXPRESION
 #VARIABLE NODE
 #Carga de variable 
 #Cargamos la direccion de la variable en a0 utilizando el 
 #offset con el fp 
-la $a0, -4($fp) 
+la $a0, 4($fp) 
 #Se obtiene el valor del array desde la direccion 
 move $a3, $a0 
 lw $a0, 0($a0) 
-addi $a0, $a0, 1 
-sw $a0, 0($a3)
-#FIN SIMPLE SENTENCE
+sub $a0, $zero, $a0 
+#CONTINUA RETURN 
+j endabsA
+#Al terminar salta a la etiqueta end del if 
+j endif_absA68 
+#Etiqueta del else. Si no hay else, esta vacia 
+elseif_absA68: 
+#SENTENCIA DEL ELSE
+#Sentencias del bloque de un metodo 
 #SIMPLE SENTENCE - CODE GEN DE EXPRESION
-#METHOD CALL 
-#Guardamos el framepointer actual en la pila 
-sw $fp, 0($sp) 
-addiu $sp $sp -4 
-#Se deja espacio para el self 
-#En este caso no existe, pero para coherencia 
-addiu $sp $sp -4
-#Cargamos los parámetros a la pila 
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, -4($fp) 
-#Se obtiene el valor del array desde la direccion 
-lw $a0, 0($a0) 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-la $a0, vtableIO
-#Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 4
-#Cargamos la direccion del metodo en el a0
-lw $a0, 0($a0)
-jalr $a0 
-addi $sp $sp 12
-lw $fp, 0($sp) 
+#LITERAL
+li $a0, 8
 #FIN SIMPLE SENTENCE
-j while_startnull6_5
-endWhile_startnull6_5:
-#SIMPLE SENTENCE - CODE GEN DE EXPRESION
-#METHOD CALL 
-#Guardamos el framepointer actual en la pila 
-sw $fp, 0($sp) 
-addiu $sp $sp -4 
-#Se deja espacio para el self 
-#En este caso no existe, pero para coherencia 
-addiu $sp $sp -4
-#Cargamos los parámetros a la pila 
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, -4($fp) 
-#Se obtiene el valor del array desde la direccion 
-lw $a0, 0($a0) 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-la $a0, vtableIO
-#Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 4
-#Cargamos la direccion del metodo en el a0
-lw $a0, 0($a0)
-jalr $a0 
-addi $sp $sp 12
-lw $fp, 0($sp) 
-#FIN SIMPLE SENTENCE
-addiu $sp $sp 16
-#Fin del programa 
-li $v0, 10 
-syscall 
+endif_absA68: 
+endabsA:
+addiu $sp $sp 4
+lw $ra, 0($sp) 
+jr $ra 
 .data
     addOne: .double 1.0
     zeroDouble: .double 0.0

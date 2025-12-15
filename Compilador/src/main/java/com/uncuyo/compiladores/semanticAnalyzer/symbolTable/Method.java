@@ -155,18 +155,16 @@ public class Method {
      * @return int offset
      */
     public int getParameterOffset(String parameter) {
-        int memory = 4;
+        int memory = 0;
         for (Map.Entry<String, Parameter> entry : parameters.entrySet()) {
-            if (entry.getKey().equals(parameter)) {
-                return memory;
+            if (entry.getValue().getType().getName().equals("Double")) {
+                memory += 8;
             }
             else {
-                if (entry.getValue().getType().getName().equals("Double")) {
-                    memory += 8;
-                }
-                else {
-                    memory += 4;
-                }
+                memory += 4;
+            }
+            if (entry.getKey().equals(parameter)) {
+                return memory;
             }
         }
         //No se debería llegar a este return, si se llega falló el semántico

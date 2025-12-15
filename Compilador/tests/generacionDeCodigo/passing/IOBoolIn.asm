@@ -638,6 +638,20 @@ syscall
         li $a1, 256
         syscall
 
+        move $t1, $t0
+
+        sacarSaltoLinea:
+            lb $t2, 0($t1)
+            beq $t2, $zero, endSalto
+            beq $t2, 10, replace
+            addiu $t1, $t1, 1
+            j sacarSaltoLinea
+
+        replace:
+            sb $zero, 0($t1)
+
+        endSalto:
+
         # Reservo espacio para Str
         li $v0, 9
         li $a0, 8

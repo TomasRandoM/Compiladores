@@ -11,16 +11,51 @@ addiu $sp $sp -4
 li $a0, 0 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
-li $a0, 0 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-li $a0, 0 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
+l.d $f0, zeroDouble
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
+sw $t0, 0($sp)
+addiu $sp, $sp, -4
+sw $t1, 0($sp)
+addiu $sp, $sp, -4
 #Sentencias del bloque 
 #ASIGNACION 
+#NEW NODE
+#Llamada a constructor 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Reservamos lugar para el self en la pila 
+addiu $sp $sp -4 
+#Cargamos los parámetros a la pila 
+#CODE GEN DE LA EXPRESION
 #LITERAL
-li $a0, 5
+.data 
+double3.8_27_20: .double 3.8
+.text 
+ l.d $f0, double3.8_27_20
+#CONTINUA NEW NODE
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
+addiu $sp $sp -8 
+sw $t0, 8($sp) 
+sw $t1, 4($sp) 
+#CODE GEN DE LA EXPRESION
+#LITERAL
+.data 
+double9.4_27_15: .double 9.4
+.text 
+ l.d $f0, double9.4_27_15
+#CONTINUA NEW NODE
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
+addiu $sp $sp -8 
+sw $t0, 8($sp) 
+sw $t1, 4($sp) 
+jal constructorB
+addi $sp $sp 24
+#Restauramos el framepointer 
+lw $fp, 0($sp) 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 #VARIABLE NODE
@@ -33,49 +68,6 @@ addiu $sp $sp 4
 lw $t0, 0($sp) 
 #Se guarda lo del lado derecho en la direccion de a0 
 sw $t0, 0($a0) 
-#WHILE
-while_startnull6_5:
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, -4($fp) 
-#EXP BINARIA CONTINUACION
-#Se obtiene el valor del array desde la direccion 
-lw $a0, 0($a0) 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#CODE GEN DEL RIGHT
-#LITERAL
-li $a0, 7
-#EXP BINARIA CONTINUACION
-#Ni left ni right son double
-#El lado izquierdo queda en el t0 y el lado derecho en el a0 
-lw $t0, 4($sp) 
-addiu $sp $sp 4
-#Ningun tipo es double
-sle $a0, $t0, $a0
-#CONTINUA WHILE
-beq $a0, $zero, endWhile_startnull6_5
-#CODE GEN DE LA SENTENCIA
-#Sentencias del bloque de un metodo 
-#SIMPLE SENTENCE - CODE GEN DE EXPRESION
-#UNARY EXPRESSION
-#CODE GEN DE LA EXPRESION
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, -4($fp) 
-#Se obtiene el valor del array desde la direccion 
-move $a3, $a0 
-lw $a0, 0($a0) 
-addi $a0, $a0, 1 
-sw $a0, 0($a3)
-#FIN SIMPLE SENTENCE
 #SIMPLE SENTENCE - CODE GEN DE EXPRESION
 #METHOD CALL 
 #Guardamos el framepointer actual en la pila 
@@ -85,57 +77,249 @@ addiu $sp $sp -4
 #En este caso no existe, pero para coherencia 
 addiu $sp $sp -4
 #Cargamos los parámetros a la pila 
-#VARIABLE NODE
+#CHAINED ACCESS NODE 
 #Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
+#Cargamos la direccion de la variable o parametro en a0 utilizando el 
 #offset con el fp 
-la $a0, -4($fp) 
-#Se obtiene el valor del array desde la direccion 
-lw $a0, 0($a0) 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
+addiu $a0 $fp -4
+lw $a0 0($a0) 
+#CHAINED ACCESS NODE 
+beq $a0, $zero, variableNotInitialized 
+#Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior
+addiu $a0 $a0 8
+lw $t0, 0($a0) 
+lw $t1, 4($a0) 
+mtc1 $t0, $f0 
+mtc1 $t1, $f1 
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
+addiu $sp $sp -8 
+sw $t0, 8($sp)
+sw $t1, 4($sp)
 la $a0, vtableIO
 #Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 4
+addiu $a0, $a0, 12
 #Cargamos la direccion del metodo en el a0
 lw $a0, 0($a0)
 jalr $a0 
-addi $sp $sp 12
-lw $fp, 0($sp) 
-#FIN SIMPLE SENTENCE
-j while_startnull6_5
-endWhile_startnull6_5:
-#SIMPLE SENTENCE - CODE GEN DE EXPRESION
-#METHOD CALL 
-#Guardamos el framepointer actual en la pila 
-sw $fp, 0($sp) 
-addiu $sp $sp -4 
-#Se deja espacio para el self 
-#En este caso no existe, pero para coherencia 
-addiu $sp $sp -4
-#Cargamos los parámetros a la pila 
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, -4($fp) 
-#Se obtiene el valor del array desde la direccion 
-lw $a0, 0($a0) 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-la $a0, vtableIO
-#Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 4
-#Cargamos la direccion del metodo en el a0
-lw $a0, 0($a0)
-jalr $a0 
-addi $sp $sp 12
+addi $sp $sp 16
 lw $fp, 0($sp) 
 #FIN SIMPLE SENTENCE
 addiu $sp $sp 16
 #Fin del programa 
 li $v0, 10 
 syscall 
+.data 
+vtableA: 
+.text 
+#Constructor 
+constructorA: 
+#Se forma el nuevo framepointer 
+move $fp, $sp 
+#Se guarda el return address en la pila 
+sw $ra, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para los atributos 
+li $a0, 12 
+#A la memoria de los atributos se le suman 4 bytes para la vtable 
+addiu $a0 $a0 4 
+li $v0, 9 
+syscall 
+#Se carga la direccion de la vtable en a0 y se inserta en la primera posicion de la memoria 
+la $a0, vtableA 
+sw $a0, 0($v0) 
+#Guardamos en el registro de activacion, en la direccion designada para self, la memoria 
+sw $v0, 4($fp) 
+#Llamada a inicializar los atributos 
+#Declaración de atributos 
+#Inicializamos los atributos 
+li $a0, 0 
+sw $a0, 4($v0) 
+l.d $f0, zeroDouble
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
+sw $t0, 8($v0)
+sw $t1, 12($v0)
+#Declaración de variables 
+#Reservamos memoria para las variables en la pila y lo inicializamos
+#Sentencias del bloque 
+#Guardamos el self en a0 para retornarlo 
+lw $a0, 4($fp) 
+addiu $sp $sp 4
+lw $ra, 0($sp) 
+jr $ra 
+.data 
+vtableB: 
+.word holaB
+.text 
+#Constructor 
+constructorB: 
+#Se forma el nuevo framepointer 
+move $fp, $sp 
+#Se guarda el return address en la pila 
+sw $ra, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para los atributos 
+li $a0, 20 
+#A la memoria de los atributos se le suman 4 bytes para la vtable 
+addiu $a0 $a0 4 
+li $v0, 9 
+syscall 
+#Se carga la direccion de la vtable en a0 y se inserta en la primera posicion de la memoria 
+la $a0, vtableB 
+sw $a0, 0($v0) 
+#Guardamos en el registro de activacion, en la direccion designada para self, la memoria 
+sw $v0, 20($fp) 
+#Llamada a inicializar los atributos 
+#Declaración de atributos 
+#Inicializamos los atributos 
+li $a0, 0 
+sw $a0, 4($v0) 
+l.d $f0, zeroDouble
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
+sw $t0, 8($v0)
+sw $t1, 12($v0)
+l.d $f0, zeroDouble
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
+sw $t0, 16($v0)
+sw $t1, 20($v0)
+#Declaración de variables 
+#Reservamos memoria para las variables en la pila y lo inicializamos
+#Sentencias del bloque 
+#ASIGNACION 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, 8($fp) 
+#Se obtiene el valor del array desde la direccion 
+lw $t0, 0($a0) 
+lw $t1, -4($a0) 
+mtc1 $t0, $f0 
+mtc1 $t1, $f1 
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
+sw $t0, 0($sp)
+addiu $sp, $sp, -4
+sw $t1, 0($sp)
+addiu $sp, $sp, -4
+#SELF 
+lw $a0, 20($fp) 
+#CHAINED ACCESS NODE 
+beq $a0, $zero, variableNotInitialized 
+#Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior
+addiu $a0 $a0 16
+#Se saca el double de la pila y se guarda en f0 
+addiu $sp $sp 8 
+lw $t0, 0($sp) 
+lw $t1, -4($sp) 
+mtc1 $t0, $f0 
+mtc1 $t1, $f1 
+#Se guarda el double del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+sw $t1, 4($a0) 
+#ASIGNACION 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, 16($fp) 
+#Se obtiene el valor del array desde la direccion 
+lw $t0, 0($a0) 
+lw $t1, -4($a0) 
+mtc1 $t0, $f0 
+mtc1 $t1, $f1 
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
+sw $t0, 0($sp)
+addiu $sp, $sp, -4
+sw $t1, 0($sp)
+addiu $sp, $sp, -4
+#SELF 
+lw $a0, 20($fp) 
+#CHAINED ACCESS NODE 
+beq $a0, $zero, variableNotInitialized 
+#Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior
+addiu $a0 $a0 8
+#Se saca el double de la pila y se guarda en f0 
+addiu $sp $sp 8 
+lw $t0, 0($sp) 
+lw $t1, -4($sp) 
+mtc1 $t0, $f0 
+mtc1 $t1, $f1 
+#Se guarda el double del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+sw $t1, 4($a0) 
+#ASIGNACION 
+#LITERAL
+li $a0, 4
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion del atributo en a0 utilizando la 
+#cantidad de parametros para acceder a self, y de ahi al atrubuto
+lw $a0, 20($fp)
+addiu $a0, $a0 4
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#Guardamos el self en a0 para retornarlo 
+lw $a0, 20($fp) 
+addiu $sp $sp 4
+lw $ra, 0($sp) 
+jr $ra 
+.text 
+holaB: 
+#Se forma el nuevo framepointer 
+move $fp, $sp 
+#Se guarda el return address en la pila 
+sw $ra, 0($sp) 
+addiu $sp $sp -4 
+#Declaración de variables 
+#Reservamos memoria para las variables en la pila y lo inicializamos
+#Sentencias del bloque 
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, 8($fp) 
+#Se obtiene el valor del array desde la direccion 
+lw $t0, 0($a0) 
+lw $t1, -4($a0) 
+mtc1 $t0, $f0 
+mtc1 $t1, $f1 
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
+addiu $sp $sp -8 
+sw $t0, 8($sp)
+sw $t1, 4($sp)
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 12
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 16
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+endholaB:
+addiu $sp $sp 4
+lw $ra, 0($sp) 
+jr $ra 
 .data
     addOne: .double 1.0
     zeroDouble: .double 0.0

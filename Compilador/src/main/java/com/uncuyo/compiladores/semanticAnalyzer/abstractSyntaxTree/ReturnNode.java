@@ -107,6 +107,7 @@ public class ReturnNode extends SentenceNode {
                 string.append("lw $a0, 0($a0) \n");
             }
         }
+        string.append("j end").append(methodName).append(className).append("\n");
     }
 
     /**

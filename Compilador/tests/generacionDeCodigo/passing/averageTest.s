@@ -1,6 +1,5 @@
-// Clase que encapsula operaciones matemáticas sobre un arreglo
+// Deberia imprimir 30
 class Calculadora {
-
     pub Array Int datos;
     Int suma;
     Int i;
@@ -8,18 +7,15 @@ class Calculadora {
 
 impl Calculadora {
 
-    // Constructor
     .(Array Int d) {
         (IO.out_array_int(d));
         datos = d;
-        (99);
         (IO.out_int(datos.length()));
         suma = 0;
         i = 0;
     }
 
-    // Suma todos los elementos del arreglo
-    fn Int calcular_suma() {
+    fn Int calcularSuma() {
         suma = 0;
         i = 0;
 
@@ -31,10 +27,9 @@ impl Calculadora {
         ret suma;
     }
 
-    // Calcula el promedio (entero)
-    fn Int calcular_promedio() {
+    fn Int calcularPromedio() {
         Int total;
-        total = self.calcular_suma();
+        total = self.calcularSuma();
 
         if (datos.length() == 0) {
             ret 0;
@@ -43,8 +38,7 @@ impl Calculadora {
         }
     }
 
-    // Imprime el arreglo
-    fn imprimir_datos() {
+    fn imprimirDatos() {
         i = 0;
         (IO.out_array_int(datos));
         (IO.out_int(datos[0]));
@@ -59,14 +53,12 @@ impl Calculadora {
     }
 }
 
-// Programa principal
 start {
 
     Array Int numeros;
     Calculadora calc;
     Int promedio;
 
-    // Creo el arreglo
     numeros = new Int[5];
     numeros[0] = 10;
     numeros[1] = 20;
@@ -74,16 +66,12 @@ start {
     numeros[3] = 40;
     numeros[4] = 50;
 
-    // Creo la calculadora
     calc = new Calculadora(numeros);
 
-    // Imprimo los datos
-    (calc.imprimir_datos());
+    (calc.imprimirDatos());
 
-    // Calculo el promedio
-    promedio = calc.calcular_promedio();
+    promedio = calc.calcularPromedio();
 
-    // Imprimo el resultado final
     (IO.out_str("Promedio = "));
     (IO.out_int(promedio));
     (IO.out_str("\n"));

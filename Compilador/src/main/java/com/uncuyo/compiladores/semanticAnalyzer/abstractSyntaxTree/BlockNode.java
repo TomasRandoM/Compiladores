@@ -141,6 +141,7 @@ public class BlockNode extends SentenceNode {
                     for (SentenceNode sentenceNode : sentences) {
                         sentenceNode.codeGen(string);
                     }
+                    string.append("end").append(methodName).append(className).append(":\n");
                     string.append("addiu $sp $sp ").append(memory + 4).append("\n");
                     string.append("lw $ra, 0($sp) \n");
                     string.append("jr $ra \n");

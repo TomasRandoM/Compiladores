@@ -203,6 +203,8 @@ public class NewNode extends OperandNode{
                     }
                 }
                 if (expressionNode.nodeType.getName().equals("Double")) {
+                    string.append("mfc1 $t0, $f0 \n");
+                    string.append("mfc1 $t1, $f1 \n");
                     memory += 8;
                     string.append("addiu $sp $sp -8 \n");
                     string.append("sw $t0, 8($sp) \n");
