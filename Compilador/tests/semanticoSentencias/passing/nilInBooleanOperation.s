@@ -9,8 +9,9 @@ impl A {
 
     }
     fn Int a() {
-        y = 5;
-        if (nil == y) {
+        A a;
+        a = new A();
+        if (nil == a) {
             y = 6;
             ret 5;
         }

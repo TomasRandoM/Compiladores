@@ -19,7 +19,6 @@ public class CodeGenerationTest {
     @Test
     void testGeneracionCodigoFailing() {
         Path base = Paths.get("tests/generacionDeCodigo/failing");
-
         try (Stream<Path> paths = Files.walk(base)) {
             paths
                     .filter(Files::isRegularFile)
@@ -42,7 +41,6 @@ public class CodeGenerationTest {
     @Test
     void testGeneracionCodigoPassing() {
         Path base = Paths.get("tests/generacionDeCodigo/passing");
-
         try (Stream<Path> paths = Files.walk(base)) {
             paths
                     .filter(Files::isRegularFile)

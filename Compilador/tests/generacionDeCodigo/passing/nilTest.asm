@@ -8,13 +8,6 @@ move $fp, $sp
 addiu $sp $sp -4 
 #Declaración de variables 
 #Reservamos memoria para las variables en la pila y lo inicializamos
-l.d $f0, zeroDouble
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-sw $t0, 0($sp)
-addiu $sp, $sp, -4
-sw $t1, 0($sp)
-addiu $sp, $sp, -4
 li $a0, 0 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
@@ -41,90 +34,78 @@ addiu $sp $sp -4
 #Carga de variable 
 #Cargamos la direccion de la variable en a0 utilizando el 
 #offset con el fp 
-la $a0, -12($fp) 
+la $a0, -4($fp) 
 addiu $sp $sp 4 
 #Cargamos el valor del lado derecho 
 lw $t0, 0($sp) 
 #Se guarda lo del lado derecho en la direccion de a0 
 sw $t0, 0($a0) 
 #ASIGNACION 
+#LITERAL
+li $a0, 0
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
 #CHAINED ACCESS NODE 
 #Carga de variable 
 #Cargamos la direccion de la variable o parametro en a0 utilizando el 
 #offset con el fp 
-addiu $a0 $fp -12
+addiu $a0 $fp -4
 lw $a0 0($a0) 
-#CHAINED CALL NODE 
-sw $fp, 0($sp) 
-addiu $sp $sp -4 
-#Guardamos el self en la pila. Es el que venia del anterior encadenado 
+#CHAINED ACCESS NODE 
 beq $a0, $zero, variableNotInitialized 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#Cargamos los parámetros a la pila 
-#LITERAL
-li $a0, 6
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#LITERAL
-li $a0, 4
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#LITERAL
-li $a0, 3
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#Cargamos el self en a0 
-lw $a0, 16($sp) 
-#Cargamos la direccion de la vtable de self en a0 
-lw $a0, 0($a0) 
-#Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 0
-#Cargamos la direccion del metodo en el a0
-lw $a0, 0($a0)
-#Saltamos al metodo y el retorno lo traemos en a0 
-jalr $a0 
-addiu $sp $sp 20
-lw $fp, 0($sp) 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, -16($fp) 
+#Cargamos la direccion del atributo en a0. Recordamos que en a0 venia el self anterior
+addiu $a0 $a0 4
 addiu $sp $sp 4 
 #Cargamos el valor del lado derecho 
 lw $t0, 0($sp) 
 #Se guarda lo del lado derecho en la direccion de a0 
 sw $t0, 0($a0) 
-#SIMPLE SENTENCE - CODE GEN DE EXPRESION
-#METHOD CALL 
-#Guardamos el framepointer actual en la pila 
-sw $fp, 0($sp) 
+#ASIGNACION 
+#LITERAL
+li $a0, 0
+sw $a0, 0($sp) 
 addiu $sp $sp -4 
-#Se deja espacio para el self 
-#En este caso no existe, pero para coherencia 
-addiu $sp $sp -4
-#Cargamos los parámetros a la pila 
 #VARIABLE NODE
 #Carga de variable 
 #Cargamos la direccion de la variable en a0 utilizando el 
 #offset con el fp 
-la $a0, -16($fp) 
-#Se obtiene el valor del array desde la direccion 
-lw $a0, 0($a0) 
+la $a0, -4($fp) 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#IF THEN ELSE:
+#If 
+if_startnull154: 
+#CODE GEN DE LA EXPRESION
+#EXPRESION BINARIA
+#CODE GEN DEL LEFT
+#LITERAL
+li $a0, 0
+#EXP BINARIA CONTINUACION
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
-la $a0, vtableIO
-#Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 4
-#Cargamos la direccion del metodo en el a0
-lw $a0, 0($a0)
-jalr $a0 
-addi $sp $sp 12
-lw $fp, 0($sp) 
-#FIN SIMPLE SENTENCE
+#CODE GEN DEL RIGHT
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+#EXP BINARIA CONTINUACION
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+#Ni left ni right son double
+#El lado izquierdo queda en el t0 y el lado derecho en el a0 
+lw $t0, 4($sp) 
+addiu $sp $sp 4
+#Ningun tipo es double
+seq $a0, $t0, $a0
+#CONTINUA IF THEN ELSE
+#Verifica si la condicion es falsa. Si es falsa salta a la etiqueta else 
+beq $a0, $zero, elseif_startnull154
+#SENTENCIA DEL IF
+#Sentencias del bloque de un metodo 
 #SIMPLE SENTENCE - CODE GEN DE EXPRESION
 #METHOD CALL 
 #Guardamos el framepointer actual en la pila 
@@ -136,14 +117,14 @@ addiu $sp $sp -4
 #Cargamos los parámetros a la pila 
 #LITERAL
 .data
-string_27_16: .asciiz "\n"
+string_16_20: .asciiz "soy Nil"
 .text
 li $v0, 9 
 li $a0, 8 
 syscall 
 la $a0, vtableStr 
 sw $a0, 0($v0)
-la $a0, string_27_16
+la $a0, string_16_20
 sw $a0, 4($v0)
 move $a0, $v0
 sw $a0, 0($sp) 
@@ -157,112 +138,12 @@ jalr $a0
 addi $sp $sp 12
 lw $fp, 0($sp) 
 #FIN SIMPLE SENTENCE
-#ASIGNACION 
-#CHAINED ACCESS NODE 
-#Carga de variable 
-#Cargamos la direccion de la variable o parametro en a0 utilizando el 
-#offset con el fp 
-addiu $a0 $fp -12
-lw $a0 0($a0) 
-#CHAINED CALL NODE 
-sw $fp, 0($sp) 
-addiu $sp $sp -4 
-#Guardamos el self en la pila. Es el que venia del anterior encadenado 
-beq $a0, $zero, variableNotInitialized 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#Cargamos los parámetros a la pila 
-#LITERAL
-li $a0, 4
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#LITERAL
-.data 
-double3.0_29_30: .double 3.0
-.text 
- l.d $f0, double3.0_29_30
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-sw $t0, 0($sp)
-addiu $sp, $sp, -4
-sw $t1, 0($sp)
-addiu $sp, $sp, -4
-#LITERAL
-.data 
-double2.0_29_25: .double 2.0
-.text 
- l.d $f0, double2.0_29_25
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-sw $t0, 0($sp)
-addiu $sp, $sp, -4
-sw $t1, 0($sp)
-addiu $sp, $sp, -4
-#Cargamos el self en a0 
-lw $a0, 24($sp) 
-#Cargamos la direccion de la vtable de self en a0 
-lw $a0, 0($a0) 
-#Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 4
-#Cargamos la direccion del metodo en el a0
-lw $a0, 0($a0)
-#Saltamos al metodo y el retorno lo traemos en a0 
-jalr $a0 
-addiu $sp $sp 28
-lw $fp, 0($sp) 
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-sw $t0, 0($sp)
-addiu $sp, $sp, -4
-sw $t1, 0($sp)
-addiu $sp, $sp, -4
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, -4($fp) 
-#Se saca el double de la pila y se guarda en f0 
-addiu $sp $sp 8 
-lw $t0, 0($sp) 
-lw $t1, -4($sp) 
-mtc1 $t0, $f0 
-mtc1 $t1, $f1 
-#Se guarda el double del lado derecho en la direccion de a0 
-sw $t0, 0($a0) 
-sw $t1, -4($a0) 
-#SIMPLE SENTENCE - CODE GEN DE EXPRESION
-#METHOD CALL 
-#Guardamos el framepointer actual en la pila 
-sw $fp, 0($sp) 
-addiu $sp $sp -4 
-#Se deja espacio para el self 
-#En este caso no existe, pero para coherencia 
-addiu $sp $sp -4
-#Cargamos los parámetros a la pila 
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, -4($fp) 
-#Se obtiene el valor del array desde la direccion 
-lw $t0, 0($a0) 
-lw $t1, -4($a0) 
-mtc1 $t0, $f0 
-mtc1 $t1, $f1 
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-addiu $sp $sp -8 
-sw $t0, 8($sp)
-sw $t1, 4($sp)
-la $a0, vtableIO
-#Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 12
-#Cargamos la direccion del metodo en el a0
-lw $a0, 0($a0)
-jalr $a0 
-addi $sp $sp 16
-lw $fp, 0($sp) 
-#FIN SIMPLE SENTENCE
+#Al terminar salta a la etiqueta end del if 
+j endif_startnull154 
+#Etiqueta del else. Si no hay else, esta vacia 
+elseif_startnull154: 
+#SENTENCIA DEL ELSE
+#Sentencias del bloque de un metodo 
 #SIMPLE SENTENCE - CODE GEN DE EXPRESION
 #METHOD CALL 
 #Guardamos el framepointer actual en la pila 
@@ -274,14 +155,14 @@ addiu $sp $sp -4
 #Cargamos los parámetros a la pila 
 #LITERAL
 .data
-string_31_16: .asciiz "\n"
+string_19_20: .asciiz "No soy nil"
 .text
 li $v0, 9 
 li $a0, 8 
 syscall 
 la $a0, vtableStr 
 sw $a0, 0($v0)
-la $a0, string_31_16
+la $a0, string_19_20
 sw $a0, 4($v0)
 move $a0, $v0
 sw $a0, 0($sp) 
@@ -295,14 +176,336 @@ jalr $a0
 addi $sp $sp 12
 lw $fp, 0($sp) 
 #FIN SIMPLE SENTENCE
-addiu $sp $sp 20
+endif_startnull154: 
+#ASIGNACION 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -8($fp) 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#LITERAL
+.data
+string_22_16: .asciiz "\n"
+.text
+li $v0, 9 
+li $a0, 8 
+syscall 
+la $a0, vtableStr 
+sw $a0, 0($v0)
+la $a0, string_22_16
+sw $a0, 4($v0)
+move $a0, $v0
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 0
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+#IF THEN ELSE:
+#If 
+if_startnull234: 
+#CODE GEN DE LA EXPRESION
+#EXPRESION BINARIA
+#CODE GEN DEL LEFT
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -8($fp) 
+#EXP BINARIA CONTINUACION
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#CODE GEN DEL RIGHT
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+#EXP BINARIA CONTINUACION
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+#Ni left ni right son double
+#El lado izquierdo queda en el t0 y el lado derecho en el a0 
+lw $t0, 4($sp) 
+addiu $sp $sp 4
+#Ningun tipo es double
+seq $a0, $t0, $a0
+#CONTINUA IF THEN ELSE
+#Verifica si la condicion es falsa. Si es falsa salta a la etiqueta else 
+beq $a0, $zero, elseif_startnull234
+#SENTENCIA DEL IF
+#Sentencias del bloque de un metodo 
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#LITERAL
+.data
+string_24_20: .asciiz "Soy igual a a"
+.text
+li $v0, 9 
+li $a0, 8 
+syscall 
+la $a0, vtableStr 
+sw $a0, 0($v0)
+la $a0, string_24_20
+sw $a0, 4($v0)
+move $a0, $v0
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 0
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+#Al terminar salta a la etiqueta end del if 
+j endif_startnull234 
+#Etiqueta del else. Si no hay else, esta vacia 
+elseif_startnull234: 
+#SENTENCIA DEL ELSE
+#Sentencias del bloque de un metodo 
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#LITERAL
+.data
+string_27_20: .asciiz "No soy igual a a"
+.text
+li $v0, 9 
+li $a0, 8 
+syscall 
+la $a0, vtableStr 
+sw $a0, 0($v0)
+la $a0, string_27_20
+sw $a0, 4($v0)
+move $a0, $v0
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 0
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+endif_startnull234: 
+#ASIGNACION 
+#NEW NODE
+#Llamada a constructor 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Reservamos lugar para el self en la pila 
+addiu $sp $sp -4 
+#Cargamos los parámetros a la pila 
+jal constructorA
+addi $sp $sp 8
+#Restauramos el framepointer 
+lw $fp, 0($sp) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -8($fp) 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#LITERAL
+.data
+string_30_16: .asciiz "\n"
+.text
+li $v0, 9 
+li $a0, 8 
+syscall 
+la $a0, vtableStr 
+sw $a0, 0($v0)
+la $a0, string_30_16
+sw $a0, 4($v0)
+move $a0, $v0
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 0
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+#IF THEN ELSE:
+#If 
+if_startnull314: 
+#CODE GEN DE LA EXPRESION
+#EXPRESION BINARIA
+#CODE GEN DEL LEFT
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -8($fp) 
+#EXP BINARIA CONTINUACION
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#CODE GEN DEL RIGHT
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+#EXP BINARIA CONTINUACION
+#Se obtiene el valor del array desde la direccion 
+lw $a0, 0($a0) 
+#Ni left ni right son double
+#El lado izquierdo queda en el t0 y el lado derecho en el a0 
+lw $t0, 4($sp) 
+addiu $sp $sp 4
+#Ningun tipo es double
+seq $a0, $t0, $a0
+#CONTINUA IF THEN ELSE
+#Verifica si la condicion es falsa. Si es falsa salta a la etiqueta else 
+beq $a0, $zero, elseif_startnull314
+#SENTENCIA DEL IF
+#Sentencias del bloque de un metodo 
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#LITERAL
+.data
+string_32_20: .asciiz "Soy igual a a"
+.text
+li $v0, 9 
+li $a0, 8 
+syscall 
+la $a0, vtableStr 
+sw $a0, 0($v0)
+la $a0, string_32_20
+sw $a0, 4($v0)
+move $a0, $v0
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 0
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+#Al terminar salta a la etiqueta end del if 
+j endif_startnull314 
+#Etiqueta del else. Si no hay else, esta vacia 
+elseif_startnull314: 
+#SENTENCIA DEL ELSE
+#Sentencias del bloque de un metodo 
+#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#METHOD CALL 
+#Guardamos el framepointer actual en la pila 
+sw $fp, 0($sp) 
+addiu $sp $sp -4 
+#Se deja espacio para el self 
+#En este caso no existe, pero para coherencia 
+addiu $sp $sp -4
+#Cargamos los parámetros a la pila 
+#LITERAL
+.data
+string_35_20: .asciiz "No soy igual a a"
+.text
+li $v0, 9 
+li $a0, 8 
+syscall 
+la $a0, vtableStr 
+sw $a0, 0($v0)
+la $a0, string_35_20
+sw $a0, 4($v0)
+move $a0, $v0
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+la $a0, vtableIO
+#Buscamos la direccion del metodo (usando el offset) 
+addiu $a0, $a0, 0
+#Cargamos la direccion del metodo en el a0
+lw $a0, 0($a0)
+jalr $a0 
+addi $sp $sp 12
+lw $fp, 0($sp) 
+#FIN SIMPLE SENTENCE
+endif_startnull314: 
+addiu $sp $sp 12
 #Fin del programa 
 li $v0, 10 
 syscall 
 .data 
 vtableA: 
-.word complexIntA
-.word complexDoubleA
 .text 
 #Constructor 
 constructorA: 
@@ -312,7 +515,7 @@ move $fp, $sp
 sw $ra, 0($sp) 
 addiu $sp $sp -4 
 #Se deja espacio para los atributos 
-li $a0, 0 
+li $a0, 4 
 #A la memoria de los atributos se le suman 4 bytes para la vtable 
 addiu $a0 $a0 4 
 li $v0, 9 
@@ -325,348 +528,13 @@ sw $v0, 4($fp)
 #Llamada a inicializar los atributos 
 #Declaración de atributos 
 #Inicializamos los atributos 
+li $a0, 0 
+sw $a0, 4($v0) 
 #Declaración de variables 
 #Reservamos memoria para las variables en la pila y lo inicializamos
 #Sentencias del bloque 
 #Guardamos el self en a0 para retornarlo 
 lw $a0, 4($fp) 
-addiu $sp $sp 4
-lw $ra, 0($sp) 
-jr $ra 
-.text 
-complexIntA: 
-#Se forma el nuevo framepointer 
-move $fp, $sp 
-#Se guarda el return address en la pila 
-sw $ra, 0($sp) 
-addiu $sp $sp -4 
-#Declaración de variables 
-#Reservamos memoria para las variables en la pila y lo inicializamos
-#Sentencias del bloque 
-#RETURN
-#CODE GEN DE LA EXPRESION
-#UNARY EXPRESSION
-#CODE GEN DE LA EXPRESION
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, 4($fp) 
-#EXP BINARIA CONTINUACION
-#Se obtiene el valor del array desde la direccion 
-lw $a0, 0($a0) 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#CODE GEN DEL RIGHT
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, 8($fp) 
-#EXP BINARIA CONTINUACION
-#Se obtiene el valor del array desde la direccion 
-lw $a0, 0($a0) 
-#Ni left ni right son double
-#El lado izquierdo queda en el t0 y el lado derecho en el a0 
-lw $t0, 4($sp) 
-addiu $sp $sp 4
-#Ningun tipo es double
-add $a0, $t0, $a0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#EXP BINARIA CONTINUACION
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#CODE GEN DEL RIGHT
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, 12($fp) 
-#EXP BINARIA CONTINUACION
-#Se obtiene el valor del array desde la direccion 
-lw $a0, 0($a0) 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#CODE GEN DEL RIGHT
-#LITERAL
-li $a0, 2
-#EXP BINARIA CONTINUACION
-#Ni left ni right son double
-#El lado izquierdo queda en el t0 y el lado derecho en el a0 
-lw $t0, 4($sp) 
-addiu $sp $sp 4
-#Ningun tipo es double
-sub $a0, $t0, $a0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#EXP BINARIA CONTINUACION
-#Ni left ni right son double
-#El lado izquierdo queda en el t0 y el lado derecho en el a0 
-lw $t0, 4($sp) 
-addiu $sp $sp 4
-#Ningun tipo es double
-mul $a0, $t0, $a0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#EXP BINARIA CONTINUACION
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#CODE GEN DEL RIGHT
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, 8($fp) 
-#EXP BINARIA CONTINUACION
-#Se obtiene el valor del array desde la direccion 
-lw $a0, 0($a0) 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#CODE GEN DEL RIGHT
-#LITERAL
-li $a0, 1
-#EXP BINARIA CONTINUACION
-#Ni left ni right son double
-#El lado izquierdo queda en el t0 y el lado derecho en el a0 
-lw $t0, 4($sp) 
-addiu $sp $sp 4
-#Ningun tipo es double
-add $a0, $t0, $a0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#EXP BINARIA CONTINUACION
-#Ni left ni right son double
-#El lado izquierdo queda en el t0 y el lado derecho en el a0 
-lw $t0, 4($sp) 
-addiu $sp $sp 4
-#Ningun tipo es double
-beq $a0, $zero, divZeroException
-#Se convierten los tipos a double para la operacion de division 
-mtc1 $t0, $f2
-mtc1 $a0, $f0
-cvt.d.w $f0, $f0
-cvt.d.w $f2, $f2
-div.d $f0, $f2, $f0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#Se castea a Int el Double y se deja en f0 
-cvt.w.d $f2, $f0 
-mfc1 $a0, $f2 
-#CONTINUA RETURN 
-j endcomplexIntA
-endcomplexIntA:
-addiu $sp $sp 4
-lw $ra, 0($sp) 
-jr $ra 
-.text 
-complexDoubleA: 
-#Se forma el nuevo framepointer 
-move $fp, $sp 
-#Se guarda el return address en la pila 
-sw $ra, 0($sp) 
-addiu $sp $sp -4 
-#Declaración de variables 
-#Reservamos memoria para las variables en la pila y lo inicializamos
-#Sentencias del bloque 
-#RETURN
-#CODE GEN DE LA EXPRESION
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, 8($fp) 
-#EXP BINARIA CONTINUACION
-#Se obtiene el valor del array desde la direccion 
-lw $t0, 0($a0) 
-lw $t1, -4($a0) 
-mtc1 $t0, $f0 
-mtc1 $t1, $f1 
-#Left es double
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-sw $t0, 0($sp)
-addiu $sp, $sp, -4
-sw $t1, 0($sp)
-addiu $sp, $sp, -4
-#CODE GEN DEL RIGHT
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, 16($fp) 
-#EXP BINARIA CONTINUACION
-#Se obtiene el valor del array desde la direccion 
-lw $t0, 0($a0) 
-lw $t1, -4($a0) 
-mtc1 $t0, $f0 
-mtc1 $t1, $f1 
-#Left es double
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-sw $t0, 0($sp)
-addiu $sp, $sp, -4
-sw $t1, 0($sp)
-addiu $sp, $sp, -4
-#CODE GEN DEL RIGHT
-#LITERAL
-.data 
-double2.5_14_23: .double 2.5
-.text 
- l.d $f0, double2.5_14_23
-#EXP BINARIA CONTINUACION
-#Ambos son double asi que no se hace conversion 
-#Se saca de la pila el primer valor y se guarda en f2 
-#El left queda en f2 y el right en f0 
-lw $t0, 8($sp) 
-lw $t1, 4($sp) 
-mtc1 $t0, $f2 
-mtc1 $t1, $f3 
-addiu $sp $sp 8
-#Ambos lados son de tipo double (tras la posible conversion) 
-add.d $f0, $f0, $f2
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#EXP BINARIA CONTINUACION
-#Ambos son double asi que no se hace conversion 
-#Se saca de la pila el primer valor y se guarda en f2 
-#El left queda en f2 y el right en f0 
-lw $t0, 8($sp) 
-lw $t1, 4($sp) 
-mtc1 $t0, $f2 
-mtc1 $t1, $f3 
-addiu $sp $sp 8
-#Ambos lados son de tipo double (tras la posible conversion) 
-mul.d $f0, $f2, $f0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#EXP BINARIA CONTINUACION
-#Left es double
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-sw $t0, 0($sp)
-addiu $sp, $sp, -4
-sw $t1, 0($sp)
-addiu $sp, $sp, -4
-#CODE GEN DEL RIGHT
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, 20($fp) 
-#EXP BINARIA CONTINUACION
-#Se obtiene el valor del array desde la direccion 
-lw $a0, 0($a0) 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-#CODE GEN DEL RIGHT
-#EXPRESION PARENTIZADA
-#CODE GEN DE LA EXPRESION
-#EXPRESION BINARIA
-#CODE GEN DEL LEFT
-#VARIABLE NODE
-#Carga de variable 
-#Cargamos la direccion de la variable en a0 utilizando el 
-#offset con el fp 
-la $a0, 8($fp) 
-#EXP BINARIA CONTINUACION
-#Se obtiene el valor del array desde la direccion 
-lw $t0, 0($a0) 
-lw $t1, -4($a0) 
-mtc1 $t0, $f0 
-mtc1 $t1, $f1 
-#Left es double
-mfc1 $t0, $f0 
-mfc1 $t1, $f1 
-sw $t0, 0($sp)
-addiu $sp, $sp, -4
-sw $t1, 0($sp)
-addiu $sp, $sp, -4
-#CODE GEN DEL RIGHT
-#LITERAL
-.data 
-double1.0_14_41: .double 1.0
-.text 
- l.d $f0, double1.0_14_41
-#EXP BINARIA CONTINUACION
-#Ambos son double asi que no se hace conversion 
-#Se saca de la pila el primer valor y se guarda en f2 
-#El left queda en f2 y el right en f0 
-lw $t0, 8($sp) 
-lw $t1, 4($sp) 
-mtc1 $t0, $f2 
-mtc1 $t1, $f3 
-addiu $sp $sp 8
-#Ambos lados son de tipo double (tras la posible conversion) 
-sub.d $f0, $f2, $f0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#EXP BINARIA CONTINUACION
-#Convertimos el valor de la izquierda en double y 
-#queda guardado en f2 
-lw $a0, 4($sp) 
-addiu $sp $sp 4
-mtc1 $a0, $f2
-cvt.d.w $f2, $f2
-#Ambos lados son de tipo double (tras la posible conversion) 
-l.d $f8, zeroDouble 
-c.eq.d $f0, $f8 
-bc1t divZeroException
-div.d $f0, $f2, $f0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#EXP BINARIA CONTINUACION
-#Ambos son double asi que no se hace conversion 
-#Se saca de la pila el primer valor y se guarda en f2 
-#El left queda en f2 y el right en f0 
-lw $t0, 8($sp) 
-lw $t1, 4($sp) 
-mtc1 $t0, $f2 
-mtc1 $t1, $f3 
-addiu $sp $sp 8
-#Ambos lados son de tipo double (tras la posible conversion) 
-sub.d $f0, $f2, $f0
-#CONTINUA EXPRESION PARENTIZADA
-#FIN EXPRESION PARENTIZADA
-#CONTINUA RETURN 
-j endcomplexDoubleA
-endcomplexDoubleA:
 addiu $sp $sp 4
 lw $ra, 0($sp) 
 jr $ra 

@@ -193,8 +193,8 @@ public class BinaryExpressionNode extends ExpressionNode {
                             if (operator.getName() == TokenTypes.op_rel_equal ||
                                 operator.getName() == TokenTypes.op_rel_notequal) {
                                 if (leftNode.getName().equals(rightNode.getName()) ||
-                                    leftNode.getName().equals("nil") ||
-                                    rightNode.getName().equals("nil")
+                                    (leftNode.getName().equals("nil") && isClassOrArray(rightNode.getName())) ||
+                                    (rightNode.getName().equals("nil")  && isClassOrArray(leftNode.getName()))
                                 ) {
                                     type = new Type(operator, "Bool");
                                 }
@@ -207,11 +207,15 @@ public class BinaryExpressionNode extends ExpressionNode {
                                         type = new Type(operator, "Bool");
                                     }
                                     else {
-                                        throw new SemanticASTException(operator, "Se esperaba que ambos" +
-                                                " operadores fueran del mismo " +
-                                                "tipo o tipo " +
-                                                "Int y Double. Se encontró: " + leftNode.getName() +
-                                                " y " + rightNode.getName());
+                                        throw new SemanticASTException(
+                                                operator,
+                                                "Comparación invalida. Se esperaba " +
+                                                        "que ambos operandos fueran del mismo tipo, " +
+                                                        "o bien Int con Double, o una clase/array " +
+                                                        "comparada con nil. " +
+                                                        "Se encontro: " + leftNode.getName() +
+                                                        " y " + rightNode.getName() + "."
+                                        );
                                     }
                                 }
                             }
