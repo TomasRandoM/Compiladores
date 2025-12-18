@@ -3,6 +3,7 @@ package com.uncuyo.compiladores.utils;
 
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 
+import java.text.Normalizer;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -170,4 +171,13 @@ public class Addons {
         return condition;
     }
 
+    /**
+     * Quita las tildes de la String pasada como parametro
+     * @param input String
+     * @return String sin tildes
+     */
+    public static String removeAccents(String input) {
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
+        return normalized.replaceAll("\\p{M}", "");
+    }
 }

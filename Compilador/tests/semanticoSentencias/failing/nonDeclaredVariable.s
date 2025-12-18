@@ -1,4 +1,4 @@
-// Incorrecto. Variable y no declarada
+// Incorrecto. Variable y no declarada en el ámbito actual
 class A {
     Int x;
 }

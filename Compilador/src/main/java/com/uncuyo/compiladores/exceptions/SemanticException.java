@@ -1,6 +1,7 @@
 package com.uncuyo.compiladores.exceptions;
 
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
+import com.uncuyo.compiladores.utils.Addons;
 
 /**
  * Exception del analizador semántico
@@ -13,10 +14,10 @@ public class SemanticException extends Exception {
      * @param message String con el error producido
      */
     public SemanticException(Token lookahead, String message) {
-        super("ERROR: SEMÁNTICO - DECLARACIONES" + '\n' + "| NUMERO DE LINEA (NUMERO DE COLUMNA) " +
+        super("ERROR: SEMANTICO - DECLARACIONES" + '\n' + "| NUMERO DE LINEA (NUMERO DE COLUMNA) " +
                 "| DESCRIPCION: |" + '\n' + "| LINEA " +
                 lookahead.getRow() + " (COLUMNA " +
                 lookahead.getColumn() + ") " + "| " +
-                message + " |" + '\n');
+                Addons.removeAccents(message) + " |" + '\n');
     }
 }

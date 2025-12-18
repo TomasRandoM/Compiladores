@@ -154,6 +154,11 @@ public class ArrayAccessNode extends OperandNode{
         string.append("#le sumamos a la direccion del array el offset y obtenemos la direccion del elemento \n");
         string.append("add $t0 $t0 $a0 \n");
         string.append("move $a0, $t0 \n");
+        if (chainedNode != null) {
+            //Solo entrara aca con un metodo de Str en un array de tipo Str
+            string.append("lw $a0, 0($a0) \n");
+            chainedNode.codeGen(string);
+        }
     }
 
     /**
@@ -309,9 +314,23 @@ public class ArrayAccessNode extends OperandNode{
             throw new SemanticASTException(token,
                     "El tipo interno del Array es null.");
         }
-
+        //Si el Array es de tipo Str, se podría acceder a los métodos del objeto, entonces
+        //se chequea ese caso
         if (chainedNode != null) {
-            throw new SemanticASTException(token, "Un array no puede tener un encadenamiento.");
+            if (arrType.getName().equals("Str") && chainedNode instanceof ChainedCallNode) {
+                arrType = chainedNode.checkNames(arrType);
+            }
+            else {
+                if (!arrType.getName().equals("Str")) {
+                    throw new SemanticASTException(token, "Un array no puede tener un" +
+                            " encadenamiento a menos que sea Str");
+                }
+                else {
+                    throw new SemanticASTException(token, "Un array de Str solo puede tener un" +
+                            " encadenamiento con un método");
+                }
+
+            }
 
         }
 

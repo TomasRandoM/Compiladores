@@ -1,5 +1,7 @@
 package com.uncuyo.compiladores.exceptions;
 
+import com.uncuyo.compiladores.utils.Addons;
+
 /**
  * Exception del analizador léxico
  * @version 1.0.0
@@ -13,6 +15,8 @@ public class LexicalException extends Exception {
      * @param row int Con el número de fila donde se produjo la excepción
      */
     public LexicalException(String message, int col, int row) {
-        super("ERROR: LEXICO" + '\n' + "| NUMERO DE LINEA (NUMERO DE COLUMNA) | DESCRIPCION: |" + '\n' + "| LINEA " + row + "(COLUMNA " + col + ") | " + message + " |");
+        super("ERROR: LEXICO" + '\n' + "| NUMERO DE LINEA (NUMERO DE COLUMNA) | DESCRIPCION: |" +
+                '\n' + "| LINEA " + row + "(COLUMNA " +
+                col + ") | " + Addons.removeAccents(message) + " |");
     }
 }

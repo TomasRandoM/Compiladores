@@ -37,11 +37,11 @@ public class SyntacticAnalyzer {
         listaDefiniciones();
         start();
         match(TokenTypes.end_of_file);
-        System.out.println("CORRECTO: ANÁLISIS SINTÁCTICO");
+        System.out.println("CORRECTO: ANALISIS SINTACTICO");
         SymbolTable.checkDeclarations();
-        System.out.println("CORRECTO: ANÁLISIS SEMÁNTICO - DECLARACIONES");
+        System.out.println("CORRECTO: ANALISIS SEMANTICO - DECLARACIONES");
         AST.check();
-        System.out.println("CORRECTO: ANÁLISIS SEMÁNTICO - SENTENCIAS");
+        System.out.println("CORRECTO: ANALISIS SEMANTICO - SENTENCIAS");
     }
 
     /**
