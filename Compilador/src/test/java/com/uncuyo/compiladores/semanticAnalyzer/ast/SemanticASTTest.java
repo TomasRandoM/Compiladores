@@ -1218,4 +1218,58 @@ public class SemanticASTTest {
         });
     }
 
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testStrArrayWithChainedNodeCorrect() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/strArrayWithChainedNode.s").program();
+        });
+    }
+
+    /**
+     * Correcto.
+     */
+    @Test
+    public void testStrArrayWithChainedNodeCorrect2() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/strArrayWithChainedNode2.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testIntArrayWithChainedNodeIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/intArrayWithChainedNode.s").program();
+        });
+    }
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testStrArrayWithChainedNodeIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/strArrayWithChainedNodeIncorrect.s").program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testStrArrayWithChainedNodeIncorrect2() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/failing/strArrayWithChainedNodeIncorrect2.s").program();
+        });
+    }
+
 }

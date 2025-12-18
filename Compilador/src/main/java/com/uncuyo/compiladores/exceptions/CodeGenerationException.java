@@ -1,6 +1,7 @@
 package com.uncuyo.compiladores.exceptions;
 
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
+import com.uncuyo.compiladores.utils.Addons;
 
 /**
  * Exception de la generación de código
@@ -13,10 +14,10 @@ public class CodeGenerationException extends Exception {
      * @param message String con el error producido
      */
     public CodeGenerationException(Token lookahead, String message) {
-        super("ERROR: Generación de código" + '\n' + "| NUMERO DE LINEA (NUMERO DE COLUMNA) " +
+        super("ERROR: Generacion de codigo" + '\n' + "| NUMERO DE LINEA (NUMERO DE COLUMNA) " +
                 "| DESCRIPCION: |" + '\n' + "| LINEA " +
                 lookahead.getRow() + " (COLUMNA " +
                 lookahead.getColumn() + ") " + "| " +
-                message + " |" + '\n');
+                Addons.removeAccents(message) + " |" + '\n');
     }
 }

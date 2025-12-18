@@ -46,7 +46,7 @@ public class Etapa1 {
         Path inputPath = Paths.get(args[0]);
         Path dirPath = inputPath.getParent();
         if (args.length == 2) {
-            outputPath = dirPath.resolve(args[1] + ".asm");
+            outputPath = dirPath.resolve(args[1] + ".txt");
         }
         else {
             fileName = inputPath.getFileName().toString();

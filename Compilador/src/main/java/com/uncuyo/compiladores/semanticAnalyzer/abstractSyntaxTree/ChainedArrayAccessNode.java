@@ -106,9 +106,20 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
         }
 
         if (this.chainedNode != null) {
+            if (finalType.getName().equals("Str") && chainedNode instanceof ChainedCallNode) {
+                finalType = chainedNode.checkNames(finalType);
+            }
+            else {
+                if (!finalType.getName().equals("Str")) {
+                    throw new SemanticASTException(name,
+                            "Un array solo puede tener un encadenamiento si es de tipo Str");
+                }
+                else {
+                    throw new SemanticASTException(name,
+                            "Un array de tipo Str puede tener un encadenamiento solo de método");
+                }
+            }
 
-            throw new SemanticASTException(name,
-                    "Un array no puede tener un encadenamiento después del índice.");
         }
         this.nodeType = finalType;
         return finalType;
@@ -238,6 +249,9 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
         string.append("#Cargamos directamente el valor en a0 \n");
         string.append("#Esto debido a que por gramática no se puede asignar un elemento a través de encadenamiento \n");
         string.append("lw $a0, 0($a0) \n");
+        if (chainedNode != null) {
+            chainedNode.codeGen(string);
+        }
         /*
         if (att.getType().getArrType().getName().equals("Double")) {
             string.append("#cargamos el elemento en f0 \n");
