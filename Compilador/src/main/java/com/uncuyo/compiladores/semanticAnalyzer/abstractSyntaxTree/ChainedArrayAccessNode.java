@@ -214,7 +214,9 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
                 string.append("mtc1 $t1, $f1 \n");
             }
             else {
-                string.append("lw $a0, 0($a0) \n");
+                if (!(expression instanceof ArrayAccessNode && ((ArrayAccessNode) expression).getLastChainedNode() != null)) {
+                    string.append("lw $a0, 0($a0) \n");
+                }
             }
         }
 

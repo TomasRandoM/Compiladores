@@ -272,7 +272,9 @@ public class BinaryExpressionNode extends ExpressionNode {
                 string.append("mtc1 $t1, $f1 \n");
             }
             else {
-                string.append("lw $a0, 0($a0) \n");
+                if (!(left instanceof ArrayAccessNode && ((ArrayAccessNode) left).getLastChainedNode() != null)) {
+                    string.append("lw $a0, 0($a0) \n");
+                }
             }
         }
         //Se guarda en la pila la expresion del lado izquierdo temporalmente
@@ -313,7 +315,9 @@ public class BinaryExpressionNode extends ExpressionNode {
                 string.append("mtc1 $t1, $f1 \n");
             }
             else {
-                string.append("lw $a0, 0($a0) \n");
+                if (!(right instanceof ArrayAccessNode && ((ArrayAccessNode) right).getLastChainedNode() != null)) {
+                    string.append("lw $a0, 0($a0) \n");
+                }
             }
         }
         if (right.nodeType.getName().equals("Double")) {
