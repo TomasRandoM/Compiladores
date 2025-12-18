@@ -323,10 +323,11 @@ public class ArrayAccessNode extends OperandNode{
             else {
                 if (!arrType.getName().equals("Str")) {
                     throw new SemanticASTException(token, "Un array no puede tener un" +
-                            " encadenamiento a menos que sea Str");
+                            " encadenamiento a menos que sea de tipo Str");
                 }
                 else {
-                    throw new SemanticASTException(token, "Un array de Str solo puede tener un" +
+                    throw new SemanticASTException(token, "Un array de tipo Str " +
+                            "solo puede tener un" +
                             " encadenamiento con un método");
                 }
 
