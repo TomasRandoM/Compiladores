@@ -87,7 +87,9 @@ public class ParenthesizedExpressionNode extends ExpressionNode {
                 string.append("mtc1 $t1, $f1 \n");
             }
             else {
-                string.append("lw $a0, 0($a0) \n");
+                if (!(expressionNode instanceof ArrayAccessNode && ((ArrayAccessNode) expressionNode).getLastChainedNode() != null)) {
+                    string.append("lw $a0, 0($a0) \n");
+                }
             }
         }
         if (chainedNode != null) {

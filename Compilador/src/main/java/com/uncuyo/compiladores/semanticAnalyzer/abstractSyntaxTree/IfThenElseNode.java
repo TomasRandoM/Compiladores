@@ -102,7 +102,9 @@ public class IfThenElseNode extends SentenceNode {
                 string.append("mtc1 $t0, $f0 \n");
                 string.append("mtc1 $t1, $f1 \n");
             } else {
-                string.append("lw $a0, 0($a0) \n");
+                if (!(expressionNode instanceof ArrayAccessNode && ((ArrayAccessNode) expressionNode).getLastChainedNode() != null)) {
+                    string.append("lw $a0, 0($a0) \n");
+                }
             }
         }
         string.append("#Verifica si la condicion es falsa. Si es falsa salta a la etiqueta else \n");

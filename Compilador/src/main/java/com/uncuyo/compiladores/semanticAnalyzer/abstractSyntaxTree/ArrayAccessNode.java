@@ -123,7 +123,9 @@ public class ArrayAccessNode extends OperandNode{
                 string.append("mtc1 $t1, $f1 \n");
             }
             else {
-                string.append("lw $a0, 0($a0) \n");
+                if (!(expressionNode instanceof ArrayAccessNode && ((ArrayAccessNode) expressionNode).getLastChainedNode() != null)) {
+                    string.append("lw $a0, 0($a0) \n");
+                }
             }
         }
         string.append("#En $a0 tengo el indice del array\n");

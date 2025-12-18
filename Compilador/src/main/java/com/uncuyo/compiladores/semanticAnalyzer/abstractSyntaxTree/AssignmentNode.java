@@ -111,7 +111,9 @@ public class AssignmentNode extends SentenceNode {
                 string.append("mtc1 $t1, $f1 \n");
             }
             else {
-                string.append("lw $a0, 0($a0) \n");
+                if (!(rightNode instanceof ArrayAccessNode && ((ArrayAccessNode) rightNode).getLastChainedNode() != null)) {
+                    string.append("lw $a0, 0($a0) \n");
+                }
             }
         }
         if (rightNode.nodeType.getName().equals("Double")) {

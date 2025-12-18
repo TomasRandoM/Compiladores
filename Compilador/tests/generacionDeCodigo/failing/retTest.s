@@ -1,3 +1,4 @@
+//No falla pero explota en ejecución debido a la falta del ret
 class A {
 }
 

@@ -244,7 +244,9 @@ public class NewNode extends OperandNode{
             string.append("#CONTINUA NEW NODE\n");
             checkChained(string, expressionNode);
             if (expressionNode instanceof ArrayAccessNode || expressionNode instanceof VariableNode) {
-                string.append("lw $a0, 0($a0)");
+                if (!(expressionNode instanceof ArrayAccessNode && ((ArrayAccessNode) expressionNode).getLastChainedNode() != null)) {
+                    string.append("lw $a0, 0($a0) \n");
+                }
             }
             string.append("#Guardamos en la pila el tamaño del array para pasarlo como parametro \n");
             string.append("sw $a0, 0($sp) \n");

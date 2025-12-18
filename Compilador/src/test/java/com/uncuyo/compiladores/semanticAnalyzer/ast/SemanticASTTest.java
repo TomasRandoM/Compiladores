@@ -1241,6 +1241,17 @@ public class SemanticASTTest {
     }
 
     /**
+     * Correcto.
+     */
+    @Test
+    public void testStrArrayWithChainedNodeCorrect3() {
+        SymbolTable.resetSymbolTable();
+        assertDoesNotThrow(() -> {
+            new SyntacticAnalyzer("tests/semanticoSentencias/passing/strArrayWithChainedNode3.s").program();
+        });
+    }
+
+    /**
      * Incorrecto.
      */
     @Test
