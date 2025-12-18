@@ -1,3 +1,4 @@
+RUNTIME EXCEPTION: se intenta acceder a una variable no inicializada.
 class A {
     pub Int a;
 }
