@@ -1,4 +1,4 @@
-// Incorrecto. Se llama al método concat desde un objeto del array que no es Str
+// Incorrecto. Se llama al método length desde un objeto del array que no es Str
 class A {
     pub Array Int x;
     Int y;
