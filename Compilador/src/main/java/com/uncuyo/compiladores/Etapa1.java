@@ -50,7 +50,7 @@ public class Etapa1 {
         }
         else {
             fileName = inputPath.getFileName().toString();
-            outputPath = dirPath.resolve(fileName.substring(0, fileName.length() - 2) + ".asm");
+            outputPath = dirPath.resolve(fileName.substring(0, fileName.length() - 2) + ".txt");
         }
         tempPath = dirPath.resolve("tempFile.tmp");
         tempFile = tempPath.toFile();
