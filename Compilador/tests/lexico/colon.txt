@@ -1,0 +1,13 @@
+CORRECTO: ANALISIS LEXICO
+| TOKEN | LEXEMA |  NÚMERO DE LÍNEA (NÚMERO DE COLUMNA) |
+| id_obj | hola | LINEA 0 (COLUMNA 0) |
+| colon | : | LINEA 0 (COLUMNA 5) |
+| const_int | 123 | LINEA 0 (COLUMNA 7) |
+| colon | : | LINEA 0 (COLUMNA 11) |
+| id_obj | a | LINEA 0 (COLUMNA 13) |
+| colon | : | LINEA 0 (COLUMNA 14) |
+| id_obj | b | LINEA 0 (COLUMNA 16) |
+| colon | : | LINEA 0 (COLUMNA 17) |
+| colon | : | LINEA 1 (COLUMNA 0) |
+| colon | : | LINEA 1 (COLUMNA 1) |
+| end_of_file |  | LINEA 1 (COLUMNA 2) |

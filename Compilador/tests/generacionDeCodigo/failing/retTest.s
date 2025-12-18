@@ -5,15 +5,16 @@ class A {
 impl A {
     .(){}
     fn Int abs(Int x) {
+        Int a;
         if (x < 0) {
             ret -x;
         } else {
-            (8);
+            a = 8;
         }
     }
 }
 start {
     A a;
     a = new A();
-    (IO.out_int(a.abs(5)));  // 5
+    (IO.out_int(a.abs(3)));
 }

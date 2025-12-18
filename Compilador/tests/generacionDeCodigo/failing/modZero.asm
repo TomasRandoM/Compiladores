@@ -21,9 +21,9 @@ addiu $sp, $sp, -4
 #CODE GEN DEL LEFT
 #LITERAL
 .data 
-double5.0_2_4: .double 5.0
+double5.0_3_4: .double 5.0
 .text 
- l.d $f0, double5.0_2_4
+ l.d $f0, double5.0_3_4
 #EXP BINARIA CONTINUACION
 #Left es double
 mfc1 $t0, $f0 

@@ -203,4 +203,25 @@ public class LexicalAnalyzerTest {
         assertTrue(Addons.compareTokenLists(Etapa1.getAllTokens("tests/lexico/input9.s"), testList));
     }
 
+    /**
+     * Test correcto que verifica :, id_obj, const_int y comentarios singleline
+     * @author Tomás Rando
+     */
+    @Test
+    public void testColon() throws LexicalException, ReaderException {
+        List<Token> testList = new ArrayList<>();
+        testList.add(new Token(TokenTypes.id_obj, "hola", null, 1, 0));
+        testList.add(new Token(TokenTypes.colon, ":", null, 1, 5));
+        testList.add(new Token(TokenTypes.const_int, "123", 123, 1, 7));
+        testList.add(new Token(TokenTypes.colon, ":", null, 1, 11));
+        testList.add(new Token(TokenTypes.id_obj, "a", null, 1, 13));
+        testList.add(new Token(TokenTypes.colon, ":", null, 1, 14));
+        testList.add(new Token(TokenTypes.id_obj, "b", null, 1, 16));
+        testList.add(new Token(TokenTypes.colon, ":", null, 1, 17));
+        testList.add(new Token(TokenTypes.colon, ":", null, 2, 0));
+        testList.add(new Token(TokenTypes.colon, ":", null, 2, 1));
+        testList.add(new Token(TokenTypes.end_of_file, "", null, 2, 2));
+        assertTrue(Addons.compareTokenLists(Etapa1.getAllTokens("tests/lexico/colon.s"), testList));
+    }
+
 }

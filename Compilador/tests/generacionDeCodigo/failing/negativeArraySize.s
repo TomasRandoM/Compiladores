@@ -1,3 +1,4 @@
+//RUNTIME EXCEPTION: la longitud del array no puede ser negativa.
 start {
     Array Bool a;
     Int b;
