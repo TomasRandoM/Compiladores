@@ -11,7 +11,7 @@ impl A {
         Str s;
         s = "chau";
         x[0] = "holas";
-        (IO.out_int(x[0].length()));
+        (IO.out_str(x[0].concat(s)));
     }
 }
 

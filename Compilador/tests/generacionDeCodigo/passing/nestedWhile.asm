@@ -91,7 +91,7 @@ sw $a0, 0($sp)
 addiu $sp $sp -4 
 #CODE GEN DEL RIGHT
 #LITERAL
-li $a0, 4
+li $a0, 2
 #EXP BINARIA CONTINUACION
 #Ni left ni right son double
 #El lado izquierdo queda en el t0 y el lado derecho en el a0 
