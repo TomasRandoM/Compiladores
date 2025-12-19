@@ -313,24 +313,33 @@ beq $a0, $zero, variableNotInitialized
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 #Cargamos los parámetros a la pila 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+#Se obtiene el valor del elemento desde la direccion 
+lw $a0, 0($a0) 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
 #Cargamos el self en a0 
-lw $a0, 4($sp) 
+lw $a0, 8($sp) 
 #Cargamos la direccion de la vtable de self en a0 
 lw $a0, 0($a0) 
 #Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 0
+addiu $a0, $a0, 4
 #Cargamos la direccion del metodo en el a0
 lw $a0, 0($a0)
 #Saltamos al metodo y el retorno lo traemos en a0 
 jalr $a0 
-addiu $sp $sp 8
+addiu $sp $sp 12
 lw $fp, 0($sp) 
 #Se obtiene el valor del array desde la direccion 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 la $a0, vtableIO
 #Buscamos la direccion del metodo (usando el offset) 
-addiu $a0, $a0, 4
+addiu $a0, $a0, 0
 #Cargamos la direccion del metodo en el a0
 lw $a0, 0($a0)
 jalr $a0 

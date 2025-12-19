@@ -16,7 +16,7 @@ public class LexicalException extends Exception {
      */
     public LexicalException(String message, int col, int row) {
         super("ERROR: LEXICO" + '\n' + "| NUMERO DE LINEA (NUMERO DE COLUMNA) | DESCRIPCION: |" +
-                '\n' + "| LINEA " + row + "(COLUMNA " +
+                '\n' + "| LINEA " + row + " (COLUMNA " +
                 col + ") | " + Addons.removeAccents(message) + " |");
     }
 }

@@ -295,7 +295,7 @@ public class LexicalAnalyzer {
             if (c == '\\') {
                 Character cc = fileReader.readChar();
                 if (cc == '0') {
-                    throw new LexicalException("CARACER NULO INVÁLIDO EN CADENA: " + c+cc, column, row);
+                    throw new LexicalException("CARACTER NULO INVÁLIDO EN CADENA: " + c+cc, column, row);
                 } else {
                     fileReader.unreadChar();
                 }

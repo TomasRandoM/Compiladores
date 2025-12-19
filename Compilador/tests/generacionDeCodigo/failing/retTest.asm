@@ -61,7 +61,7 @@ sw $a0, 0($sp)
 addiu $sp $sp -4 
 #Cargamos los parámetros a la pila 
 #LITERAL
-li $a0, 5
+li $a0, 3
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 #Cargamos el self en a0 
@@ -133,6 +133,9 @@ sw $ra, 0($sp)
 addiu $sp $sp -4 
 #Declaración de variables 
 #Reservamos memoria para las variables en la pila y lo inicializamos
+li $a0, 0 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
 #Sentencias del bloque 
 #IF THEN ELSE:
 #If 
@@ -186,13 +189,13 @@ j endif_absA78
 elseif_absA78: 
 #SENTENCIA DEL ELSE
 #Sentencias del bloque de un metodo 
-#SIMPLE SENTENCE - CODE GEN DE EXPRESION
+#ASIGNACION 
 #LITERAL
 li $a0, 8
 #FIN SIMPLE SENTENCE
 endif_absA78: 
 endabsA:
-addiu $sp $sp 4
+addiu $sp $sp 8
 lw $ra, 0($sp) 
 jr $ra 
 .data
