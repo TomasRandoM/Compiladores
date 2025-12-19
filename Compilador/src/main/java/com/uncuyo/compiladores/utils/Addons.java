@@ -1,8 +1,12 @@
 package com.uncuyo.compiladores.utils;
 
 
+import com.uncuyo.compiladores.exceptions.WriterException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.HashSet;
 import java.util.List;
