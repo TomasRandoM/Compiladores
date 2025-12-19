@@ -21,6 +21,9 @@ public class Etapa3 {
         if (args.length < 1) {
             throw new WriterException("ERROR: DEBE INDICAR AL MENOS UN ARGUMENTO (INPUT FILE)");
         }
+        if (args.length > 1) {
+            throw new WriterException("ERROR: DEBE INDICAR COMO MAXIMO UN ARGUMENTO (INPUT FILE)");
+        }
 
         //Chequeo de extensión
         if (!args[0].endsWith(".s")) {
@@ -30,11 +33,11 @@ public class Etapa3 {
         try {
             SyntacticAnalyzer syntacticAnalyzer = new SyntacticAnalyzer(args[0]);
             syntacticAnalyzer.program();
-            JsonGenerator.printSymbolTable("SymbolTable.json");
-            JsonASTGenerator.printAST("JsonAST.json");
+            String path = args[0];
+            String outputPath = path.substring(0, path.length() - 1) + "ts.json";
+            JsonGenerator.printSymbolTable(outputPath);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            e.printStackTrace();
         }
     }
 }
