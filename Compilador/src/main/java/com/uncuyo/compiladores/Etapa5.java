@@ -4,6 +4,7 @@ import com.uncuyo.compiladores.exceptions.*;
 import com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree.AST;
 import com.uncuyo.compiladores.syntacticAnalyzer.SyntacticAnalyzer;
 import com.uncuyo.compiladores.utils.JsonASTGenerator;
+import com.uncuyo.compiladores.utils.JsonGenerator;
 
 /**
  * Clase del ejecutor de la Etapa 5.
@@ -13,8 +14,8 @@ public class Etapa5 {
     public static void main(String[] args) throws ReaderException, LexicalException, WriterException, SyntacticException {
 
         //Chequeo de recibimiento de parámetros
-        if (args.length < 1) {
-            throw new WriterException("ERROR: DEBE INDICAR AL MENOS UN ARGUMENTO (INPUT FILE)");
+        if (args.length != 1) {
+            throw new WriterException("ERROR: DEBE INDICAR UN SOLO ARGUMENTO (INPUT FILE)");
         }
 
         //Chequeo de extensión
@@ -22,14 +23,17 @@ public class Etapa5 {
             throw new WriterException("ERROR: LA ENTRADA DEBE SER UN ARCHIVO .s");
         }
         String path = args[0];
-        String outputPath = path.substring(0, path.length() - 1) + "asm";
+        String outputTSPath = path.substring(0, path.length() - 1) + "ts.json";
+        String outputASTPath = path.substring(0, path.length() - 1) + "ast.json";
+        String outputASMPath = path.substring(0, path.length() - 1) + "asm";
         try {
             SyntacticAnalyzer syntacticAnalyzer = new SyntacticAnalyzer(args[0]);
             syntacticAnalyzer.program();
-            AST.codeGen(outputPath);
+            JsonGenerator.printSymbolTable(outputTSPath);
+            JsonASTGenerator.printAST(outputASTPath);
+            AST.codeGen(outputASMPath);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            e.printStackTrace();
         }
 
     }

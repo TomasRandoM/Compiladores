@@ -136,7 +136,7 @@ addiu $sp $sp -4
 #Sentencias del bloque 
 #IF THEN ELSE:
 #If 
-if_absA68: 
+if_absA78: 
 #CODE GEN DE LA EXPRESION
 #EXPRESION BINARIA
 #CODE GEN DEL LEFT
@@ -162,7 +162,7 @@ addiu $sp $sp 4
 slt $a0, $t0, $a0
 #CONTINUA IF THEN ELSE
 #Verifica si la condicion es falsa. Si es falsa salta a la etiqueta else 
-beq $a0, $zero, elseif_absA68
+beq $a0, $zero, elseif_absA78
 #SENTENCIA DEL IF
 #Sentencias del bloque de un metodo 
 #RETURN
@@ -181,16 +181,16 @@ sub $a0, $zero, $a0
 #CONTINUA RETURN 
 j endabsA
 #Al terminar salta a la etiqueta end del if 
-j endif_absA68 
+j endif_absA78 
 #Etiqueta del else. Si no hay else, esta vacia 
-elseif_absA68: 
+elseif_absA78: 
 #SENTENCIA DEL ELSE
 #Sentencias del bloque de un metodo 
 #SIMPLE SENTENCE - CODE GEN DE EXPRESION
 #LITERAL
 li $a0, 8
 #FIN SIMPLE SENTENCE
-endif_absA68: 
+endif_absA78: 
 endabsA:
 addiu $sp $sp 4
 lw $ra, 0($sp) 

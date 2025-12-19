@@ -18,6 +18,9 @@ public class Etapa2 {
         if (args.length < 1) {
             throw new WriterException("ERROR: DEBE INDICAR AL MENOS UN ARGUMENTO (INPUT FILE)");
         }
+        if (args.length > 1) {
+            throw new WriterException("ERROR: DEBE INDICAR COMO MAXIMO UN ARGUMENTO (INPUT FILE)");
+        }
 
         //Chequeo de extensión
         if (!args[0].endsWith(".s")) {

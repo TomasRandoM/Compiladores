@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,6 @@ import java.util.List;
  */
 public class Etapa1 {
     public static void main(String[] args) throws ReaderException, LexicalException, WriterException {
-        String fileName;
         Path outputPath;
         Path tempPath;
         File tempFile;
@@ -37,6 +37,9 @@ public class Etapa1 {
             throw new WriterException("ERROR: DEBE INDICAR AL MENOS UN ARGUMENTO (INPUT FILE)");
         }
 
+        if (args.length > 2) {
+            throw new WriterException("ERROR: DEBE INDICAR COMO MAXIMO 2 ARGUMENTOS (INPUT FILE) (OUTPUT FILE)");
+        }
         //Chequeo de extensión
         if (!args[0].endsWith(".s")) {
             throw new WriterException("ERROR: LA ENTRADA DEBE SER UN ARCHIVO .s");
@@ -46,56 +49,72 @@ public class Etapa1 {
         Path inputPath = Paths.get(args[0]);
         Path dirPath = inputPath.getParent();
         if (args.length == 2) {
-            outputPath = dirPath.resolve(args[1] + ".txt");
+            outputPath = dirPath.resolve(args[1]);
+            tempPath = dirPath.resolve("tempFile.tmp");
+            tempFile = tempPath.toFile();
+
+            boolean stop = false;
+            LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(args[0]);
+            PrintWriter writer = null;
+            try {
+                writer = new PrintWriter(new FileWriter(tempFile));
+                writer.println("CORRECTO: ANALISIS LEXICO");
+                writer.println("| TOKEN | LEXEMA |  NUMERO DE LINEA (NUMERO DE COLUMNA) |");
+                while (!stop) {
+                    token = lexicalAnalyzer.nextToken();
+                    writer.println("| " + token.getName().name() + " | " + token.getLexeme() + " | LINEA " + token.getRow() + " (COLUMNA " + token.getColumn() + ") |");
+
+                    if (token.getName() == TokenTypes.end_of_file) {
+                        stop = true;
+                    }
+                }
+
+                writer.close();
+                //El archivo temporal lo renombramos al normal
+                Files.move(tempPath, outputPath, StandardCopyOption.REPLACE_EXISTING);
+
+            } catch (LexicalException | ReaderException ex) {
+                writer.close();
+                try {
+                    //Borramos el archivo temporal
+                    Files.deleteIfExists(tempPath);
+                } catch (IOException e) {
+                    //
+                }
+                throw ex;
+
+            } catch (IOException ex) {
+                try {
+                    if (writer != null) {
+                        writer.close();
+                    }
+                    //Borramos el archivo temporal
+                    Files.deleteIfExists(tempPath);
+                } catch (IOException e) {
+                    //
+                }
+                throw new WriterException("NO SE PUEDE ESCRIBIR EL ARCHIVO " + outputPath);
+            }
         }
         else {
-            fileName = inputPath.getFileName().toString();
-            outputPath = dirPath.resolve(fileName.substring(0, fileName.length() - 2) + ".txt");
-        }
-        tempPath = dirPath.resolve("tempFile.tmp");
-        tempFile = tempPath.toFile();
-
-        boolean stop = false;
-        LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(args[0]);
-        PrintWriter writer = null;
-        try {
-            writer = new PrintWriter(new FileWriter(tempFile));
-            writer.println("CORRECTO: ANALISIS LEXICO");
-            writer.println("| TOKEN | LEXEMA |  NÚMERO DE LÍNEA (NÚMERO DE COLUMNA) |");
-            while (!stop) {
-                token = lexicalAnalyzer.nextToken();
-                writer.println("| " + token.getName().name() + " | " + token.getLexeme() + " | LINEA " + token.getRow() + " (COLUMNA " + token.getColumn() + ") |");
-
-                if (token.getName() == TokenTypes.end_of_file) {
-                    stop = true;
-                }
-            }
-
-            writer.close();
-            //El archivo temporal lo renombramos al normal
-            Files.move(tempPath, outputPath, StandardCopyOption.REPLACE_EXISTING);
-
-        } catch (LexicalException | ReaderException ex) {
-            writer.close();
+            boolean stop = false;
+            LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(args[0]);
             try {
-                //Borramos el archivo temporal
-                Files.deleteIfExists(tempPath);
-            } catch (IOException e) {
-                //
-            }
-            throw ex;
+                System.out.println("CORRECTO: ANALISIS LEXICO");
+                System.out.println("| TOKEN | LEXEMA |  NUMERO DE LINEA (NUMERO DE COLUMNA) |");
+                while (!stop) {
+                    token = lexicalAnalyzer.nextToken();
+                    System.out.println("| " + token.getName().name() + " | " + token.getLexeme() + " | LINEA " + token.getRow() + " (COLUMNA " + token.getColumn() + ") |");
 
-        } catch (IOException ex) {
-            try {
-                if (writer != null) {
-                    writer.close();
+                    if (token.getName() == TokenTypes.end_of_file) {
+                        stop = true;
+                    }
                 }
-                //Borramos el archivo temporal
-                Files.deleteIfExists(tempPath);
-            } catch (IOException e) {
-                //
+
+            } catch (LexicalException | ReaderException ex) {
+                System.out.println(ex.getMessage());
+
             }
-            throw new WriterException("NO SE PUEDE ESCRIBIR EL ARCHIVO " + outputPath);
         }
     }
 
