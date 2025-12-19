@@ -4,6 +4,7 @@ import com.uncuyo.compiladores.exceptions.SemanticASTException;
 import com.uncuyo.compiladores.exceptions.WriterException;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -68,25 +69,10 @@ public class AST {
             blockNode.codeGen(string);
         }
 
-        try {
-            Path setupPath = Paths.get("src/main/java/com/uncuyo/compiladores/codeGen/setupCode.asm");
-            Path exceptionsPath = Paths.get("src/main/java/com/uncuyo/compiladores/codeGen/runtimeExceptions.asm");
-
-            if (!Files.exists(setupPath)) {
-                throw new WriterException("ERROR: No se encontró setupCode.asm en: " + setupPath.toAbsolutePath());
-            }
-            if (!Files.exists(exceptionsPath)) {
-                throw new WriterException("ERROR: No se encontró runtimeExceptions.asm en: " + exceptionsPath.toAbsolutePath());
-            }
-
-            String setupCode = Files.readString(setupPath);
-            String exceptionsCode = Files.readString(exceptionsPath);
-            string.append(setupCode);
-            string.append(exceptionsCode);
-
-        } catch (IOException e) {
-            throw new WriterException("ERROR AL LEER setupCode.asm O runtimeExceptions.asm: " + e.getMessage());
-        }
+        String setupCode = readFromResources("codeGeneration/setupCode.asm");
+        String exceptionsCode = readFromResources("codeGeneration/runtimeExceptions.asm");
+        string.append(setupCode);
+        string.append(exceptionsCode);
 
         try (FileWriter writer = new FileWriter(pathName)) {
             writer.write(string.toString());
@@ -94,8 +80,6 @@ public class AST {
             throw new WriterException("ERROR AL ESCRIBIR EL ARCHIVO ASM: " + e.getMessage());
         }
     }
-
-
 
     public static void resetAST() {
         currentClass = null;
@@ -151,6 +135,23 @@ public class AST {
 
     public static boolean isIsReturnPresent() {
         return isReturnPresent;
+    }
+
+    /**
+     * Lee desde /resources el path y lo devuelve como String
+     * @param path Path del resource
+     * @return String
+     * @throws WriterException Excepcion por si ocurriese un error
+     */
+    private static String readFromResources(String path) throws WriterException {
+        try (InputStream input = AST.class.getClassLoader().getResourceAsStream(path)) {
+            if (input == null) {
+                throw new WriterException("ERROR: No se encontró el recurso");
+            }
+            return new String(input.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new WriterException("ERROR: Error leyendo el recurso");
+        }
     }
 
 }
