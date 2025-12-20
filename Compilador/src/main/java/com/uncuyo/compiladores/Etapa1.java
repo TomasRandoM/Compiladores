@@ -6,7 +6,6 @@ import com.uncuyo.compiladores.exceptions.WriterException;
 import com.uncuyo.compiladores.lexicalAnalyzer.LexicalAnalyzer;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
 import com.uncuyo.compiladores.lexicalAnalyzer.TokenTypes;
-import com.uncuyo.compiladores.utils.Addons;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +60,10 @@ public class Etapa1 {
                 writer.println("| TOKEN | LEXEMA |  NUMERO DE LINEA (NUMERO DE COLUMNA) |");
                 while (!stop) {
                     token = lexicalAnalyzer.nextToken();
-                    writer.println("| " + token.getName().name() + " | " + token.getLexeme() + " | LINEA " + token.getRow() + " (COLUMNA " + token.getColumn() + ") |");
+                    writer.println("| " + token.getName().name() + " | " +
+                            token.getLexeme() +
+                            " | LINEA " + token.getRow() +
+                            " (COLUMNA " + token.getColumn() + ") |");
 
                     if (token.getName() == TokenTypes.end_of_file) {
                         stop = true;
@@ -81,7 +82,7 @@ public class Etapa1 {
                 } catch (IOException e) {
                     //
                 }
-                throw ex;
+                System.out.println(ex.getMessage());
 
             } catch (IOException ex) {
                 try {
@@ -99,17 +100,21 @@ public class Etapa1 {
         else {
             boolean stop = false;
             LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(args[0]);
+            StringBuilder string = new StringBuilder();
             try {
-                System.out.println("CORRECTO: ANALISIS LEXICO");
-                System.out.println("| TOKEN | LEXEMA |  NUMERO DE LINEA (NUMERO DE COLUMNA) |");
+                string.append("CORRECTO: ANALISIS LEXICO \n");
+                string.append("| TOKEN | LEXEMA |  NUMERO DE LINEA (NUMERO DE COLUMNA) | \n");
                 while (!stop) {
                     token = lexicalAnalyzer.nextToken();
-                    System.out.println("| " + token.getName().name() + " | " + token.getLexeme() + " | LINEA " + token.getRow() + " (COLUMNA " + token.getColumn() + ") |");
+                    string.append("| " + token.getName().name() + " | " +
+                            token.getLexeme() + " | LINEA " + token.getRow() +
+                            " (COLUMNA " + token.getColumn() + ") | \n");
 
                     if (token.getName() == TokenTypes.end_of_file) {
                         stop = true;
                     }
                 }
+                System.out.println(string.toString());
 
             } catch (LexicalException | ReaderException ex) {
                 System.out.println(ex.getMessage());
