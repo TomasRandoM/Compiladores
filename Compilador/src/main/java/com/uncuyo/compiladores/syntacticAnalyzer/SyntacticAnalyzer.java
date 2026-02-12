@@ -765,7 +765,10 @@ public class SyntacticAnalyzer {
             lookahead.getName() == TokenTypes.pwhile ||
             lookahead.getName() == TokenTypes.pif ||
             lookahead.getName() == TokenTypes.semicolon) {
-                blockNode.addSentence(sentencia());
+                SentenceNode sentenceNode = sentencia();
+                if (sentenceNode != null) {
+                    blockNode.addSentence(sentenceNode);
+                }
                 sentencias(blockNode);
             }
             else {
