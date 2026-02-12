@@ -257,6 +257,7 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
         string.append("move $a0, $t0 \n");
         string.append("#Cargamos directamente el valor en a0 \n");
         string.append("#Esto debido a que por gramática no se puede asignar un elemento a través de encadenamiento \n");
+        string.append("move $a3, $a0 \n");
         string.append("lw $a0, 0($a0) \n");
         if (chainedNode != null) {
             chainedNode.codeGen(string);

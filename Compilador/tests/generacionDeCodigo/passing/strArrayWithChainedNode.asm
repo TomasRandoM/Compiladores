@@ -94,6 +94,7 @@ add $t0 $t0 $a0
 move $a0, $t0 
 #Cargamos directamente el valor en a0 
 #Esto debido a que por gramática no se puede asignar un elemento a través de encadenamiento 
+move $a3, $a0 
 lw $a0, 0($a0) 
 #CHAINED CALL NODE 
 sw $fp, 0($sp) 

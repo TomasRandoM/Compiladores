@@ -73,6 +73,7 @@ public class ParenthesizedExpressionNode extends ExpressionNode {
             if (expressionNode instanceof VariableNode) {
                 isAttribute = ((VariableNode) expressionNode).isAttribute;
             }
+            string.append("move $a3, $a0 \n");
             string.append("#Se obtiene el valor del array desde la direccion \n");
             if (expressionNode.nodeType.getName().equals("Double")) {
                 if (isAttribute) {
@@ -102,6 +103,7 @@ public class ParenthesizedExpressionNode extends ExpressionNode {
         ChainedNode chainedNode1 = expressionNode.getLastChainedNode();
 
         if ((!(chainedNode1 instanceof ChainedArrayAccessNode) && chainedNode1 instanceof ChainedAccessNode)) {
+            string.append("move $a3, $a0 \n");
             if (expressionNode.nodeType.getName().equals("Double")) {
                 string.append("lw $t0, 0($a0) \n");
                 string.append("lw $t1, 4($a0) \n");
@@ -134,6 +136,34 @@ public class ParenthesizedExpressionNode extends ExpressionNode {
         else {
             return expressionNode.getLastChainedNode();
         }
+    }
+
+    public boolean isVariable() {
+        if (chainedNode != null) {
+            if (chainedNode.getLastChainedNode() instanceof ChainedCallNode) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        else {
+            if (expressionNode instanceof BinaryExpressionNode ||
+                expressionNode instanceof UnaryExpressionNode ||
+                expressionNode instanceof LiteralNode ||
+                expressionNode instanceof MethodCallNode) {
+                return false;
+            }
+            else {
+                if (expressionNode instanceof ParenthesizedExpressionNode) {
+                    return ((ParenthesizedExpressionNode) expressionNode).isVariable();
+                }
+            }
+        }
+        if (expressionNode.getLastChainedNode() instanceof ChainedCallNode) {
+            return false;
+        }
+        return true;
     }
 
 }
