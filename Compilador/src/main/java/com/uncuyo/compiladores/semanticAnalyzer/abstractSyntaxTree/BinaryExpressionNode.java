@@ -59,6 +59,7 @@ public class BinaryExpressionNode extends ExpressionNode {
         }
 
         //Cambio los nodos si son array
+        /*
         if (leftNode.getName().equals("Array")) {
             if (left instanceof VariableNode || chained) {
                 if (!(rightNode.getName().equals("Array") && (right instanceof VariableNode || chained))) {
@@ -78,7 +79,7 @@ public class BinaryExpressionNode extends ExpressionNode {
                 rightNode = rightNode.getArrType();
             }
         }
-
+        */
 
         // Caso +, -, * y %
 

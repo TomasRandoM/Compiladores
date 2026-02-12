@@ -3,6 +3,6 @@ start {
     Array Double arr;
     Double x;
 
-    arr = new Int[5];
+    arr = new Double[5];
     x = ++arr[1];
 }

@@ -22,7 +22,7 @@ addiu $sp $sp -4
 addiu $sp $sp -4 
 #Metemos a la pila el parametro que representa el espacio que ocupan los elementos 
 #del array. 8 si es Double, 4 si es otra cosa 
-li $a0, 4 
+li $a0, 8 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 #CODE GEN DE LA EXPRESION
@@ -32,12 +32,17 @@ li $a0, 5
 #Guardamos en la pila el tamaño del array para pasarlo como parametro 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
-li $a0, 0 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-jal constructorArray 
+#Guardo el 0.0 en la pila para usarlo de inicializador 
+l.d $f0, zeroDouble 
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
+sw $t0, 0($sp)
+addiu $sp, $sp, -4
+sw $t1, 0($sp)
+addiu $sp, $sp, -4
+jal constructorArrayDouble 
 #La direccion de memoria del array queda en a0 
-addiu $sp $sp 20 
+addiu $sp $sp 24 
 #Restauramos el framepointer 
 lw $fp, 0($sp) 
 sw $a0, 0($sp) 
