@@ -167,6 +167,11 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
             }
             else {
                 if ((className != null) && (SymbolTable.getClass(className).getAttributes().get(token.getLexeme()) != null)) {
+                    Attribute att = SymbolTable.getClass(className).getAttributes().get(token.getLexeme());
+                    if (!att.getIsPublic() && (!att.getClassname().equals(className))) {
+                        throw new SemanticASTException(token, "El atributo " + token.getLexeme() +
+                                " no ha sido declarado en este contexto.");
+                    }
                     type = SymbolTable.getClass(className).getAttributes().get(token.getLexeme()).getType();
                 }
                 else {

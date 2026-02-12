@@ -279,6 +279,10 @@ public class ArrayAccessNode extends OperandNode{
                         }
                     }
                      */
+                    if ((!attr.isPublic()) && (!attr.getClassname().equals(className))) {
+                        throw new SemanticASTException(this.token, "El atributo " + token.getLexeme() +
+                                " no ha sido declarado en este contexto.");
+                    }
                     arrayType = attr.getType();
                 }
                 else {

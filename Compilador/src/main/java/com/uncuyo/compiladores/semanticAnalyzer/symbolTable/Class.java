@@ -51,9 +51,12 @@ public class Class {
             // pongo los metodos y atributos en orden
             //orderedAttributes.putAll(parentClass.attributes);
             for (Attribute attribute : parentClass.attributes.values()) {
+                orderedAttributes.put(attribute.getName(), attribute);
+                /*
                 if (attribute.getIsPublic()) {
                     orderedAttributes.put(attribute.getName(), attribute);
                 }
+                 */
             }
             orderedMethods.putAll(parentClass.methods);
         }

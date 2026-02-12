@@ -1335,5 +1335,56 @@ public class SemanticASTTest {
         });
     }
 
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testAccessingPrivateInheritedAttributeIncorrect1() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer(
+                    "tests/semanticoSentencias/failing/accessingPrivateInheritedAttribute1.s"
+            ).program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testAccessingPrivateInheritedAttributeIncorrect2() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer(
+                    "tests/semanticoSentencias/failing/accessingPrivateInheritedAttribute2.s"
+            ).program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testAccessingPrivateInheritedAttributeIncorrect3() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer(
+                    "tests/semanticoSentencias/failing/accessingPrivateInheritedAttribute3.s"
+            ).program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testAccessingPrivateInheritedAttributeIncorrect4() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer(
+                    "tests/semanticoSentencias/failing/accessingPrivateInheritedAttribute4.s"
+            ).program();
+        });
+    }
 
 }

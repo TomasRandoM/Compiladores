@@ -201,6 +201,10 @@ public class ChainedAccessNode extends ChainedNode {
             }
 
             if (!attribute.getIsPublic()) {
+                if (!attribute.getClassname().equals(this.className)) {
+                    throw new SemanticASTException(name, "El atributo " + name.getLexeme() +
+                            " no fue declarado en este contexto.");
+                }
                 if(!baseClass.getName().equals(getClassName())) {
                     if (getClassName() == null) {
                         throw new SemanticASTException(name, "No se puede acceder a un " +
