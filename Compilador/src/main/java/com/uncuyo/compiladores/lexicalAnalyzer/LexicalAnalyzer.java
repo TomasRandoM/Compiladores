@@ -391,8 +391,8 @@ public class LexicalAnalyzer {
             else {
                 unreadChar(cc);
                 token = new Token(c == '<' ? TokenTypes.op_rel_less : TokenTypes.op_rel_greater,
-                        c.toString() + cc, null, row,
-                        column - (c.toString() + cc).length());
+                        c.toString(), null, row,
+                        column - (c.toString()).length());
             }
         }
         else if (c == '!' || c == '=') {

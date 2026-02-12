@@ -472,10 +472,21 @@ public class BinaryExpressionNode extends ExpressionNode {
                     string.append("slt $a0, $t0, $a0\n");
                     break;
                 case op_rel_equal:
-                    string.append("seq $a0, $t0, $a0\n");
+                    if (left.nodeType.getName().equals("Str")) {
+                        string.append("jal equalStr \n");
+                    }
+                    else {
+                        string.append("seq $a0, $t0, $a0\n");
+                    }
                     break;
                 case op_rel_notequal:
-                    string.append("sne $a0, $t0, $a0\n");
+                    if (left.nodeType.getName().equals("Str")) {
+                        string.append("jal equalStr \n");
+                        string.append("seq $a0, $zero, $a0 \n");
+                    }
+                    else {
+                        string.append("sne $a0, $t0, $a0\n");
+                    }
                     break;
                 case op_rel_greaterequal:
                     string.append("sge $a0, $t0, $a0\n");
