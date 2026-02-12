@@ -633,6 +633,7 @@ endprocessA:
 addiu $sp $sp 8
 lw $ra, 0($sp) 
 jr $ra 
+.text 
 .data
     addOne: .double 1.0
     zeroDouble: .double 0.0

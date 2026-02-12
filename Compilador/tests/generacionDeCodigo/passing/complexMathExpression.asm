@@ -670,6 +670,7 @@ endcomplexDoubleA:
 addiu $sp $sp 4
 lw $ra, 0($sp) 
 jr $ra 
+.text 
 .data
     addOne: .double 1.0
     zeroDouble: .double 0.0

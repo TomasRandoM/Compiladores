@@ -39,6 +39,11 @@ public class Method {
     private Map<String, Parameter> parameters = new LinkedHashMap<>();
 
     /**
+     * Nombre de la clase que declara al metodo
+     */
+    private String classname;
+
+    /**
      * Constructor
      * @param token Token
      * @param type Type
@@ -49,6 +54,7 @@ public class Method {
         this.type = type;
         this.name = token.getLexeme();
         this.isStaticMethod = isStaticMethod;
+        this.classname = SymbolTable.getCurrentClass().getName();
     }
 
     /**
@@ -63,6 +69,7 @@ public class Method {
         this.type = type;
         this.name = name;
         this.isStaticMethod = isStaticMethod;
+        this.classname = SymbolTable.getCurrentClass().getName();
     }
     public String getName() {
         return name;
@@ -215,6 +222,20 @@ public class Method {
         return memory;
     }
 
+    /**
+     * Si el nombre de class1 es diferente a classname, es un metodo heredado
+     * @param class1 String
+     * @return boolean
+     */
+    public boolean isInheritedMethod(String class1) {
+        return (!class1.equals(classname));
+    }
 
+    public String getClassname() {
+        return classname;
+    }
 
+    public void setClassname(String classname) {
+        this.classname = classname;
+    }
 }

@@ -99,6 +99,7 @@ addiu $sp $sp 8
 #Fin del programa 
 li $v0, 10 
 syscall 
+.text 
 .data
     addOne: .double 1.0
     zeroDouble: .double 0.0
