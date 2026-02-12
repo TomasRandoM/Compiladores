@@ -16,7 +16,7 @@ public class SemanticASTException extends Exception {
     public SemanticASTException(Token lookahead, String message) {
         super("ERROR: SEMANTICO - SENTENCIAS" + '\n' + "| NUMERO DE LINEA (NUMERO DE COLUMNA) " +
                 "| DESCRIPCION: |" + '\n' + "| LINEA " +
-                lookahead.getRow() + " (COLUMNA " +
+                (lookahead.getRow() + 1) + " (COLUMNA " +
                 lookahead.getColumn() + ") " + "| " +
                 Addons.removeAccents(message) + " |" + '\n');
     }

@@ -29,8 +29,8 @@ public class Etapa5 {
         try {
             SyntacticAnalyzer syntacticAnalyzer = new SyntacticAnalyzer(args[0]);
             syntacticAnalyzer.program();
-            JsonGenerator.printSymbolTable(outputTSPath);
-            JsonASTGenerator.printAST(outputASTPath);
+            //JsonGenerator.printSymbolTable(outputTSPath);
+            //JsonASTGenerator.printAST(outputASTPath);
             AST.codeGen(outputASMPath);
         } catch (Exception e) {
             System.out.println(e.getMessage());

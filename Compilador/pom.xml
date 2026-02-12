@@ -34,7 +34,7 @@
     </dependencies>
 
     <build>
-        <finalName>etapa5</finalName>
+        <finalName>tinyS</finalName>
         <plugins>
 
             <!-- Compilador Java -->

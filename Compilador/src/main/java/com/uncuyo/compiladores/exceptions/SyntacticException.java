@@ -16,7 +16,7 @@ public class SyntacticException extends Exception {
     public SyntacticException(Token lookahead, String message) {
         super("ERROR: SINTACTICO" + '\n' + "| NUMERO DE LINEA (NUMERO DE COLUMNA) " +
                 "| DESCRIPCION: |" + '\n' + "| LINEA " +
-                lookahead.getRow() + " (COLUMNA " +
+                (lookahead.getRow() + 1) + " (COLUMNA " +
                 lookahead.getColumn() + ") " + "| " +
                 Addons.removeAccents(message) + " |" + '\n');
     }

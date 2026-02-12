@@ -224,4 +224,10 @@ public class LexicalAnalyzerTest {
         assertTrue(Addons.compareTokenLists(Etapa1.getAllTokens("tests/lexico/colon.s"), testList));
     }
 
+    @Test
+    public void testStringNotClosed() throws LexicalException, ReaderException {
+        assertThrows(LexicalException.class, () -> {
+            Etapa1.getAllTokens("tests/lexico/input17.s");
+        });
+    }
 }
