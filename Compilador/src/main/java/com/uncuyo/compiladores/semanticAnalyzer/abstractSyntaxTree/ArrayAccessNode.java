@@ -279,6 +279,10 @@ public class ArrayAccessNode extends OperandNode{
                         }
                     }
                      */
+                    if ((!attr.isPublic()) && (!attr.getClassname().equals(className))) {
+                        throw new SemanticASTException(this.token, "El atributo " + token.getLexeme() +
+                                " no ha sido declarado en este contexto.");
+                    }
                     arrayType = attr.getType();
                 }
                 else {
@@ -302,7 +306,13 @@ public class ArrayAccessNode extends OperandNode{
         }
 
         //obtengo el tipo del indice
-        Type intType = expressionNode.check();
+        Type intType;
+        if (expressionNode instanceof ChainedNode) {
+            intType = ((ChainedNode) expressionNode).checkNames(null);
+        }
+        else {
+            intType = expressionNode.check();
+        }
 
         if (!intType.getName().equals("Int")) {
             throw new SemanticASTException(token, "El índice debe ser de tipo Int. Se encontró: " +

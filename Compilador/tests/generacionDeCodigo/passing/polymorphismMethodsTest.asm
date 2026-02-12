@@ -604,6 +604,7 @@ endareaCuadrado:
 addiu $sp $sp 4
 lw $ra, 0($sp) 
 jr $ra 
+.text 
 .data
     addOne: .double 1.0
     zeroDouble: .double 0.0
@@ -1319,6 +1320,28 @@ jr $ra
             bne $t0, $zero, concatStrCopyLoop
         addiu $sp $sp 4
         lw $ra, 0($fp)
+        jr $ra
+
+equalStr:
+    lw $a0, 4($a0)
+    lw $t0, 4($t0)
+
+    forEqualStr:
+        lb $t1, 0($a0)
+        lb $t2, 0($t0)
+
+        bne $t1, $t2, endForEqualStr1
+        beq $t1, $zero, endForEqualStr2
+        addiu $t0, $t0, 1
+        addiu $a0, $a0, 1
+        j forEqualStr
+
+    endForEqualStr1:
+        li $a0, 0
+        jr $ra
+
+    endForEqualStr2:
+        li $a0, 1
         jr $ra
 .data
     # Excepciones de division por cero

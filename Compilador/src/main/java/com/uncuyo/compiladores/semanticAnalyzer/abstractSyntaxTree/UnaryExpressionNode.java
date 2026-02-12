@@ -59,6 +59,27 @@ public class UnaryExpressionNode extends ExpressionNode {
                 operator.getName() == TokenTypes.op_sum ||
                 operator.getName() == TokenTypes.pint
         ) {
+            if (operator.getName() == TokenTypes.op_increment ||
+                operator.getName() == TokenTypes.op_decrement
+            ) {
+                if (expressionNode instanceof BinaryExpressionNode ||
+                    expressionNode instanceof UnaryExpressionNode ||
+                    expressionNode instanceof LiteralNode ||
+                    expressionNode instanceof MethodCallNode ||
+                    expressionNode.getLastChainedNode() instanceof ChainedCallNode
+                ) {
+                    throw new SemanticASTException(operator, "Los operadores ++ y -- solo pueden " +
+                            "ser aplicados a variables. Se encontró un valor");
+                }
+                else {
+                    if (expressionNode instanceof ParenthesizedExpressionNode) {
+                        if (!((ParenthesizedExpressionNode) expressionNode).isVariable()) {
+                            throw new SemanticASTException(operator, "Los operadores ++ y -- solo pueden " +
+                                    "ser aplicados a variables. Se encontró un valor");
+                        }
+                    }
+                }
+            }
             if (auxType.getName().equals("Int") || auxType.getName().equals("Double")) {
                 if (operator.getName() == TokenTypes.pint) {
                     type = new Type(operator, "Int");

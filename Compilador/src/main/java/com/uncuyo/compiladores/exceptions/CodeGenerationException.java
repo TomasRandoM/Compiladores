@@ -16,7 +16,7 @@ public class CodeGenerationException extends Exception {
     public CodeGenerationException(Token lookahead, String message) {
         super("ERROR: Generacion de codigo" + '\n' + "| NUMERO DE LINEA (NUMERO DE COLUMNA) " +
                 "| DESCRIPCION: |" + '\n' + "| LINEA " +
-                lookahead.getRow() + " (COLUMNA " +
+                (lookahead.getRow() + 1) + " (COLUMNA " +
                 lookahead.getColumn() + ") " + "| " +
                 Addons.removeAccents(message) + " |" + '\n');
     }

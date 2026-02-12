@@ -2,6 +2,9 @@ package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
 import com.uncuyo.compiladores.exceptions.SemanticASTException;
 import com.uncuyo.compiladores.exceptions.WriterException;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Class;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Method;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.SymbolTable;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -69,6 +72,7 @@ public class AST {
             blockNode.codeGen(string);
         }
 
+        writeInheritedMethods(string);
         String setupCode = readFromResources("codeGeneration/setupCode.asm");
         String exceptionsCode = readFromResources("codeGeneration/runtimeExceptions.asm");
         string.append(setupCode);
@@ -154,4 +158,19 @@ public class AST {
         }
     }
 
+    /**
+     * Escribe el codigo de los saltos a los metodos heredados
+     * @param string StringBuilder
+     */
+    private static void writeInheritedMethods(StringBuilder string) {
+        string.append(".text \n");
+        for (Class c1 : SymbolTable.getClasses().values()) {
+            for (Method m1 : c1.getMethods().values()) {
+                if (m1.isInheritedMethod(c1.getName())) {
+                    string.append(m1.getName() + c1.getName() + ":\n");
+                    string.append("j " + m1.getName() + m1.getClassname() + "\n");
+                }
+            }
+        }
+    }
 }

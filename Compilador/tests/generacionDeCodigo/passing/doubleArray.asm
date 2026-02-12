@@ -22,7 +22,7 @@ addiu $sp $sp -4
 addiu $sp $sp -4 
 #Metemos a la pila el parametro que representa el espacio que ocupan los elementos 
 #del array. 8 si es Double, 4 si es otra cosa 
-li $a0, 4 
+li $a0, 8 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
 #CODE GEN DE LA EXPRESION
@@ -32,12 +32,17 @@ li $a0, 5
 #Guardamos en la pila el tamaño del array para pasarlo como parametro 
 sw $a0, 0($sp) 
 addiu $sp $sp -4 
-li $a0, 0 
-sw $a0, 0($sp) 
-addiu $sp $sp -4 
-jal constructorArray 
+#Guardo el 0.0 en la pila para usarlo de inicializador 
+l.d $f0, zeroDouble 
+mfc1 $t0, $f0 
+mfc1 $t1, $f1 
+sw $t0, 0($sp)
+addiu $sp, $sp, -4
+sw $t1, 0($sp)
+addiu $sp, $sp, -4
+jal constructorArrayDouble 
 #La direccion de memoria del array queda en a0 
-addiu $sp $sp 20 
+addiu $sp $sp 24 
 #Restauramos el framepointer 
 lw $fp, 0($sp) 
 sw $a0, 0($sp) 
@@ -368,6 +373,7 @@ addiu $sp $sp 8
 #Fin del programa 
 li $v0, 10 
 syscall 
+.text 
 .data
     addOne: .double 1.0
     zeroDouble: .double 0.0
@@ -1083,6 +1089,28 @@ syscall
             bne $t0, $zero, concatStrCopyLoop
         addiu $sp $sp 4
         lw $ra, 0($fp)
+        jr $ra
+
+equalStr:
+    lw $a0, 4($a0)
+    lw $t0, 4($t0)
+
+    forEqualStr:
+        lb $t1, 0($a0)
+        lb $t2, 0($t0)
+
+        bne $t1, $t2, endForEqualStr1
+        beq $t1, $zero, endForEqualStr2
+        addiu $t0, $t0, 1
+        addiu $a0, $a0, 1
+        j forEqualStr
+
+    endForEqualStr1:
+        li $a0, 0
+        jr $ra
+
+    endForEqualStr2:
+        li $a0, 1
         jr $ra
 .data
     # Excepciones de division por cero

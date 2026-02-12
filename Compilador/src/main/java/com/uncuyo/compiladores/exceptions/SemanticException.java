@@ -16,7 +16,7 @@ public class SemanticException extends Exception {
     public SemanticException(Token lookahead, String message) {
         super("ERROR: SEMANTICO - DECLARACIONES" + '\n' + "| NUMERO DE LINEA (NUMERO DE COLUMNA) " +
                 "| DESCRIPCION: |" + '\n' + "| LINEA " +
-                lookahead.getRow() + " (COLUMNA " +
+                (lookahead.getRow() + 1) + " (COLUMNA " +
                 lookahead.getColumn() + ") " + "| " +
                 Addons.removeAccents(message) + " |" + '\n');
     }

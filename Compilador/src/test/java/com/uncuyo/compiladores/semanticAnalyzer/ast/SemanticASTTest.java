@@ -1283,4 +1283,108 @@ public class SemanticASTTest {
         });
     }
 
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testIncrementIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer(
+                    "tests/semanticoSentencias/failing/unaryExpressions/increment.s"
+            ).program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testIncrementWithLiteralIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer(
+                    "tests/semanticoSentencias/failing/unaryExpressions/incrementWithLiteral.s"
+            ).program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testDecrementIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer(
+                    "tests/semanticoSentencias/failing/unaryExpressions/decrement.s"
+            ).program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testDecrementWithParenthesizedExpressionIncorrect() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer(
+                    "tests/semanticoSentencias/failing/unaryExpressions/decrementWithParenthesizedExpression.s"
+            ).program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testAccessingPrivateInheritedAttributeIncorrect1() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer(
+                    "tests/semanticoSentencias/failing/accessingPrivateInheritedAttribute1.s"
+            ).program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testAccessingPrivateInheritedAttributeIncorrect2() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer(
+                    "tests/semanticoSentencias/failing/accessingPrivateInheritedAttribute2.s"
+            ).program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testAccessingPrivateInheritedAttributeIncorrect3() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer(
+                    "tests/semanticoSentencias/failing/accessingPrivateInheritedAttribute3.s"
+            ).program();
+        });
+    }
+
+    /**
+     * Incorrecto.
+     */
+    @Test
+    public void testAccessingPrivateInheritedAttributeIncorrect4() {
+        SymbolTable.resetSymbolTable();
+        assertThrows(SemanticASTException.class, () -> {
+            new SyntacticAnalyzer(
+                    "tests/semanticoSentencias/failing/accessingPrivateInheritedAttribute4.s"
+            ).program();
+        });
+    }
+
 }

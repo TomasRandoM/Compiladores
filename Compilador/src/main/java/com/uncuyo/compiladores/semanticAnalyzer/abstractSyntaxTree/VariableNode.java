@@ -2,10 +2,8 @@ package com.uncuyo.compiladores.semanticAnalyzer.abstractSyntaxTree;
 
 import com.uncuyo.compiladores.exceptions.SemanticASTException;
 import com.uncuyo.compiladores.lexicalAnalyzer.Token;
+import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.*;
 import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Class;
-import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Method;
-import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.SymbolTable;
-import com.uncuyo.compiladores.semanticAnalyzer.symbolTable.Type;
 
 /**
  * Clase que representa las variables
@@ -87,6 +85,11 @@ public class VariableNode extends OperandNode {
                         throw new SemanticASTException(this.token, "El atributo " +
                                 "de instancia " + token.getLexeme() +
                                 " es accedido desde un contexto estático.");
+                    }
+                    Attribute att = currentClass.getAttributes().get(token.getLexeme());
+                    if ((!att.isPublic()) && (!att.getClassname().equals(this.currentClass))) {
+                        throw new SemanticASTException(this.token, "El atributo " + token.getLexeme() + " no" +
+                                " fue declarado en este contexto.");
                     }
                     type = currentClass.getAttributes().get(token.getLexeme()).getType();
                     type.setToken(this.token);

@@ -90,7 +90,14 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
             }
 
             // índice Int
-            Type indexType = expression.check();
+            Type indexType;
+            if (expression instanceof ChainedNode) {
+                indexType = ((ChainedNode) expression).checkNames(null);
+            }
+            else {
+                indexType = expression.check();
+            }
+
             if (!indexType.getName().equals("Int")) {
                 throw new SemanticASTException(expression.getToken(),
                         "El índice del Array debe ser Int. Se encontró: " + indexType.getName());
@@ -160,6 +167,11 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
             }
             else {
                 if ((className != null) && (SymbolTable.getClass(className).getAttributes().get(token.getLexeme()) != null)) {
+                    Attribute att = SymbolTable.getClass(className).getAttributes().get(token.getLexeme());
+                    if (!att.getIsPublic() && (!att.getClassname().equals(className))) {
+                        throw new SemanticASTException(token, "El atributo " + token.getLexeme() +
+                                " no ha sido declarado en este contexto.");
+                    }
                     type = SymbolTable.getClass(className).getAttributes().get(token.getLexeme()).getType();
                 }
                 else {
@@ -250,6 +262,7 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
         string.append("move $a0, $t0 \n");
         string.append("#Cargamos directamente el valor en a0 \n");
         string.append("#Esto debido a que por gramática no se puede asignar un elemento a través de encadenamiento \n");
+        string.append("move $a3, $a0 \n");
         string.append("lw $a0, 0($a0) \n");
         if (chainedNode != null) {
             chainedNode.codeGen(string);

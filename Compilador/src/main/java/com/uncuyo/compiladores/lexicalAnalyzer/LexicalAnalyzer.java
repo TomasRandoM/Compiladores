@@ -291,13 +291,21 @@ public class LexicalAnalyzer {
                 column=0;
             }
 
+            boolean isComillas = false;
             // caracter nulo \0 invalido en literal cadena
             if (c == '\\') {
                 Character cc = fileReader.readChar();
                 if (cc == '0') {
                     throw new LexicalException("CARACTER NULO INVÁLIDO EN CADENA: " + c+cc, column, row);
                 } else {
-                    fileReader.unreadChar();
+                    if (cc == '"') {
+                        lexeme.append(c);
+                        lexeme.append(cc);
+                        isComillas = true;
+                    }
+                    else {
+                        fileReader.unreadChar();
+                    }
                 }
             }
 
@@ -306,12 +314,16 @@ public class LexicalAnalyzer {
                 throw new LexicalException("SIMBOLO INVALIDO: " + c, column, row);
             }
 
-            if (c == '"') {
-                return new Token(TokenTypes.const_string, lexeme.toString(),
-                        null, startRow, startColumn);
-            }
+            if (!isComillas) {
+                if (c == '"') {
+                    return new Token(TokenTypes.const_string, lexeme.toString(),
+                            null, startRow, startColumn);
+                }
 
-            lexeme.append(c);
+                lexeme.append(c);
+            }
+            isComillas = false;
+
         }
 
         throw new LexicalException("SE SUPERO EL TAMAÑO MAXIMO DE CADENA (1024 CARACTERES)",column,row);
@@ -391,8 +403,8 @@ public class LexicalAnalyzer {
             else {
                 unreadChar(cc);
                 token = new Token(c == '<' ? TokenTypes.op_rel_less : TokenTypes.op_rel_greater,
-                        c.toString() + cc, null, row,
-                        column - (c.toString() + cc).length());
+                        c.toString(), null, row,
+                        column - (c.toString()).length());
             }
         }
         else if (c == '!' || c == '=') {

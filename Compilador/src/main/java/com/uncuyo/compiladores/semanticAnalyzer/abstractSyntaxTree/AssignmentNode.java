@@ -80,6 +80,15 @@ public class AssignmentNode extends SentenceNode {
                 }
             }
         }
+        else {
+            if (leftType.getName().equals("Array")) {
+                if (!leftType.getArrType().getName().equals(rightType.getArrType().getName())) {
+                    throw new SemanticASTException(rightNode.getToken(), "Se asigna un tipo de array incorrecto. Se " +
+                            "esperaba: " + leftType.getArrType().getName() + " y se encontró: " +
+                            rightType.getArrType().getName() + ".");
+                }
+            }
+        }
     }
 
     /**

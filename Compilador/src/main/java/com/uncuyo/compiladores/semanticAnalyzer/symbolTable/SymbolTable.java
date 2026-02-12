@@ -443,6 +443,7 @@ public class SymbolTable {
         Class arrayClass = new Class(token, "Array");
 
         //Metodos de IO
+        SymbolTable.setCurrentClass(IOClass);
         Method method;
         Type type;
         Type typeParameter;
@@ -577,6 +578,7 @@ public class SymbolTable {
         IOClass.addMethods(method);
 
         //Metodos para Str
+        SymbolTable.setCurrentClass(strClass);
         //length
         token = new Token(TokenTypes.id_obj, "length", null, 0, 0);
         type = new Type(token, "Int");
@@ -596,6 +598,7 @@ public class SymbolTable {
         strClass.addMethods(method);
 
         //Metodos para Array
+        SymbolTable.setCurrentClass(arrayClass);
         //length
         token = new Token(TokenTypes.id_obj, "length", null, 0, 0);
         type = new Type(token, "Int");

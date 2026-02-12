@@ -139,7 +139,7 @@ addiu $sp $sp -4
 #Sentencias del bloque 
 #IF THEN ELSE:
 #If 
-if_absA78: 
+if_absA88: 
 #CODE GEN DE LA EXPRESION
 #EXPRESION BINARIA
 #CODE GEN DEL LEFT
@@ -165,7 +165,7 @@ addiu $sp $sp 4
 slt $a0, $t0, $a0
 #CONTINUA IF THEN ELSE
 #Verifica si la condicion es falsa. Si es falsa salta a la etiqueta else 
-beq $a0, $zero, elseif_absA78
+beq $a0, $zero, elseif_absA88
 #SENTENCIA DEL IF
 #Sentencias del bloque de un metodo 
 #RETURN
@@ -184,20 +184,32 @@ sub $a0, $zero, $a0
 #CONTINUA RETURN 
 j endabsA
 #Al terminar salta a la etiqueta end del if 
-j endif_absA78 
+j endif_absA88 
 #Etiqueta del else. Si no hay else, esta vacia 
-elseif_absA78: 
+elseif_absA88: 
 #SENTENCIA DEL ELSE
 #Sentencias del bloque de un metodo 
 #ASIGNACION 
 #LITERAL
 li $a0, 8
-#FIN SIMPLE SENTENCE
-endif_absA78: 
+sw $a0, 0($sp) 
+addiu $sp $sp -4 
+#VARIABLE NODE
+#Carga de variable 
+#Cargamos la direccion de la variable en a0 utilizando el 
+#offset con el fp 
+la $a0, -4($fp) 
+addiu $sp $sp 4 
+#Cargamos el valor del lado derecho 
+lw $t0, 0($sp) 
+#Se guarda lo del lado derecho en la direccion de a0 
+sw $t0, 0($a0) 
+endif_absA88: 
 endabsA:
 addiu $sp $sp 8
 lw $ra, 0($sp) 
 jr $ra 
+.text 
 .data
     addOne: .double 1.0
     zeroDouble: .double 0.0
@@ -913,6 +925,28 @@ jr $ra
             bne $t0, $zero, concatStrCopyLoop
         addiu $sp $sp 4
         lw $ra, 0($fp)
+        jr $ra
+
+equalStr:
+    lw $a0, 4($a0)
+    lw $t0, 4($t0)
+
+    forEqualStr:
+        lb $t1, 0($a0)
+        lb $t2, 0($t0)
+
+        bne $t1, $t2, endForEqualStr1
+        beq $t1, $zero, endForEqualStr2
+        addiu $t0, $t0, 1
+        addiu $a0, $a0, 1
+        j forEqualStr
+
+    endForEqualStr1:
+        li $a0, 0
+        jr $ra
+
+    endForEqualStr2:
+        li $a0, 1
         jr $ra
 .data
     # Excepciones de division por cero

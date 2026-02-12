@@ -10,7 +10,7 @@ public class Attribute {
     private Type type;
     private Token token;
     private boolean isPublic;
-
+    private String classname;
     /**
      * Constructor de Attribute
      * @author Paulina Suden y Tomas Rando
@@ -22,6 +22,7 @@ public class Attribute {
         this.token = token;
         this.type = type;
         this.isPublic = isPublic;
+        this.classname = SymbolTable.getCurrentClass().getName();
     }
 
     public String getName() {
@@ -54,6 +55,22 @@ public class Attribute {
 
     public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean aPublic) {
+        isPublic = aPublic;
+    }
+
+    public String getClassname() {
+        return classname;
+    }
+
+    public void setClassname(String classname) {
+        this.classname = classname;
     }
 }
 
