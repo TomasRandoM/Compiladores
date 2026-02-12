@@ -90,7 +90,14 @@ public class ChainedArrayAccessNode extends ChainedAccessNode {
             }
 
             // índice Int
-            Type indexType = expression.check();
+            Type indexType;
+            if (expression instanceof ChainedNode) {
+                indexType = ((ChainedNode) expression).checkNames(null);
+            }
+            else {
+                indexType = expression.check();
+            }
+
             if (!indexType.getName().equals("Int")) {
                 throw new SemanticASTException(expression.getToken(),
                         "El índice del Array debe ser Int. Se encontró: " + indexType.getName());
